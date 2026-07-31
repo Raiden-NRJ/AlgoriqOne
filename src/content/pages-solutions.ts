@@ -313,8 +313,8 @@ export const ROLE_PAGES: Record<RoleId, PageContent> = {
       },
       {
         id: 'payroll',
-        title: 'What is not here',
-        body: 'There is no payroll. It is compliance-heavy, jurisdiction-specific, and deliberately last on the roadmap. Timesheets and leave export cleanly to whatever you run today.',
+        title: 'Payroll',
+        body: 'Payroll runs on the platform, on the same permission model as the rest of HR — so approved leave and approved attendance reach a pay run as records rather than as a spreadsheet somebody exports on the last Friday of the month. Payroll is jurisdiction-specific by nature; ask us which jurisdictions are live before you plan a migration around it.',
       },
     ],
     related: [

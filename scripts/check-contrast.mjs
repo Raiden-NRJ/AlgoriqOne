@@ -98,6 +98,7 @@ function token(name, depth = 0) {
 const T = {
   bg: token('bg'),
   bgSubtle: token('bg-subtle'),
+  bgWarm: token('bg-warm'),
   surface: token('surface'),
   border: token('border'),
   borderStrong: token('border-strong'),
@@ -140,6 +141,14 @@ const PAIRS = [
   ['fg-muted on bg-subtle', T.fgMuted, T.bgSubtle, 4.5],
   ['fg-subtle on bg', T.fgSubtle, T.bg, 4.5],
   ['fg-subtle on bg-subtle', T.fgSubtle, T.bgSubtle, 4.5],
+
+  // Warm parchment (§3). A warm surface under cool-hued ink is exactly the
+  // combination that drifts, so all three text weights are pinned here.
+  ['fg on bg-warm', T.fg, T.bgWarm, 7],
+  ['fg-muted on bg-warm', T.fgMuted, T.bgWarm, 4.5],
+  ['fg-subtle on bg-warm', T.fgSubtle, T.bgWarm, 4.5],
+  ['brand-700 on bg-warm', T.brand700, T.bgWarm, 4.5],
+
   ['brand-600 on bg', T.brand600, T.bg, 4.5],
   ['brand-700 on bg', T.brand700, T.bg, 4.5],
   ['brand-700 on bg-subtle', T.brand700, T.bgSubtle, 4.5],
