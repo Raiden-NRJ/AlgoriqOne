@@ -59,6 +59,13 @@
   --color-fg-subtle: var(--color-neutral-500);
   --color-fg-inverse: var(--color-neutral-50);
 
+  /* Warm parchment — §3, the chain, and nowhere else yet. That section is the
+     centrepiece of the argument and every other band on the page is the same
+     cool grey, so it needs a surface the eye registers as "stop and read this".
+     Hue 85 is the only warm value in the system: it is a *surface* token, never
+     text, never a border, and it stays light (rule 10 still holds). */
+  --color-bg-warm: oklch(0.972 0.009 85);
+
   /* Dark band — used deliberately for the "serious" sections (permissions,
      security). Not a theme: a tonal device. See docs/04 §8. Its ink is the
      parent brand's --color-ink-950 family, so the band reads as algoryq.com. */
@@ -107,6 +114,21 @@
   /* ── Motion ─────────────────────────────────────────────────────────── */
   --ease-out-quint: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out-quint: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Runs an element from wherever it starts out to the right viewport edge.
+   Mirrors Container width="wide" — its 90rem cap and its lg 3rem padding —
+   because a percentage margin on a grid item resolves against the *track*, not
+   the container, so the usual `calc(50% - 50vw)` trick is wrong here.
+
+   @utility, not `@layer utilities { .bleed-r }`: only registered utilities are
+   variant-composable in Tailwind v4, and this is used as `xl:bleed-r`. A plain
+   class in the layer silently produces no rule at all under a variant.
+
+   Only ever used on decoration inside an overflow-hidden section: the 100vw
+   term ignores a classic scrollbar and would otherwise cause a sideways scroll. */
+@utility bleed-r {
+  width: calc(100% + (100vw - min(90rem, 100vw)) / 2 + 3rem);
 }
 
 @layer base {

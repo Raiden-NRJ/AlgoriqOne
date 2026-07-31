@@ -42,7 +42,7 @@ export function Section({
   ...rest
 }: {
   id?: string;
-  tone?: 'default' | 'subtle' | 'band';
+  tone?: 'default' | 'subtle' | 'warm' | 'band';
   size?: 'default' | 'lg';
   className?: string;
   children: ReactNode;
@@ -50,6 +50,7 @@ export function Section({
   const tones = {
     default: 'bg-[var(--color-bg)]',
     subtle: 'bg-[var(--color-bg-subtle)] border-y border-[var(--color-border)]',
+    warm: 'bg-[var(--color-bg-warm)] border-y border-[var(--color-border)]',
     band: 'bg-[var(--color-band)] text-[var(--color-band-fg)]',
   } as const;
   return (

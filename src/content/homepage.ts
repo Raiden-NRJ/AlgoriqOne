@@ -16,6 +16,52 @@ export const hero = {
   proofPoints: ['14-day free trial', 'No credit card', 'Self-hosted option available'],
 } as const;
 
+/**
+ * §1 hero visual — the integration web: the portal in the middle, the modules
+ * that feed it wired around the outside.
+ *
+ * Node labels confirmed against the product by the owner (2026-07-31), Payroll
+ * and HRIS included. Payroll is the one to watch: the solutions page carried a
+ * "there is no payroll" line until that same date, so if the module is ever
+ * pulled back, this node and pages-solutions.ts `payroll` move together or the
+ * site contradicts itself.
+ *
+ * The activity rows are Demo-tenant sample data and are labelled as such
+ * underneath the illustration (CLAUDE.md rule 1).
+ */
+export const heroVisual = {
+  /** Text equivalent — the illustration itself is aria-hidden. */
+  alt: 'An illustration of the Algoryq One portal at the centre of seven wired modules — CRM, HRMS, Payroll, Sales, Timesheet, HRIS and Projects Gantt — with the portal showing a “My actions” feed of recent events: a new lead, a raised invoice, a project milestone, logged time and an approved timesheet.',
+  nodes: [
+    { id: 'crm', label: 'CRM' },
+    { id: 'hrms', label: 'HRMS' },
+    { id: 'payroll', label: 'Payroll' },
+    { id: 'sales', label: 'Sales' },
+    { id: 'timesheet', label: 'Timesheet' },
+    { id: 'hris', label: 'HRIS' },
+    { id: 'projects', label: 'Projects Gantt' },
+  ],
+  portal: {
+    url: 'portal.one.algoryq.com/actions',
+    nav: ['Dashboard', 'CRM', 'Projects', 'Time & Work', 'People', 'Business'],
+    heading: 'My actions',
+    /*
+     * Titles are the reference's, verbatim where they were coherent. Its
+     * subtitles were not — every row repeated its own title back, and two named
+     * a "Project X" — so the metas are written against the demo tenant instead.
+     */
+    items: [
+      { icon: 'lead', title: 'New Lead Added', meta: 'Orbit Health · qualified', tone: 'success' },
+      { icon: 'payroll', title: 'Payroll Run for Q2', meta: 'Awaiting finance approval', tone: 'brandStrong' },
+      { icon: 'milestone', title: 'Milestone Achieved', meta: 'Atlas CRM Rollout · phase 2', tone: 'neutral' },
+      { icon: 'time', title: 'Time Logged by A. Kapoor', meta: '8h · Atlas CRM Rollout', tone: 'brand' },
+      { icon: 'time', title: 'Timesheet Approved', meta: 'A. Kapoor · 38h · week 30', tone: 'brand' },
+    ],
+  },
+} as const;
+
+export type HeroVisualNodeId = (typeof heroVisual)['nodes'][number]['id'];
+
 /** §3 The chain — the centrepiece. Each link names the module that owns it. */
 export const chain = {
   eyebrow: 'The chain',
