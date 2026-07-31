@@ -50,10 +50,10 @@ export default function CareersPage() {
             </p>
             <p>
               <a
-                href="mailto:careers@rocketcrm.app"
+                href="mailto:careers@algoryq.com"
                 className="font-medium text-[var(--color-brand-700)] underline decoration-[var(--color-brand-300)] underline-offset-4"
               >
-                careers@rocketcrm.app
+                careers@algoryq.com
               </a>
             </p>
           </Reveal>

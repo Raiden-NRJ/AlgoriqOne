@@ -116,7 +116,7 @@ also the things that are impossible to retrofit.
 ## 5. Definition of done (per milestone)
 
 1. All acceptance criteria in the owning doc(s) checked.
-2. `nx typecheck`, `nx lint`, `nx build` green for `@rocketcrm/marketing`.
+2. `nx typecheck`, `nx lint`, `nx build` green for `@algoryq/marketing`.
 3. Build green **with all service URLs unreachable**.
 4. Bundle budgets pass.
 5. Lighthouse: Performance ≥ 97 mobile / ≥ 99 desktop, Accessibility / Best Practices / SEO = 100.

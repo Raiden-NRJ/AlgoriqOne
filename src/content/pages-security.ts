@@ -242,7 +242,7 @@ export const SECURITY_PAGES: Record<SecurityPageId, PageContent> = {
         title: 'Reporting a vulnerability',
         body: 'If you find something, tell us and we will respond. We publish a contact and a response expectation rather than making you hunt for one.',
         bullets: [
-          'security@rocketcrm.app',
+          'security@algoryq.com',
           'A security.txt at the well-known location',
           'We will acknowledge within two business days',
         ],

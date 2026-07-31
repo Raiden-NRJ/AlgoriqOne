@@ -1,5 +1,5 @@
 /**
- * The canonical demo dataset — taken verbatim from the RocketCRM Enterprise
+ * The canonical demo dataset — taken verbatim from the Algoryq One Enterprise
  * Suite Figma file ("Demo Tenant Context", node 4:26) so the website, the Figma
  * deck and any product screenshots tell the same story.
  *
@@ -8,8 +8,8 @@
  */
 
 export const DEMO_TENANT = {
-  name: 'RocketCRM Demo',
-  domain: 'demo.rocketcrm.app',
+  name: 'Algoryq One Demo',
+  domain: 'demo.one.algoryq.com',
   note: 'Sample data',
 } as const;
 
@@ -70,7 +70,7 @@ export const DEMO_PEOPLE: DemoPerson[] = [
 export const APPS = [
   {
     name: 'Portal',
-    host: 'portal.rocketcrm.app',
+    host: 'portal.one.algoryq.com',
     port: '3100',
     tone: 'portal',
     description:
@@ -78,7 +78,7 @@ export const APPS = [
   },
   {
     name: 'Admin Console',
-    host: 'admin.rocketcrm.app',
+    host: 'admin.one.algoryq.com',
     port: '3200',
     tone: 'admin',
     description:
@@ -86,7 +86,7 @@ export const APPS = [
   },
   {
     name: 'Customer Portal',
-    host: 'my.rocketcrm.app',
+    host: 'my.one.algoryq.com',
     port: '3400',
     tone: 'customer',
     description:
@@ -94,7 +94,7 @@ export const APPS = [
   },
   {
     name: 'Marketing Site',
-    host: 'rocketcrm.app',
+    host: 'one.algoryq.com',
     port: '3300',
     tone: 'platform',
     description: 'Public site — product story, features, pricing, blog, lead capture.',

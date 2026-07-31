@@ -7,15 +7,15 @@ inventory for `apps/marketing`. Implemented in `apps/marketing/src/app/globals.c
 
 ---
 
-## 1. Relationship to `@rocketcrm/ui`
+## 1. Relationship to `@algoryq/ui`
 
-**Decision: the marketing site keeps its own standalone theme. It does not import `@rocketcrm/ui`.**
+**Decision: the marketing site keeps its own standalone theme. It does not import `@algoryq/ui`.**
 
 Rationale — three reasons, in order:
 1. **Different job.** The product system optimizes for density, scanability and 8-hour sessions. The
    site optimizes for narrative, drama and a 90-second visit. Forcing one system to do both degrades
    both.
-2. **Weight.** `@rocketcrm/ui` pulls Radix, dnd-kit, chart libs and the admin shell. A marketing page
+2. **Weight.** `@algoryq/ui` pulls Radix, dnd-kit, chart libs and the admin shell. A marketing page
    must ship a fraction of that (`12-performance-and-seo.md` budgets).
 3. **Release independence.** A product design-system bump must never be able to break the homepage.
 
@@ -42,27 +42,38 @@ programmatic contrast guarantees possible.
 
 ### 2.1 Brand ramp
 
-Brand hue **277 (indigo)** — inherited from the product's `--primary: oklch(0.546 0.215 277)` so the
-site and the app are visibly the same company.
+Brand hue **259 (Algoryq blue)** — adopted from the parent brand (2026-07-31 rebrand) so Algoryq One
+and `algoryq.com` are visibly the same company.
+
+**Steps 500 and 600 are Algoryq's own values, copied unmodified** from the parent stylesheet
+(`--color-brand-500: oklch(58% .17 258)`, `--color-brand-600: oklch(45% .18 260)`). The rest of the
+ramp is interpolated around those two anchors, so a swatch lifted from either site matches. Re-hue
+only alongside the parent.
 
 ```
---brand-50   oklch(0.977 0.014 277)
---brand-100  oklch(0.946 0.033 277)
---brand-200  oklch(0.902 0.063 277)
---brand-300  oklch(0.828 0.108 277)
---brand-400  oklch(0.710 0.170 277)
---brand-500  oklch(0.610 0.205 277)
---brand-600  oklch(0.546 0.215 277)   ← primary, = product --primary
---brand-700  oklch(0.472 0.196 277)
---brand-800  oklch(0.398 0.162 277)
---brand-900  oklch(0.328 0.126 277)
---brand-950  oklch(0.232 0.090 277)
+--brand-50   oklch(0.977 0.012 259)
+--brand-100  oklch(0.945 0.028 259)
+--brand-200  oklch(0.898 0.055 259)
+--brand-300  oklch(0.822 0.096 259)
+--brand-400  oklch(0.702 0.145 259)
+--brand-500  oklch(0.580 0.170 258)   ← Algoryq --color-brand-500, verbatim
+--brand-600  oklch(0.450 0.180 260)   ← Algoryq --color-brand-600, verbatim; our primary
+--brand-700  oklch(0.390 0.158 260)
+--brand-800  oklch(0.330 0.128 260)
+--brand-900  oklch(0.275 0.100 260)
+--brand-950  oklch(0.205 0.072 261)
 ```
+
+The move from the old indigo (hue 277, `--brand-600: oklch(0.546 0.215 277)`) *improved* the primary
+action colour's contrast on white, from 5.32:1 to **7.71:1** — the new 600 is darker as well as
+bluer. Nothing regressed; see the table in §2.3.
 
 ### 2.2 Neutral ramp
 
-Cool-tinted (chroma 0.01–0.03 at hue 274) so neutrals harmonise with brand instead of fighting it.
-Twelve steps `--neutral-0` (white) through `--neutral-1000`.
+Tinted to the parent's ink hue **265** (`algoryq.com --color-ink-950: oklch(13% .012 265)`), chroma
+0.002–0.03, so neutrals harmonise with brand instead of fighting it. Twelve steps `--neutral-0`
+(white) through `--neutral-1000`. The rebrand moved these from hue 274 → 265; lightness was left
+alone, so every contrast ratio held to within 0.02.
 
 **Steps 500 and 600 are contrast-derived, not eyeballed.** They back `--color-fg-subtle` and
 `--color-fg-muted`, which carry most of the secondary text on the site. The first browser audit found
@@ -70,10 +81,21 @@ the original values failing at 3.3:1 on white, so they were recomputed against a
 
 | Token | Was | Now | Ratio on white |
 |---|---|---|---|
-| `--neutral-500` → `--color-fg-subtle` | `oklch(0.62 0.018 274)` | `oklch(0.545 0.019 274)` | 3.34 → **4.97** |
-| `--neutral-600` → `--color-fg-muted` | `oklch(0.5 0.02 274)` | `oklch(0.47 0.02 274)` | 6.1 → **6.84** |
+| `--neutral-500` → `--color-fg-subtle` | `oklch(0.62 0.018 274)` | `oklch(0.545 0.019 265)` | 3.34 → **4.96** |
+| `--neutral-600` → `--color-fg-muted` | `oklch(0.5 0.02 274)` | `oklch(0.47 0.02 265)` | 6.1 → **6.83** |
 
 Do not lighten either without re-running `npm run check:contrast`.
+
+### 2.3 How the palette is verified
+
+`npm run check:contrast` **parses `src/app/globals.css`** and computes real oklch → sRGB → WCAG
+ratios for all 26 pairs the site actually renders. It resolves `var(--color-*)` aliases, so it tests
+the same values the browser receives.
+
+It did not always. Until the rebrand it held a hand-copied token table under a "must mirror
+globals.css" comment, and when the ramp was re-hued it reported *all 26 pairs meet target* — for the
+violet tokens that had just been deleted. A checker that can pass against colours the site no longer
+ships is worse than no checker, because it is trusted. Do not reintroduce a mirrored copy.
 
 ### 2.3 Accent — used sparingly, with intent
 

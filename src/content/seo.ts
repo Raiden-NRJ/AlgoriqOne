@@ -4,7 +4,7 @@
  * These live in one place rather than being derived from page headlines,
  * because a headline optimised for a reader mid-scroll and a title optimised
  * for a search result are different sentences. Titles are ≤ 48 characters so
- * that the " · RocketCRM" suffix keeps the whole thing under 60; descriptions
+ * that the " · Algoryq One" suffix keeps the whole thing under 60; descriptions
  * are ≤ 155.
  *
  * Both limits are enforced by scripts/check-content.mjs.
@@ -119,12 +119,14 @@ export const INDUSTRY_SEO: Record<string, Seo> = {
       'For consultancies and integrators where winning the work depends on who can staff it. Pipeline, delivery, capacity and leave on one platform.',
   },
   agencies: {
-    title: 'RocketCRM for agencies',
+    // Not "Algoryq One for agencies" — the template already appends
+    // " · Algoryq One", and the brand twice in one SERP line reads as spam.
+    title: 'Retainers, utilisation & client portal',
     description:
       'Retainers and projects tracked the same way, utilisation you can see before month end, and a client portal your customers log into.',
   },
   technology: {
-    title: 'RocketCRM for technology companies',
+    title: 'Services delivery for tech companies',
     description:
       'Services delivery alongside product work, an API your team will actually build against, and a security posture that survives review.',
   },

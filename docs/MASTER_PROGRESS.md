@@ -14,6 +14,25 @@ port 3500, outside the root npm workspace. `apps/marketing` is untouched.
 **Theme decision (2026-07-31, user): light mode only.** No dark theme, no toggle. The dark bands on
 §8 and §13 are a tonal device using `--color-band-*`, not a theme.
 
+**Rebrand (2026-07-31, user): RocketCRM → Algoryq One, powered by Algoryq.tech.** The product is now
+an **Algoryq Technologies** product and the site says so. Landed across all ~45 routes:
+
+- **Mark** — the parent glyph from `algoryq.com`, copied path-for-path into
+  `src/components/site/logo.tsx`; new `src/app/icon.svg` is a tonal inversion of the parent favicon
+  so the two are never confused in a tab strip.
+- **Wordmark** — `Algoryq` + `One`, second segment in brand blue, mirroring the parent's
+  `algoryq` + `.tech` colour split.
+- **Palette** — brand hue 277 (indigo) → **259 (Algoryq blue)**, with the 500/600 stops taken
+  verbatim from the parent; neutrals re-tinted to the parent's ink hue 265. Contrast *improved*
+  (primary action on white 5.32:1 → **7.71:1**); all 26 pairs still pass (`02` §2).
+- **Identity** — `one.algoryq.com`, portal at `portal.one.algoryq.com`, contact addresses on
+  `algoryq.com`. All of it lives in `SITE` / `PARENT` / `CONTACT` in `src/content/site.ts`.
+- **Attribution** — footer carries "Powered by Algoryq.tech"; copyright names Algoryq Technologies.
+
+Positioning was **not** touched: the wedge, ICP and objection map were never name-dependent (`01` §0).
+Capability claims were not touched either — `00-audit-and-inventory.md` still describes the same code.
+The binding rules are `CLAUDE.md` rule 12 and `01` §0.
+
 ## What is built
 
 **47 routes, all building green.** `npm run build` succeeds with zero services running.
@@ -21,7 +40,7 @@ port 3500, outside the root npm workspace. `apps/marketing` is untouched.
 | Area | State |
 |---|---|
 | App scaffold (Next 16, Tailwind v4, TS strict, own lockfile, port 3500) | ✅ |
-| Token system — light only, oklch, brand hue 277 | ✅ `src/app/globals.css` |
+| Token system — light only, oklch, brand hue 259 (Algoryq blue) | ✅ `src/app/globals.css` |
 | Content modules (typed, copy out of JSX) | ✅ 12 modules incl. per-page SEO map |
 | Chrome — header w/ mega-menu + mobile sheet, footer, logo, skip link | ✅ |
 | Homepage — 20 sections in narrative order | ✅ server-rendered |
@@ -66,7 +85,7 @@ pages (`/compare/*`, needs legal review), and `/customers`.
 | # | Document | Purpose | Status |
 |---|---|---|---|
 | — | [CLAUDE.md](../CLAUDE.md) | Operating guide, working rules, input list | ✅ Written |
-| 00 | [Audit & Inventory](00-audit-and-inventory.md) | What RocketCRM actually is, verified against code | ✅ Written · Figma sub-task blocked |
+| 00 | [Audit & Inventory](00-audit-and-inventory.md) | What Algoryq One actually is, verified against code | ✅ Written · Figma sub-task blocked |
 | 01 | [Brand & Positioning](01-brand-and-positioning.md) | Wedge, ICP, voice, narrative spine, objection map | ✅ Written · needs GTM sign-off |
 | 02 | [Design System](02-design-system.md) | Tokens, type, color, space, elevation, motion, components | ✅ Written |
 | 03 | [Information Architecture](03-information-architecture.md) | Sitemap, nav, 37→20 section resolution, URL contract | ✅ Written |
@@ -126,7 +145,7 @@ Legend: 🔴 hard blocker · 🟠 needs a decision soon · 🟡 has a working fa
 | 2026-07-31 | ~~Positioning wedge = "one permission model, three departments"~~ — **superseded same day** | See row below |
 | 2026-07-31 | **Positioning wedge = "deal → delivery → cash"** (chosen by the user from four costed options) | The operational chain is concrete, demonstrable in one screen-share, and closest to the money — it speaks to the COO/CFO who signs. The permission model is demoted from headline to *proof layer*: it is the deepest moat but a governance argument, and governance wins the CISO rather than the budget holder. Accepted cost: this puts us in the PSA category against Kantata/Certinia rather than against Salesforce, and the HR modules become supporting cast (`01` §3). |
 | 2026-07-31 | Homepage = **20 sections**; the other 21 requested topics become destination pages | 37 sections contradicts the keynote requirement; nothing is dropped (`03` §1) |
-| 2026-07-31 | Site keeps a **standalone theme**, does not import `@rocketcrm/ui` | Different job, bundle weight, release independence (`02` §1) |
+| 2026-07-31 | Site keeps a **standalone theme**, does not import `@algoryq/ui` | Different job, bundle weight, release independence (`02` §1) |
 | 2026-07-31 | **Built from scratch in `website/`**, `apps/marketing` untouched | User instruction; also gives a self-contained install with no monorepo coupling |
 | 2026-07-31 | **Light mode only.** Dark bands are a tonal device, not a theme | User instruction; one theme designed properly beats two designed adequately |
 | 2026-07-31 | **Code is the source of truth; Figma is a generated output** | Confirmed on inspection — the supplied file already understated the service count (`14` §1) |
@@ -137,6 +156,13 @@ Legend: 🔴 hard blocker · 🟠 needs a decision soon · 🟡 has a working fa
 | 2026-07-31 | Lighthouse Performance gated at **≥97 mobile / ≥99 desktop** (median of 3), not a hard 100 | Lab-score variance makes a hard 100 gate flaky; field CWV is the real metric (`12` §1) |
 | 2026-07-31 | Interactive demo (§6) uses **fixture data, labelled "Sample data"**, no backend calls | Honesty + performance + no coupling to service availability |
 | 2026-07-31 | **No native mobile app claim** — responsive web + PWA only | It's what exists (`00` §7) |
+| 2026-07-31 | **Renamed RocketCRM → Algoryq One**, branded as an Algoryq Technologies product | User instruction. The parent is a named engineering company, and for a buyer committing to a 30-service platform "who operates this in five years" is a real objection — an explicit parent answers it better than a standalone product brand (`01` §0) |
+| 2026-07-31 | Site domain = **`one.algoryq.com`** (product subdomain), chosen by the user over `algoryqone.com` and `algoryq.one` | Keeps the endorsement in the URL itself, so the powered-by line reinforces rather than introduces the relationship |
+| 2026-07-31 | Wordmark = **"Algoryq One", two words**, chosen by the user over the tight `algoryqone` lockup | Reads unambiguously aloud and in prose; the colour split still mirrors the parent's `algoryq`+`.tech` |
+| 2026-07-31 | The parent glyph is **copied path-for-path, never redrawn** | Two brands sharing a mark must share it exactly, or they read as a knock-off at small sizes (`CLAUDE.md` rule 12) |
+| 2026-07-31 | Brand hue 277 → **259**, with Algoryq's own 500/600 values used verbatim | A swatch lifted from either site must match. Contrast improved rather than regressed (`02` §2.1) |
+| 2026-07-31 | `check-contrast.mjs` now **parses `globals.css`** instead of mirroring it by hand | The mirrored table passed all 26 pairs against tokens that had just been deleted. A checker that can pass against colours the site no longer ships is worse than none (`02` §2.3) |
+| 2026-07-31 | Off-site routes (`/signup`, `/login`) render as **plain `<a>`, never `<Link>`** | `<Link>` prefetches, which follows the config redirect cross-origin to the portal. The old placeholder host answered so this stayed invisible; `portal.one.algoryq.com` is not provisioned yet, and the browser audit surfaced it as 715 findings — one failed prefetch on every route at every viewport. Prefetching a host we are about to redirect to is wasted work regardless. Kept as `OFFSITE_ROUTES` in `src/content/site.ts`, in sync with `next.config.mjs` |
 
 ---
 

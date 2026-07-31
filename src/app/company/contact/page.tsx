@@ -32,7 +32,7 @@ const ROUTES = [
   },
   {
     heading: 'Security disclosure',
-    body: 'Found something? Email security@rocketcrm.app. We acknowledge within two business days and will not take legal action against good-faith research.',
+    body: 'Found something? Email security@algoryq.com. We acknowledge within two business days and will not take legal action against good-faith research.',
     links: [],
   },
 ];

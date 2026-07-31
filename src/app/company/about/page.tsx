@@ -2,10 +2,10 @@ import type { Metadata } from 'next';
 import { CtaBand, PageHero } from '@/components/page/page-template';
 import { Container, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
-import { PLATFORM_FACTS } from '@/content/site';
+import { PARENT, PLATFORM_FACTS, SITE } from '@/content/site';
 
 export const metadata: Metadata = {
-  title: 'About RocketCRM',
+  title: 'About Algoryq One',
   description:
     'Why we built one platform instead of integrating three, what we have shipped, and what we have deliberately not built yet.',
   alternates: { canonical: '/company/about' },
@@ -36,7 +36,7 @@ export default function AboutPage() {
       <PageHero
         eyebrow="About"
         title="We didn’t integrate three products. We built one."
-        intro="RocketCRM started from a specific frustration: in services businesses, the commercial pipeline, the delivery organisation and the people data are the same problem, and every available answer treated them as three."
+        intro="Algoryq One started from a specific frustration: in services businesses, the commercial pipeline, the delivery organisation and the people data are the same problem, and every available answer treated them as three."
       />
 
       <Section>
@@ -59,6 +59,30 @@ export default function AboutPage() {
               <p>
                 It is also why this website spends so much time on permissions. It is not a feature
                 we are proud of; it is the structural decision the rest of the platform depends on.
+              </p>
+            </div>
+          </Reveal>
+
+          <Reveal className="flex flex-col gap-5">
+            <h2 className="text-h2">Who builds it</h2>
+            <div className="flex max-w-[min(68ch,100%)] flex-col gap-4 leading-relaxed text-[var(--color-fg-muted)]">
+              <p>
+                {SITE.name} is built by{' '}
+                <a
+                  href={PARENT.siteUrl}
+                  className="font-medium text-[var(--color-brand-700)] underline underline-offset-4"
+                >
+                  {PARENT.name}
+                </a>
+                , an engineering company whose stated business is the AI platforms, cloud
+                infrastructure and enterprise systems that other organisations run on.
+              </p>
+              <p>
+                We mention it because it is the honest answer to a question every buyer of a
+                thirty-service platform should ask, and few vendors answer plainly: who is going to
+                be operating this in five years? {SITE.name} is not a product looking for a parent.
+                It is what an infrastructure company built when it needed the deal-to-cash chain to
+                work properly.
               </p>
             </div>
           </Reveal>

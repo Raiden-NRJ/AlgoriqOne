@@ -101,7 +101,7 @@ export default function SecurityHubPage() {
             >
               <table className="w-full min-w-[40rem] border-collapse text-left">
                 <caption className="sr-only">
-                  RocketCRM security and compliance posture by control area.
+                  Algoryq One security and compliance posture by control area.
                 </caption>
                 <thead>
                   <tr className="border-b border-[var(--color-border)] bg-[var(--color-bg-subtle)]">
@@ -159,10 +159,10 @@ export default function SecurityHubPage() {
             <p className="max-w-[min(62ch,100%)] text-[var(--color-fg-muted)]">
               Send it to{' '}
               <a
-                href="mailto:security@rocketcrm.app"
+                href="mailto:security@algoryq.com"
                 className="font-medium text-[var(--color-brand-700)] underline decoration-[var(--color-brand-300)] underline-offset-4"
               >
-                security@rocketcrm.app
+                security@algoryq.com
               </a>
               . We acknowledge within two business days and will keep you updated until it is closed.
               We will not take legal action against good-faith research.

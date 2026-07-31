@@ -47,7 +47,7 @@ export const LEGAL_DOCS: Record<LegalDocId, LegalDoc> = {
       {
         heading: 'If you use the product',
         paragraphs: [
-          'Data you put into a RocketCRM workspace belongs to you. We process it to provide the service. The platform implements GDPR data-subject request flows — export and erasure — and retention policies, so a request is an operation rather than an engineering project.',
+          'Data you put into an Algoryq One workspace belongs to you. We process it to provide the service. The platform implements GDPR data-subject request flows — export and erasure — and retention policies, so a request is an operation rather than an engineering project.',
         ],
         bullets: [
           'Export your data at any time through the API or CSV export',
@@ -58,7 +58,7 @@ export const LEGAL_DOCS: Record<LegalDocId, LegalDoc> = {
       {
         heading: 'Retention and contact',
         paragraphs: [
-          'Website analytics are retained for 24 months, then aggregated and purged. Contact records are kept while the conversation is live and for a reasonable period after. To ask what we hold, or to have it removed, email privacy@rocketcrm.app.',
+          'Website analytics are retained for 24 months, then aggregated and purged. Contact records are kept while the conversation is live and for a reasonable period after. To ask what we hold, or to have it removed, email privacy@algoryq.com.',
         ],
       },
     ],
@@ -74,7 +74,7 @@ export const LEGAL_DOCS: Record<LegalDocId, LegalDoc> = {
       {
         heading: 'The service',
         paragraphs: [
-          'RocketCRM provides a multi-tenant software platform. You get a workspace, we keep it running, and you pay per seat for the modules you have enabled.',
+          'Algoryq Technologies provides Algoryq One, a multi-tenant software platform. You get a workspace, we keep it running, and you pay per seat for the modules you have enabled.',
         ],
       },
       {
@@ -108,7 +108,7 @@ export const LEGAL_DOCS: Record<LegalDocId, LegalDoc> = {
       {
         heading: 'Conformance target',
         paragraphs: [
-          'This website and the RocketCRM platform target WCAG 2.2 Level AA, with AAA contrast on body text. We treat accessibility as a build gate rather than a review stage.',
+          'This website and the Algoryq One platform target WCAG 2.2 Level AA, with AAA contrast on body text. We treat accessibility as a build gate rather than a review stage.',
         ],
         bullets: [
           'Automated accessibility checks fail the build on violation',
@@ -132,7 +132,7 @@ export const LEGAL_DOCS: Record<LegalDocId, LegalDoc> = {
       {
         heading: 'Contact',
         paragraphs: [
-          'Email accessibility@rocketcrm.app. We will acknowledge within two business days. A VPAT is available on request for procurement processes that need one.',
+          'Email accessibility@algoryq.com. We will acknowledge within two business days. A VPAT is available on request for procurement processes that need one.',
         ],
       },
     ],

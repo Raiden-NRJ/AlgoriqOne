@@ -26,12 +26,12 @@ coherent company rather than three different fake datasets.
 > **Superseded 2026-07-31.** The "Northwind Consulting" fixture below was invented before the Figma
 > file was available. The Figma deck ships a canonical demo dataset ("Demo Tenant Context", node
 > `4:26`), which is now the standard and is implemented in `src/content/demo-tenant.ts`:
-> **tenant** RocketCRM Demo · **companies** Nimbus Retail Group, Vertex Manufacturing, Orbit Health ·
+> **tenant** Algoryq One Demo · **companies** Nimbus Retail Group, Vertex Manufacturing, Orbit Health ·
 > **projects** Atlas CRM Rollout, Beacon Employee Experience · **people** Demo Admin, Ava Kapoor,
 > Noah Chen, Mia Rivera, Lena Sorenson, Priya Oberoi, Jordan Wells.
 > Read the rules below with those names substituted.
 
-- **The company:** ~~"Northwind Consulting"~~ → the RocketCRM Demo tenant, per the note above.
+- **The company:** ~~"Northwind Consulting"~~ → the Algoryq One Demo tenant, per the note above.
 - **People:** the seven named people from the Figma deck, with consistent roles across every screen.
   The same person approving a timesheet appears in the org chart.
 - **Clients:** the three Figma companies, extended only if a screen genuinely needs more.

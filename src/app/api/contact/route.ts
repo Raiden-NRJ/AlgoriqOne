@@ -12,7 +12,7 @@ import { NextResponse } from 'next/server';
 const CRM_URL = process.env.CRM_SERVICE_URL;
 const LEAD_TENANT_ID = process.env.LEAD_TENANT_ID;
 const INTERNAL_AUTH = process.env.INTERNAL_AUTH_SECRET;
-const FALLBACK_EMAIL = 'hello@rocketcrm.app';
+const FALLBACK_EMAIL = 'hello@algoryq.com';
 
 interface Payload {
   name?: string;

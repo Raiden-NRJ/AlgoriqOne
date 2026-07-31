@@ -1,6 +1,6 @@
 # 00 — Product Audit & Feature Inventory
 
-**Purpose:** establish, from the codebase alone, exactly what RocketCRM *is* — so every word on the
+**Purpose:** establish, from the codebase alone, exactly what Algoryq One *is* — so every word on the
 website traces to something that exists. This document is the fact base every other doc cites.
 **Method:** direct source inspection on 2026-07-31. No claim here is inferred from documentation alone;
 counts were produced by enumerating files.
@@ -76,7 +76,7 @@ Enumerated from `services/` and cross-checked against the gateway route table an
 | `recruitment-service` | Requisitions, pipeline, interview feedback, offers |
 | `workplace-service` | Announcements, policies + acknowledgements, assets, expenses |
 
-**Website implication:** RocketCRM is not "a CRM". It is a **CRM + PSA + HRMS suite on one permission
+**Website implication:** Algoryq One is not "a CRM". It is a **CRM + PSA + HRMS suite on one permission
 model**. That is the positioning wedge — see `01-brand-and-positioning.md`.
 
 ---
@@ -185,7 +185,7 @@ admin console, dashboards/reports, workflow designer, custom fields, mobile view
 Benchmarked against Zoho One, Salesforce, HubSpot, Monday, Odoo (feature suites) and Stripe, Linear,
 Vercel, Notion (site craft).
 
-**Where RocketCRM genuinely wins and the site must say so:**
+**Where Algoryq One genuinely wins and the site must say so:**
 1. **One permission model across CRM + PSA + HRMS.** Competitors bolt suites together; RBAC here is one
    catalog, deny-by-default in all 30 services, with overrides, delegations, and time-limited grants.
 2. **Architectural transparency.** We can publish the service map, the gateway trust boundary, the

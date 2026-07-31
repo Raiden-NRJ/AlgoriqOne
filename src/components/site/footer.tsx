@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { FOOTER_COLUMNS, SITE } from '@/content/site';
+import { FOOTER_COLUMNS, PARENT, SITE } from '@/content/site';
 import { Container } from './primitives';
-import { Logo } from './logo';
+import { Logo, PoweredBy } from './logo';
 
 export function SiteFooter() {
   const year = 2026;
@@ -15,6 +15,7 @@ export function SiteFooter() {
             <p className="max-w-[min(34ch,100%)] text-sm leading-relaxed text-[var(--color-fg-muted)]">
               {SITE.description}
             </p>
+            <PoweredBy />
           </div>
 
           <nav aria-label="Footer" className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-6">
@@ -39,7 +40,16 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-14 flex flex-col gap-4 border-t border-[var(--color-border)] pt-8 text-sm text-[var(--color-fg-subtle)] sm:flex-row sm:items-center sm:justify-between">
-          <p>© {year} RocketCRM. All rights reserved.</p>
+          <p>
+            © {year}{' '}
+            <a
+              href={PARENT.siteUrl}
+              className="transition-colors hover:text-[var(--color-fg)]"
+            >
+              {PARENT.name}
+            </a>
+            . All rights reserved.
+          </p>
           <p>
             Product claims on this site are traceable to the platform’s source. Sample data is
             fictional and labelled.

@@ -1,4 +1,4 @@
-# RocketCRM website
+# Algoryq One website
 
 The public product website. A self-contained Next.js 16 application — it is **not** part of the root
 npm workspace and does not require the 30-service monorepo to be installed.
@@ -53,7 +53,7 @@ message.
 | `RELEASES_SERVICE_URL` | `/resources/changelog` renders real releases |
 | `CRM_SERVICE_URL` + `LEAD_TENANT_ID` | The contact form creates a real lead |
 | `INTERNAL_AUTH_SECRET` | Sent as `x-internal-auth` to services that require it |
-| `PORTAL_URL` | Where `/signup` and `/login` redirect (default `https://portal.rocketcrm.app`) |
+| `PORTAL_URL` | Where `/signup` and `/login` redirect (default `https://portal.one.algoryq.com`) |
 | `SITE_INDEXABLE` | Must be `"true"` for `robots.txt` to allow indexing — staging is noindex by default |
 
 Nothing above reaches the client bundle. All loaders are `import 'server-only'`.

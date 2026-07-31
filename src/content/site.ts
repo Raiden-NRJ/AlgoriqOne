@@ -3,12 +3,51 @@
 import { CLUSTERS } from './clusters';
 
 export const SITE = {
-  name: 'RocketCRM',
+  name: 'Algoryq One',
   tagline: 'From won deal to paid invoice, in one platform',
   description:
-    'RocketCRM connects your pipeline, delivery team and billing — so the hours your team logs are the hours you invoice, with no reconciliation in between.',
-  url: 'https://rocketcrm.app',
-  appUrl: 'https://portal.rocketcrm.app',
+    'Algoryq One connects your pipeline, delivery team and billing — so the hours your team logs are the hours you invoice, with no reconciliation in between.',
+  url: 'https://one.algoryq.com',
+  appUrl: 'https://portal.one.algoryq.com',
+} as const;
+
+/**
+ * The parent brand. Algoryq One is an Algoryq Technologies product, and the
+ * site says so rather than implying an independent vendor — the footer
+ * attribution, the legal entity in the terms, and the contact domain all
+ * resolve here. Kept as data so a single edit moves every mention.
+ */
+export const PARENT = {
+  name: 'Algoryq Technologies',
+  /**
+   * The byline wordmark, split so the accent segment can be coloured — the same
+   * two-part treatment as our own lockup and as algoryq.com's header.
+   */
+  wordmark: { lead: 'Algoryq', accent: '.tech' },
+  url: 'https://algoryq.tech',
+  siteUrl: 'https://algoryq.com',
+} as const;
+
+/**
+ * Routes that `next.config.mjs` redirects straight off-site to the portal.
+ *
+ * They look internal but always leave, so components must render them as plain
+ * anchors rather than `<Link>`. Next prefetches Link targets, which follows the
+ * 307 cross-origin to the portal host — a wasted request per page at best, and
+ * a console error on every page load when that host is not yet provisioned.
+ * The audit caught exactly that: 715 findings, all of them this one prefetch.
+ *
+ * Keep in sync with the `redirects()` block in `next.config.mjs`.
+ */
+export const OFFSITE_ROUTES: readonly string[] = ['/signup', '/login'];
+
+/** One place for every published address, so none drifts to an old domain. */
+export const CONTACT = {
+  general: 'hello@algoryq.com',
+  security: 'security@algoryq.com',
+  privacy: 'privacy@algoryq.com',
+  careers: 'careers@algoryq.com',
+  accessibility: 'accessibility@algoryq.com',
 } as const;
 
 export interface NavLink {

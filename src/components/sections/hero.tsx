@@ -83,7 +83,7 @@ function HeroComposition() {
      */
     <div className="relative mx-auto w-full max-w-[36rem]">
       <p className="sr-only">
-        An illustration of the RocketCRM portal showing the “My actions” inbox with four pending
+        An illustration of the Algoryq One portal showing the “My actions” inbox with four pending
         approvals — a timesheet, a deal and a leave request — and a confirmation that 38 approved
         hours have been attached to invoice INV-2041.
       </p>
@@ -95,7 +95,7 @@ function HeroComposition() {
           <span aria-hidden className="size-2.5 rounded-full bg-[var(--color-border-strong)]" />
           <span aria-hidden className="size-2.5 rounded-full bg-[var(--color-border-strong)]" />
           <span className="ml-2 truncate rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1 font-mono text-[0.6875rem] text-[var(--color-fg-subtle)]">
-            portal.rocketcrm.app/actions
+            portal.one.algoryq.com/actions
           </span>
         </div>
 

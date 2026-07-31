@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!--
+    Algoryq One app icon.
+
+    Same glyph geometry as algoryq.com/icon.svg, tonally inverted so the two
+    favicons are never mistaken for each other: the parent is a light glyph on
+    ink with a blue bar; this is a white glyph on brand blue with an ink bar.
+    Colours are literal hex because an SVG served as a static asset gets no
+    CSS custom properties — they mirror the brand ramp in globals.css.
+  -->
+  <defs>
+    <linearGradient id="one-tile" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1450B8"/>
+      <stop offset="1" stop-color="#2E7BE8"/>
+    </linearGradient>
+    <linearGradient id="one-bar" x1="41.5" y1="75" x2="95" y2="75" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0B1430"/>
+      <stop offset="1" stop-color="#16305F"/>
+    </linearGradient>
+  </defs>
+  <rect width="100" height="100" rx="22" fill="url(#one-tile)"/>
+  <g transform="translate(10 10) scale(0.8)" stroke-linejoin="round" paint-order="stroke" stroke-width="4">
+    <path fill="#FFFFFF" stroke="#FFFFFF" d="M50 8 L76.4 63.5 L59.75 63.5 L50 44 L26 92 L10 92 Z"/>
+    <path fill="url(#one-bar)" stroke="url(#one-bar)" d="M42.55 69 L87.05 69 L93.65 81 L46.15 81 Z"/>
+    <path fill="#FFFFFF" stroke="#FFFFFF" d="M72 86.5 L86 86.5 L90 92 L76 92 Z"/>
+  </g>
+</svg>

@@ -8,6 +8,8 @@
  * Usage: node scripts/check-contrast.mjs
  */
 
+import { readFileSync } from 'node:fs';
+
 /* ── oklch → sRGB ────────────────────────────────────────────────────────── */
 
 function oklchToSrgb(L, C, hDeg) {
@@ -53,37 +55,76 @@ const hex = (oklch) =>
     .map((c) => Math.round(c * 255).toString(16).padStart(2, '0'))
     .join('');
 
-/* ── The tokens (must mirror src/app/globals.css) ────────────────────────── */
+/* ── The tokens, read from globals.css ───────────────────────────────────── */
+
+/**
+ * Parsed out of the stylesheet rather than mirrored by hand.
+ *
+ * This used to be a hand-copied table with a "must mirror globals.css" comment
+ * on it, which is exactly as reliable as it sounds: during the Algoryq rebrand
+ * the whole ramp was re-hued and this script cheerfully reported "all 26 pairs
+ * meet target" — for the violet tokens that had just been deleted. A checker
+ * that can pass against colours the site no longer ships is worse than none,
+ * so it now reads the same file the browser does.
+ */
+
+const CSS = readFileSync(new URL('../src/app/globals.css', import.meta.url), 'utf8');
+
+const DECLARED = new Map(
+  [...CSS.matchAll(/--color-([a-z0-9-]+)\s*:\s*([^;]+);/g)].map(([, name, value]) => [
+    name,
+    value.trim(),
+  ]),
+);
+
+/** Resolves `var(--color-x)` aliases down to a literal oklch() triple. */
+function token(name, depth = 0) {
+  const value = DECLARED.get(name);
+  if (value === undefined) throw new Error(`--color-${name} is not declared in globals.css`);
+  if (depth > 8) throw new Error(`--color-${name}: var() chain too deep (cycle?)`);
+
+  const alias = value.match(/^var\(\s*--color-([a-z0-9-]+)\s*\)$/);
+  if (alias) return token(alias[1], depth + 1);
+
+  const oklch = value.match(
+    /^oklch\(\s*([\d.]+%?)\s+([\d.]+)\s+([\d.]+)\s*\)$/,
+  );
+  if (!oklch) throw new Error(`--color-${name}: cannot parse "${value}" as a plain oklch() triple`);
+
+  const [, l, c, h] = oklch;
+  return [l.endsWith('%') ? parseFloat(l) / 100 : parseFloat(l), parseFloat(c), parseFloat(h)];
+}
 
 const T = {
-  bg: [1, 0, 0],
-  bgSubtle: [0.975, 0.003, 274],
-  surface: [1, 0, 0],
-  border: [0.92, 0.006, 274],
-  borderStrong: [0.865, 0.009, 274],
-  fg: [0.21, 0.03, 274],
-  fgMuted: [0.47, 0.02, 274],
-  fgSubtle: [0.545, 0.019, 274],
+  bg: token('bg'),
+  bgSubtle: token('bg-subtle'),
+  surface: token('surface'),
+  border: token('border'),
+  borderStrong: token('border-strong'),
+  fg: token('fg'),
+  fgMuted: token('fg-muted'),
+  fgSubtle: token('fg-subtle'),
 
-  band: [0.16, 0.026, 274],
-  bandSurface: [0.205, 0.03, 274],
-  bandBorder: [0.3, 0.028, 274],
-  bandFg: [0.97, 0.005, 274],
-  bandFgMuted: [0.78, 0.014, 274],
+  band: token('band'),
+  bandSurface: token('band-surface'),
+  bandBorder: token('band-border'),
+  bandFg: token('band-fg'),
+  bandFgMuted: token('band-fg-muted'),
 
-  brand50: [0.977, 0.014, 277],
-  brand300: [0.828, 0.108, 277],
-  brand400: [0.71, 0.17, 277],
-  brand600: [0.546, 0.215, 277],
-  brand700: [0.472, 0.196, 277],
-  brand800: [0.398, 0.162, 277],
+  brand50: token('brand-50'),
+  brand300: token('brand-300'),
+  brand400: token('brand-400'),
+  brand600: token('brand-600'),
+  brand700: token('brand-700'),
+  brand800: token('brand-800'),
+  // Not a token: the literal white we set on brand-filled buttons.
   white: [1, 0, 0],
   // Two greens: one dark enough for white surfaces, one light enough for the
   // dark band. A single value cannot clear 4.5:1 against both.
-  success: [0.53, 0.15, 152],
-  successOnBand: [0.75, 0.16, 152],
-  danger: [0.58, 0.22, 27],
-  warning: [0.72, 0.16, 70],
+  success: token('success'),
+  successOnBand: token('success-band'),
+  danger: token('danger'),
+  warning: token('warning'),
 };
 
 /**
