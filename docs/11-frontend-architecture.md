@@ -142,7 +142,7 @@ Blog stays live from `knowledge-base-service` (already built, already working).
 - Every client island is `next/dynamic`, most with `ssr: false` and a server-rendered static fallback.
 - Icons imported individually (`lucide-react` tree-shakes only with named imports — verify in the
   analyzer, don't assume).
-- `@next/bundle-analyzer` is already a devDependency — wire it to a `nx analyze @rocketcrm/marketing`
+- `@next/bundle-analyzer` is already a devDependency — wire it to a `nx analyze @algoryq/marketing`
   target and review it before every release.
 - **No third-party script in the critical path.** Analytics loads after first interaction or on idle
   (`16-`). No chat widget on load — if one is ever added, it is behind a button.
@@ -162,7 +162,7 @@ Blog stays live from `knowledge-base-service` (already built, already working).
 
 ## 8. Quality gates (CI)
 
-Added to the existing pipeline for `@rocketcrm/marketing`:
+Added to the existing pipeline for `@algoryq/marketing`:
 
 1. `typecheck` — strict, zero errors
 2. `lint` — including the no-hex/no-magic-number rule

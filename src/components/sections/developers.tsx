@@ -81,17 +81,17 @@ function CodeSample() {
         className="overflow-x-auto p-5 font-mono text-[0.8125rem] leading-relaxed text-[var(--color-band-fg-muted)]"
       >
         <code>
-          {`import { RocketCRM } from '@rocketcrm/sdk';
+          {`import { AlgoryqOne } from '@algoryq/one-sdk';
 
-const rc = new RocketCRM({ apiKey: process.env.ROCKETCRM_KEY });
+const one = new AlgoryqOne({ apiKey: process.env.ALGORYQ_ONE_KEY });
 
 // Every call is permission-checked server-side.
-const { data } = await rc.crm.leads.list({
+const { data } = await one.crm.leads.list({
   status: 'qualified',
   pageSize: 50,
 });
 
-await rc.webhooks.create({
+await one.webhooks.create({
   event: 'sales.deal.won',
   url: 'https://example.com/hooks/deal-won',
   // Deliveries are HMAC-signed and retried.

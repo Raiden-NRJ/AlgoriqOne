@@ -1,14 +1,45 @@
 # 01 — Brand, Positioning & Messaging Spine
 
 **Depends on:** `00-audit-and-inventory.md`.
-**Purpose:** decide what RocketCRM *means* before deciding what it looks like. Every headline, every
+**Purpose:** decide what Algoryq One *means* before deciding what it looks like. Every headline, every
 section order, and every CTA on the site derives from this document.
+
+---
+
+## 0. Brand identity and the parent relationship
+
+**Renamed 2026-07-31 (user):** the product was **RocketCRM**; it is now **Algoryq One**, a product of
+**Algoryq Technologies** (`algoryq.com` / `algoryq.tech`). Everything below about the *positioning*
+survived the rename unchanged — the wedge, the ICP, and the objection map were never name-dependent.
+
+| | |
+|---|---|
+| Product name, in prose | **Algoryq One** — two words, both capitalised |
+| Code identifier | `AlgoryqOne` — SDK class, package names (`@algoryq/one-sdk`) only |
+| Wordmark | `Algoryq` + `One`, second segment in `--color-brand-600` |
+| Parent | Algoryq Technologies |
+| Attribution | "Powered by Algoryq.tech" — footer, linking to `algoryq.tech` |
+| Copyright holder | Algoryq Technologies (not "Algoryq One") |
+| Site | `one.algoryq.com` |
+
+**The endorsement is explicit, not implied.** Algoryq One is presented as an Algoryq product rather
+than as an independent vendor that happens to share a name. That is a deliberate trust transfer: a
+services firm evaluating a 30-service platform is buying an operator as much as software, and a named
+parent engineering company is a stronger answer to "who will still be running this in five years?"
+than a standalone product brand. It also constrains us — the compliance and uptime language in `07`
+now describes claims made on the parent's behalf, so the precision rule in `CLAUDE.md` §2 matters
+more, not less.
+
+**The visual relationship** is a shared mark and hue family, not a shared design. The glyph is the
+parent's, copied path-for-path; the brand ramp's 500/600 stops are the parent's values verbatim
+(`02` §2.1). But `algoryq.com` is dark-first and this site is light-only, and that stays true —
+only the hue family crosses over. `CLAUDE.md` rule 12 is the binding statement.
 
 ---
 
 ## 1. The strategic problem
 
-RocketCRM is a **CRM + PSA + HRMS suite on one permission model** (00 §2). That is a strength as
+Algoryq One is a **CRM + PSA + HRMS suite on one permission model** (00 §2). That is a strength as
 product and a liability as positioning: "we do everything" is the least credible claim in enterprise
 software. Zoho One already owns "everything, cheap". Salesforce owns "everything, enterprise".
 
@@ -17,7 +48,7 @@ We cannot out-breadth them and must not try. We win on a narrower, sharper, prov
 ## 2. Positioning statement
 
 > **For services businesses of 200–5,000 people whose won deals become projects, whose projects become
-> logged hours, and whose hours become invoices — across three systems that don't agree — RocketCRM is
+> logged hours, and whose hours become invoices — across three systems that don't agree — Algoryq One is
 > the platform where that entire chain lives in one place.**
 >
 > Unlike a CRM that stops at the closed deal, or a PSA that starts after it, every step from lead to
@@ -104,7 +135,7 @@ counters that spin to arbitrary numbers, chat-bubble popups on load.
 
 | Concept | Website term | Never say |
 |---|---|---|
-| The product | RocketCRM | RocketCRM.io, the RocketCRM |
+| The product | Algoryq One | Algoryq One.io, the Algoryq One |
 | The whole thing | "the platform" | "the suite", "the ecosystem" |
 | Modules | Revenue / Delivery / People / Service / Intelligence / Platform | "verticals", "pillars" |
 | `talentory-service` | **Skills & Learning** | Talentory (internal name only) |
@@ -132,7 +163,7 @@ it is cut. This spine is what turns 37 requested topics into a keynote instead o
 
 **Primary headline (hero) — chosen:**
 > **From won deal to paid invoice, without leaving the platform.**
-> RocketCRM connects your pipeline, your delivery team and your billing — so the hours your team logs
+> Algoryq One connects your pipeline, your delivery team and your billing — so the hours your team logs
 > are the hours you invoice, and nobody reconciles three systems to find out.
 
 Alternates held for A/B (`16-analytics-and-experimentation.md`):
@@ -151,7 +182,7 @@ Alternates held for A/B (`16-analytics-and-experimentation.md`):
 | **Time** | "Hours logged against the work item, approved once, and billable by construction." | timesheet-service, approval chain |
 | **Cash** | "Approved hours reconcile to the invoice — no export, no re-key, no month-end archaeology." | billing-service: invoices, payments, credit notes |
 | **People** (supporting) | "Resourcing knows about capacity and approved leave, so the chain reflects who is actually available." | employee + leave + attendance services |
-| **Trust** (proof) | "Every approval in that chain is enforced in the service, not implied by the interface." | `@rocketcrm/authz`, deny-by-default across 30 services |
+| **Trust** (proof) | "Every approval in that chain is enforced in the service, not implied by the interface." | `@algoryq/authz`, deny-by-default across 30 services |
 
 **Closing CTA:** "Start free" (primary) / "See pricing" (secondary) / "Talk to us" (tertiary, always
 available in header). No "Book a demo" as primary — it contradicts the brief's own goal of converting

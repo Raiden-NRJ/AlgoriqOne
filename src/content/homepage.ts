@@ -10,7 +10,7 @@
 export const hero = {
   eyebrow: 'CRM · Projects · Time · Billing — one chain',
   headline: ['From won deal to paid invoice,', 'without leaving the platform.'],
-  sub: 'RocketCRM connects your pipeline, your delivery team and your billing — so the hours your team logs are the hours you invoice, and nobody reconciles three systems to find out.',
+  sub: 'Algoryq One connects your pipeline, your delivery team and your billing — so the hours your team logs are the hours you invoice, and nobody reconciles three systems to find out.',
   primaryCta: { label: 'Start free', href: '/signup' },
   secondaryCta: { label: 'See the chain', href: '#chain' },
   proofPoints: ['14-day free trial', 'No credit card', 'Self-hosted option available'],
@@ -133,7 +133,7 @@ export const thesis = {
 export const permissions = {
   eyebrow: 'Why the chain holds',
   headline: 'Every approval in that chain is enforced. Not implied.',
-  sub: 'A chain is only worth as much as the approvals along it. If “approved” means somebody clicked a button the interface happened to show them, the number at the end is a guess. In RocketCRM every one of the 30 services checks a permission before it acts — deny by default, verified in tests, recorded in the audit trail.',
+  sub: 'A chain is only worth as much as the approvals along it. If “approved” means somebody clicked a button the interface happened to show them, the number at the end is a guess. In Algoryq One every one of the 30 services checks a permission before it acts — deny by default, verified in tests, recorded in the audit trail.',
   points: [
     'One catalog, one convention: module.resource.action, with wildcard expansion.',
     'Per-user grants and denies, with an expiry date. Deny always wins.',

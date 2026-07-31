@@ -2,7 +2,7 @@
 
 // The product applications live on their own hosts. Keeping the destinations in
 // env means a staging build points at staging without a code change.
-const PORTAL_URL = process.env.PORTAL_URL ?? 'https://portal.rocketcrm.app';
+const PORTAL_URL = process.env.PORTAL_URL ?? 'https://portal.one.algoryq.com';
 
 const nextConfig = {
   reactStrictMode: true,

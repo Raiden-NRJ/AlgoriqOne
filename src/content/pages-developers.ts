@@ -8,7 +8,7 @@ export const DEVELOPER_OVERVIEW: PageContent = {
   eyebrow: 'Developers',
   title: 'The same gateway our own applications use.',
   intro:
-    'There is no private API. The four RocketCRM applications call the platform through the same REST gateway, with the same authentication and the same permission checks that your integration will hit.',
+    'There is no private API. The four Algoryq One applications call the platform through the same REST gateway, with the same authentication and the same permission checks that your integration will hit.',
   jobs: [
     'Integrate without waiting for a vendor to expose an endpoint',
     'Automate the things your process needs and ours does not',

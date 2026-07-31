@@ -103,7 +103,7 @@ export function PermissionMatrix() {
           <table className="w-full min-w-[22rem] border-collapse text-left">
             <caption className="sr-only">
               Permissions held by the {role.name} role. Each row is a permission key from the
-              RocketCRM catalog.
+              Algoryq One catalog.
             </caption>
             <thead>
               <tr className="border-b border-[var(--color-band-border)]">

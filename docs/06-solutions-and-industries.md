@@ -11,11 +11,11 @@ solutions pages answer *what it does for me*, which is what actually converts a 
 Solutions split by **industry** (the company's shape) and by **role** (the reader's job). Both use one
 template so we can add either kind cheaply:
 
-1. **Hero** — "RocketCRM for <X>", the outcome sentence, one screenshot configured for X.
+1. **Hero** — "Algoryq One for <X>", the outcome sentence, one screenshot configured for X.
 2. **"A week in your role/industry"** — a narrative timeline, not a feature list. The single most
    effective device on a solutions page: it makes the product concrete before it makes it impressive.
 3. **The three problems X has** — named specifically enough that the reader thinks "how do they know".
-4. **How RocketCRM handles each** — module + screenshot + the mechanism.
+4. **How Algoryq One handles each** — module + screenshot + the mechanism.
 5. **The configuration** — which clusters, which roles, which permission set, which workflows. This
    is where our modularity (feature flags + licenses) becomes a selling point: *"turn on what you need".*
 6. **What you'd replace** — a plain list of tool categories consolidated, feeding the ROI calculator.

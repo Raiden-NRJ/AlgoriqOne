@@ -84,7 +84,7 @@ export function SiteHeader() {
 
       <Container width="wide">
         <div ref={navRef} className="flex h-16 items-center justify-between gap-6">
-          <Link href="/" className="shrink-0 rounded-[var(--radius-md)]" aria-label="RocketCRM home">
+          <Link href="/" className="shrink-0 rounded-[var(--radius-md)]" aria-label="Algoryq One home">
             <Logo size="sm" />
           </Link>
 

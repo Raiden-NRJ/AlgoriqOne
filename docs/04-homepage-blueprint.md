@@ -27,7 +27,7 @@ Line 2 in `--brand-600`. No gradient text in the hero — the contrast contract 
 brand-attribute "substantiated" both argue against it.
 
 **Sub** (`body-lg`, `--fg-muted`, max 52ch):
-> RocketCRM runs your CRM, projects, and HR on one platform where every module shares the same
+> Algoryq One runs your CRM, projects, and HR on one platform where every module shares the same
 > authorization engine, audit trail, and API — so your systems finally agree.
 
 **CTAs.** Primary `Start free` → `/signup`. Secondary `See it working` → smooth-scrolls to §6 (not an
@@ -115,7 +115,7 @@ Never mention Zoho/Salesforce by name outside `/compare` — punching down reads
 
 ---
 
-## §4 — Why RocketCRM exists  ·  Beat 4 (The claim)  ·  `ThesisSection`
+## §4 — Why Algoryq One exists  ·  Beat 4 (The claim)  ·  `ThesisSection`
 
 **One idea:** built as one system from day one — here's the before/after.
 
@@ -124,12 +124,12 @@ before/after comparison.
 
 **Thesis:**
 > **We didn't integrate three products. We built one.**
-> Every RocketCRM module — leads, projects, timesheets, leave, payroll-adjacent HR — sits on the same
+> Every Algoryq One module — leads, projects, timesheets, leave, payroll-adjacent HR — sits on the same
 > authorization engine, emits into the same audit trail, and answers to the same API gateway.
 
 **Before/After.** Two columns sharing a row scale, so differences are read across, not down. Six rows:
 
-| | Three systems | RocketCRM |
+| | Three systems | Algoryq One |
 |---|---|---|
 | Permissions | Three models, manual reconciliation | One catalog, `module.resource.action`, enforced in every service |
 | Approvals | Four inboxes | One inbox (`/actions`) |
@@ -138,7 +138,7 @@ before/after comparison.
 | Reporting | Export, merge, reconcile | One reporting service over shared read models |
 | Adding a field | Vendor ticket × 3 | Self-serve, per tenant, no code |
 
-Every "RocketCRM" cell is true and traceable (`00` §2). The left column uses `--fg-muted`; the right
+Every "Algoryq One" cell is true and traceable (`00` §2). The left column uses `--fg-muted`; the right
 uses `--fg` with a brand left-edge — the eye is pulled right without a garish colour block.
 
 **Motion.** Rows reveal on a 60ms stagger. The right column's brand edge wipes down as the section
@@ -242,7 +242,7 @@ This section exists because it is our defensible moat. It gets full-section trea
 
 **Left — the argument:**
 > **Most CRMs hide the buttons. We deny the request.**
-> A hidden button is not a security control. In RocketCRM, every one of the 30 services checks a
+> A hidden button is not a security control. In Algoryq One, every one of the 30 services checks a
 > permission before it acts — deny by default, verified in tests, logged in the audit trail.
 
 Four proof bullets: one permission catalog (`module.resource.action`) · per-user grants **and denies**,

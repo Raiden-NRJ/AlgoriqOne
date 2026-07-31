@@ -4,6 +4,7 @@
  */
 import Link from 'next/link';
 import type { ComponentProps, ElementType, ReactNode } from 'react';
+import { OFFSITE_ROUTES } from '@/content/site';
 
 export function cn(...parts: Array<string | false | null | undefined>): string {
   return parts.filter(Boolean).join(' ');
@@ -161,9 +162,11 @@ export function Button({
   } as const;
 
   const classes = cn(base, sizes, variants[variant], className);
-  const isExternal = href.startsWith('http');
+  // OFFSITE_ROUTES are internal-looking paths that redirect to the portal, so
+  // they get the plain-anchor treatment too — see the note on the constant.
+  const leavesSite = href.startsWith('http') || OFFSITE_ROUTES.includes(href);
 
-  if (isExternal) {
+  if (leavesSite) {
     return (
       <a href={href} className={classes}>
         {children}
@@ -283,7 +286,7 @@ export function SampleDataNote({ tone = 'default' }: { tone?: 'default' | 'band'
         tone === 'band' ? 'text-[var(--color-band-fg-muted)]' : 'text-[var(--color-fg-subtle)]',
       )}
     >
-      Sample data from the RocketCRM Demo tenant.
+      Sample data from the Algoryq One Demo tenant.
     </p>
   );
 }

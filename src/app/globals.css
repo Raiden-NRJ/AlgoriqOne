@@ -1,45 +1,52 @@
 /*
- * RocketCRM website — design tokens.
+ * Algoryq One website — design tokens.
  * Tailwind v4, CSS-first. LIGHT MODE ONLY (decision 2026-07-31).
- * Brand hue 277 (indigo/violet) inherited from the product design system
- * (packages/ui --primary: oklch(0.546 0.215 277)) and from the Figma cover mark.
- * Spec: website/docs/02-design-system.md
+ *
+ * Brand hue 259 (Algoryq blue), adopted from Algoryq Technologies
+ * (algoryq.com --color-brand-500: oklch(58% .17 258), --color-brand-600:
+ * oklch(45% .18 260)). Those two stops are reproduced exactly and the rest of
+ * the ramp is interpolated around them, so a swatch lifted from either site
+ * matches. The neutrals move to the parent's ink hue 265.
+ *
+ * The parent brand is dark-first; we are not. Only the hue family crosses over
+ * — the surfaces stay light (rule 10). See docs/02-design-system.md.
  */
 @import "tailwindcss";
 
 @source "../**/*.{ts,tsx}";
 
 @theme {
-  /* ── Brand ramp ─────────────────────────────────────────────────────── */
-  --color-brand-50: oklch(0.977 0.014 277);
-  --color-brand-100: oklch(0.946 0.033 277);
-  --color-brand-200: oklch(0.902 0.063 277);
-  --color-brand-300: oklch(0.828 0.108 277);
-  --color-brand-400: oklch(0.71 0.17 277);
-  --color-brand-500: oklch(0.61 0.205 277);
-  --color-brand-600: oklch(0.546 0.215 277);
-  --color-brand-700: oklch(0.472 0.196 277);
-  --color-brand-800: oklch(0.398 0.162 277);
-  --color-brand-900: oklch(0.328 0.126 277);
-  --color-brand-950: oklch(0.232 0.09 277);
+  /* ── Brand ramp (Algoryq blue) ──────────────────────────────────────── */
+  --color-brand-50: oklch(0.977 0.012 259);
+  --color-brand-100: oklch(0.945 0.028 259);
+  --color-brand-200: oklch(0.898 0.055 259);
+  --color-brand-300: oklch(0.822 0.096 259);
+  --color-brand-400: oklch(0.702 0.145 259);
+  /* 500 and 600 are Algoryq's own values, unmodified. */
+  --color-brand-500: oklch(0.58 0.17 258);
+  --color-brand-600: oklch(0.45 0.18 260);
+  --color-brand-700: oklch(0.39 0.158 260);
+  --color-brand-800: oklch(0.33 0.128 260);
+  --color-brand-900: oklch(0.275 0.1 260);
+  --color-brand-950: oklch(0.205 0.072 261);
 
-  /* ── Neutrals (cool-tinted, hue 274) ────────────────────────────────── */
+  /* ── Neutrals (Algoryq ink, hue 265) ────────────────────────────────── */
   --color-neutral-0: oklch(1 0 0);
-  --color-neutral-25: oklch(0.987 0.002 274);
-  --color-neutral-50: oklch(0.975 0.003 274);
-  --color-neutral-100: oklch(0.955 0.005 274);
-  --color-neutral-200: oklch(0.92 0.006 274);
-  --color-neutral-300: oklch(0.865 0.009 274);
-  --color-neutral-400: oklch(0.7 0.015 274);
+  --color-neutral-25: oklch(0.987 0.002 265);
+  --color-neutral-50: oklch(0.975 0.003 265);
+  --color-neutral-100: oklch(0.955 0.005 265);
+  --color-neutral-200: oklch(0.92 0.006 265);
+  --color-neutral-300: oklch(0.865 0.009 265);
+  --color-neutral-400: oklch(0.7 0.015 265);
   /* 500 and 600 are tuned to clear 4.5:1 on white and on --color-bg-subtle;
      verified by scripts/check-contrast.mjs, not by eye. */
-  --color-neutral-500: oklch(0.545 0.019 274);
-  --color-neutral-600: oklch(0.47 0.02 274);
-  --color-neutral-700: oklch(0.39 0.025 274);
-  --color-neutral-800: oklch(0.29 0.028 274);
-  --color-neutral-900: oklch(0.21 0.03 274);
-  --color-neutral-950: oklch(0.16 0.026 274);
-  --color-neutral-1000: oklch(0.125 0.022 274);
+  --color-neutral-500: oklch(0.545 0.019 265);
+  --color-neutral-600: oklch(0.47 0.02 265);
+  --color-neutral-700: oklch(0.39 0.025 265);
+  --color-neutral-800: oklch(0.29 0.028 265);
+  --color-neutral-900: oklch(0.21 0.03 265);
+  --color-neutral-950: oklch(0.16 0.026 265);
+  --color-neutral-1000: oklch(0.125 0.022 265);
 
   /* ── Semantic surfaces (light only) ─────────────────────────────────── */
   --color-bg: var(--color-neutral-0);
@@ -53,15 +60,18 @@
   --color-fg-inverse: var(--color-neutral-50);
 
   /* Dark band — used deliberately for the "serious" sections (permissions,
-     security). Not a theme: a tonal device. See docs/04 §8. */
+     security). Not a theme: a tonal device. See docs/04 §8. Its ink is the
+     parent brand's --color-ink-950 family, so the band reads as algoryq.com. */
   --color-band: var(--color-neutral-950);
-  --color-band-surface: oklch(0.205 0.03 274);
-  --color-band-border: oklch(0.3 0.028 274);
-  --color-band-fg: oklch(0.97 0.005 274);
-  --color-band-fg-muted: oklch(0.78 0.014 274);
+  --color-band-surface: oklch(0.205 0.03 265);
+  --color-band-border: oklch(0.3 0.028 265);
+  --color-band-fg: oklch(0.97 0.005 265);
+  --color-band-fg-muted: oklch(0.78 0.014 265);
 
-  /* ── Accent + semantic (mirrors packages/ui) ────────────────────────── */
-  --color-accent: oklch(0.72 0.14 195);
+  /* ── Accent + semantic ──────────────────────────────────────────────── */
+  /* Algoryq's "aurora" cyan (--color-aurora-500: oklch(76% .13 200)), pulled
+     down in lightness to hold 3:1 as a non-text accent on white. */
+  --color-accent: oklch(0.72 0.14 200);
   /* Two greens: no single lightness clears 4.5:1 against both white and the
      dark band, so text on the band uses --color-success-band. */
   --color-success: oklch(0.53 0.15 152);
@@ -70,11 +80,11 @@
   --color-danger: oklch(0.58 0.22 27);
   --color-info: oklch(0.62 0.17 250);
 
-  /* App colours from the Figma module map */
-  --color-app-portal: oklch(0.42 0.12 274);
-  --color-app-admin: oklch(0.546 0.215 277);
-  --color-app-customer: oklch(0.66 0.12 195);
-  --color-app-platform: oklch(0.6 0.2 300);
+  /* App colours from the Figma module map, re-hued onto the Algoryq family */
+  --color-app-portal: oklch(0.42 0.12 265);
+  --color-app-admin: oklch(0.45 0.18 260);
+  --color-app-customer: oklch(0.66 0.12 200);
+  --color-app-platform: oklch(0.55 0.19 285);
 
   /* ── Type ───────────────────────────────────────────────────────────── */
   --font-sans: var(--font-inter), ui-sans-serif, -apple-system, BlinkMacSystemFont,
@@ -89,10 +99,10 @@
   --radius-2xl: 1.75rem;
 
   /* ── Elevation (light ring + soft shadow, never stacked) ────────────── */
-  --shadow-e1: 0 1px 2px oklch(0.21 0.03 274 / 0.04), 0 1px 3px oklch(0.21 0.03 274 / 0.06);
-  --shadow-e2: 0 2px 4px oklch(0.21 0.03 274 / 0.04), 0 8px 20px oklch(0.21 0.03 274 / 0.08);
-  --shadow-e3: 0 4px 8px oklch(0.21 0.03 274 / 0.05), 0 16px 40px oklch(0.21 0.03 274 / 0.1);
-  --shadow-e4: 0 8px 16px oklch(0.21 0.03 274 / 0.06), 0 32px 64px oklch(0.21 0.03 274 / 0.12);
+  --shadow-e1: 0 1px 2px oklch(0.21 0.03 265 / 0.04), 0 1px 3px oklch(0.21 0.03 265 / 0.06);
+  --shadow-e2: 0 2px 4px oklch(0.21 0.03 265 / 0.04), 0 8px 20px oklch(0.21 0.03 265 / 0.08);
+  --shadow-e3: 0 4px 8px oklch(0.21 0.03 265 / 0.05), 0 16px 40px oklch(0.21 0.03 265 / 0.1);
+  --shadow-e4: 0 8px 16px oklch(0.21 0.03 265 / 0.06), 0 32px 64px oklch(0.21 0.03 265 / 0.12);
 
   /* ── Motion ─────────────────────────────────────────────────────────── */
   --ease-out-quint: cubic-bezier(0.16, 1, 0.3, 1);
@@ -186,14 +196,14 @@
   /* The one permitted background gradient: a low-chroma aurora wash. */
   .bg-aurora {
     background-image:
-      radial-gradient(58rem 34rem at 78% -12%, oklch(0.61 0.205 277 / 0.1), transparent 68%),
-      radial-gradient(42rem 28rem at 8% 4%, oklch(0.72 0.14 195 / 0.07), transparent 70%);
+      radial-gradient(58rem 34rem at 78% -12%, oklch(0.58 0.17 258 / 0.11), transparent 68%),
+      radial-gradient(42rem 28rem at 8% 4%, oklch(0.72 0.14 200 / 0.07), transparent 70%);
   }
 
   .bg-grid {
     background-image:
-      linear-gradient(to right, oklch(0.21 0.03 274 / 0.045) 1px, transparent 1px),
-      linear-gradient(to bottom, oklch(0.21 0.03 274 / 0.045) 1px, transparent 1px);
+      linear-gradient(to right, oklch(0.21 0.03 265 / 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, oklch(0.21 0.03 265 / 0.045) 1px, transparent 1px);
     background-size: 56px 56px;
     mask-image: radial-gradient(58rem 30rem at 50% 0%, #000 20%, transparent 78%);
   }

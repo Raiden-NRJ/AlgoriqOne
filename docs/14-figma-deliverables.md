@@ -9,6 +9,12 @@
 
 File: **RocketCRM Enterprise Suite** (`c0PVNJPrpbWm2bx8ewzyKc`), supplied by the user.
 
+> The file name and its contents are recorded here **as they actually are**, under the product's
+> pre-rebrand name. The 2026-07-31 rename to Algoryq One did not touch the Figma file, and this
+> section is a record of an external artifact — editing it to say "Algoryq One" would make the
+> document describe a file that does not exist. Where the file has been superseded by the rebrand,
+> it is marked below rather than rewritten.
+
 **What it actually is:** a one-page product-story deck, not a set of website designs. Four frames:
 
 | Node | Frame | Contents |
@@ -22,9 +28,15 @@ There are **no published Figma variables** (`get_variable_defs` returned `{}`), 
 and no page layouts. So it cannot serve as a design source for the site — but it is valuable for
 three things, all of which have been adopted:
 
-1. **Brand.** The violet mark and the accent bar are implemented in `src/components/site/logo.tsx`
+1. ~~**Brand.** The violet mark and the accent bar are implemented in `src/components/site/logo.tsx`
    and the header. The brand hue matches the product system's `--primary` (hue 277), confirming the
-   two were always meant to be the same family.
+   two were always meant to be the same family.~~
+   **Superseded by the 2026-07-31 rebrand.** The mark in `src/components/site/logo.tsx` is now the
+   Algoryq Technologies glyph, taken path-for-path from `algoryq.com`, and the brand hue is 259
+   (Algoryq blue) rather than 277. The Figma cover's rounded-square "R" is no longer the mark, and
+   the accent bar is now a brand-blue gradient. **The Figma file is stale on brand** — treat
+   `docs/02-design-system.md` §2 and the code as authoritative, as the general rule in §2 below
+   already requires.
 2. **Canonical demo data.** `src/content/demo-tenant.ts` now carries the Figma dataset verbatim —
    Nimbus Retail Group, Vertex Manufacturing, Orbit Health, Atlas CRM Rollout, Beacon Employee
    Experience, and the seven named people. **This replaced the "Northwind Consulting" fixture
@@ -49,7 +61,7 @@ tokens and components, so the file is accurate on the day it is created.
 
 One Figma project, four files:
 
-### File 1 — `RocketCRM Web · Foundations`
+### File 1 — `Algoryq One Web · Foundations`
 - **Variables** imported from `website/docs/tokens.json` (`02` §9): color (light + dark modes as Figma
   variable modes), spacing, radius, elevation, duration, easing.
 - Type styles for all ten scale steps, at three breakpoint modes (mobile/tablet/desktop) so fluid
@@ -59,7 +71,7 @@ One Figma project, four files:
 - Documentation frames: color usage rules, the contrast contract, the gradient vocabulary (`02` §2.7),
   the motion vocabulary (`09` §2).
 
-### File 2 — `RocketCRM Web · Components`
+### File 2 — `Algoryq One Web · Components`
 Every component from `02` §8 as a Figma component set with variants matching the code props exactly
 (`variant`, `size`, `state`). Auto Layout everywhere; no absolute positioning except in the hero
 composition. Component descriptions carry the code import path so a developer can jump from a frame to
@@ -68,7 +80,7 @@ the file.
 Hard rule: **if a variant exists in Figma it must exist in code, and vice versa.** A variant that
 can't be built is a bug in the design file, not a request to the engineer.
 
-### File 3 — `RocketCRM Web · Pages`
+### File 3 — `Algoryq One Web · Pages`
 Full-fidelity designs at three breakpoints (390 / 768 / 1440) for:
 homepage (all 20 sections) · the product-page template + all five clusters · the six platform pages ·
 the four security pages · pricing · ROI · demo · solutions template · comparison template · blog index
@@ -77,7 +89,7 @@ and article · contact · about · 404 · footer/header states.
 Both themes for the homepage, pricing, and all security pages. Every frame uses Auto Layout so
 responsive intent is legible rather than implied.
 
-### File 4 — `RocketCRM Web · Prototype`
+### File 4 — `Algoryq One Web · Prototype`
 A clickable prototype covering the three conversion lanes end-to-end (`03` §5): self-serve
 (home → demo → signup), technical (home → architecture → security → API), enterprise (home → solutions
 → pricing → ROI → contact). Plus the mega-menu, mobile nav sheet, theme toggle, and the interactive

@@ -1,7 +1,7 @@
 /**
  * GATED TRUST CONTENT.
  *
- * These arrays are empty because RocketCRM has no customer logos, testimonials,
+ * These arrays are empty because Algoryq One has no customer logos, testimonials,
  * case studies, or compliance certifications on file — and inventing them is
  * forbidden (website/CLAUDE.md rule 1, docs/07 §1).
  *

@@ -1,7 +1,7 @@
 # 07 — Security, Trust & Compliance Surfaces
 
 **Depends on:** `00` (what's actually built), `01` (CISO in the buying committee).
-**Purpose:** the pages and components that get RocketCRM through procurement — and the rules that keep
+**Purpose:** the pages and components that get Algoryq One through procurement — and the rules that keep
 us out of legal trouble while doing it.
 
 This is the highest-risk document in the folder. Overstating a compliance posture is not a marketing
@@ -28,7 +28,7 @@ report or certificate exists and is on file. The `ComplianceBadges` component re
 `website/content/certifications.json` and renders nothing when it is empty. There is no override.
 
 **Review rule:** every page under `/security` requires sign-off from whoever owns security at
-RocketCRM before publish, and a re-review whenever the underlying implementation changes.
+Algoryq One before publish, and a re-review whenever the underlying implementation changes.
 
 ---
 

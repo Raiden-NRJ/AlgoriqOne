@@ -1,4 +1,4 @@
-# RocketCRM Website — Operating Guide
+# Algoryq One Website — Operating Guide
 
 **Workstream:** a flagship, enterprise-grade product website, **built from scratch in this folder**.
 **Owner folder:** `website/` — plan *and* code. **Port:** 3500. **Theme:** light mode only.
@@ -8,6 +8,12 @@
 > point and is not touched by this workstream. `website/` is a self-contained Next.js application
 > with its own `package.json` and `node_modules` — it does not participate in the root npm workspace
 > and does not pull the 30-service monorepo into an install.
+
+> **Rebrand (2026-07-31, user):** the product was renamed **RocketCRM → Algoryq One** and placed
+> under the Algoryq Technologies brand, "powered by Algoryq.tech". The mark, the brand hue (259) and
+> the ink neutrals (265) now come from `algoryq.com`; the site is at `one.algoryq.com`. Rule 12
+> below is the binding version. Nothing about the product's *capabilities* changed — every claim
+> still traces to the same code, so `00-audit-and-inventory.md` stands as written.
 
 ---
 
@@ -37,7 +43,7 @@ worked strictly in order, one at a time, 100% complete before the next.**
   CLAUDE.md                       ← you are here
   docs/
     MASTER_PROGRESS.md            ← check this first every session
-    00-audit-and-inventory.md     ← what RocketCRM actually is (verified against code)
+    00-audit-and-inventory.md     ← what Algoryq One actually is (verified against code)
     01-brand-and-positioning.md   ← story, ICP, messaging spine, objection map
     02-design-system.md           ← tokens, type, color, spacing, elevation, motion
     03-information-architecture.md← sitemap, URL map, homepage narrative resolution
@@ -68,7 +74,7 @@ These are inherited from the root `CLAUDE.md` and tightened for a public-facing 
    compliance certifications. Every trust element is a data-driven component that renders only when
    real content exists (see `07-security-trust-compliance.md`). An honest empty slot beats a fake logo
    wall — and a fake SOC 2 badge is a legal problem, not a design choice.
-2. **Compliance language is precise.** RocketCRM's architecture is SOC 2 *ready* and has GDPR DSR
+2. **Compliance language is precise.** Algoryq One's architecture is SOC 2 *ready* and has GDPR DSR
    flows built (doc 28). It is **not certified**. Copy says "SOC 2-ready architecture", never "SOC 2
    certified", and no certification badge renders until an auditor's report exists.
 3. **Claims trace to code.** Every capability statement on the site maps to a file path in
@@ -95,7 +101,21 @@ These are inherited from the root `CLAUDE.md` and tightened for a public-facing 
     bands on §8 (permissions) and §13 (security) are a *tonal device* within the light design, using
     the `--color-band-*` tokens — not a theme. Do not reintroduce a dark variant without changing
     this rule first.
-11. **Definition of done per doc:** implementation + responsive pass (320→2560px) + a11y pass +
+12. **The brand is Algoryq's, not ours to redraw.** The product is **Algoryq One**, a product of
+    **Algoryq Technologies**, and the site says so — the footer carries a "Powered by Algoryq.tech"
+    attribution and the copyright names the parent entity. Specifics:
+    - The mark in `src/components/site/logo.tsx` is the parent glyph copied path-for-path from
+      `algoryq.com`. **Do not redraw, re-proportion, or "clean up" those path `d` attributes** — the
+      two brands must be the same mark at every size.
+    - The wordmark is `Algoryq` + `One`, with the second segment in `--color-brand-600`. This mirrors
+      the parent's `algoryq` + `.tech` colour split. In prose the product is "Algoryq One" (two
+      words); `AlgoryqOne` is the code identifier only (SDK class, package name).
+    - Brand hue is **259** and the ramp's 500/600 stops are Algoryq's own values, unmodified. Re-hue
+      the ramp only alongside the parent.
+    - The parent is dark-first and we are not. Only the hue family crosses over; rule 10 still holds.
+    - Every published name, URL and address lives in `SITE` / `PARENT` / `CONTACT` in
+      `src/content/site.ts`. Never hardcode a domain or an email in a component.
+13. **Definition of done per doc:** implementation + responsive pass (320→2560px) + a11y pass +
     motion/reduced-motion pass + copy review + Lighthouse/bundle check + doc's Completion Status
     marked + `MASTER_PROGRESS.md` updated.
 
@@ -122,7 +142,7 @@ npm run typecheck
 
 - This app is **not** in the root npm workspace. It has its own lockfile, and `turbopack.root` is
   pinned in `next.config.mjs` so Next doesn't walk up into the monorepo looking for one.
-- It deliberately does **not** import `@rocketcrm/ui`: different audience, different brand register,
+- It deliberately does **not** import `@algoryq/ui`: different audience, different brand register,
   and none of the admin-shell bundle weight. `02-design-system.md` explains the trade and the
   brand-level contract that keeps the two from drifting.
 - Never write repo files via `echo`/`printf`/`node -e` — it has silently corrupted committed files
@@ -137,6 +157,14 @@ npm run typecheck
   ancestor clipped the text instead (docs/13 §4).
 - **Read the screenshots.** `npm run audit:shots` writes every viewport to `audit-shots/`. Two real
   bugs shipped past a fully green audit and were only caught by looking at the images.
+- **A route that redirects off-site must be a plain `<a>`, not a `<Link>`.** Next prefetches `<Link>`
+  targets and follows the redirect cross-origin, so every page load fires a request at the portal
+  host — a console error on every route when that host isn't provisioned yet. `Button` already
+  handles this via `OFFSITE_ROUTES` in `src/content/site.ts`; add a route there whenever you add a
+  redirect to `next.config.mjs`.
+- **`npm run audit` needs a running server** (`npm run start`) and takes ~20 minutes. Don't poll for
+  it with `pgrep -f audit.mjs` — that pattern matches the polling shell's own command line and
+  reports the audit as finished while it is still going. Wait on the PID.
 
 ## Inputs still needed from the business
 

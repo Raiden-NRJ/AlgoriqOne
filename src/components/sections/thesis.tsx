@@ -4,7 +4,7 @@ import { Container, Eyebrow, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
 
 /**
- * §4 Why RocketCRM exists — beat 4 (the claim), with before/after folded in
+ * §4 Why Algoryq One exists — beat 4 (the claim), with before/after folded in
  * (requested topic 32). Rows are read across, not down, so the difference is
  * the thing the eye compares.
  */
@@ -24,7 +24,7 @@ export function Thesis() {
             <div className="grid grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)_minmax(0,1.15fr)] gap-2 border-b border-[var(--color-border)] bg-[var(--color-bg-subtle)] px-4 py-3 sm:px-6">
               <span className="text-label text-[var(--color-fg-subtle)]">Area</span>
               <span className="text-label text-[var(--color-fg-subtle)]">Three systems</span>
-              <span className="text-label text-[var(--color-brand-700)]">RocketCRM</span>
+              <span className="text-label text-[var(--color-brand-700)]">Algoryq One</span>
             </div>
 
             <ul>

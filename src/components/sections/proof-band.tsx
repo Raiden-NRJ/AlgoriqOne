@@ -6,7 +6,7 @@ import { Container } from '@/components/site/primitives';
 /**
  * §2 Trust bar — GATED (docs/04 §2).
  *
- * RocketCRM has no customer logos on file and no permission to display any, so
+ * Algoryq One has no customer logos on file and no permission to display any, so
  * the logo state does not render. The fallback is not a placeholder: it is four
  * facts that are true, checkable, and more persuasive to a technical buyer than
  * a row of grey rectangles would be.

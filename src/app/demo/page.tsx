@@ -16,7 +16,7 @@ export const metadata: Metadata = {
  * The self-serve alternative to a sales call (docs/08 §3.3).
  *
  * No email gate, no form before the value. Everything on this page runs on
- * fixture data from the RocketCRM Demo tenant and says so.
+ * fixture data from the Algoryq One Demo tenant and says so.
  */
 export default function DemoPage() {
   return (

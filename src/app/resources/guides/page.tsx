@@ -8,7 +8,7 @@ import { Reveal } from '@/components/site/reveal';
 export const metadata: Metadata = {
   title: 'Guides',
   description:
-    'Practical guides for evaluating and rolling out RocketCRM: designing a permission model, planning a migration, and rolling out approvals.',
+    'Practical guides for evaluating and rolling out Algoryq One: designing a permission model, planning a migration, and rolling out approvals.',
   alternates: { canonical: '/resources/guides' },
 };
 
