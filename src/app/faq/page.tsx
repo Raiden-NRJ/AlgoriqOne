@@ -40,7 +40,7 @@ export default function FaqPage() {
       />
 
       <Section>
-        <Container className="flex flex-col gap-14">
+        <Container className="flex flex-col gap-12">
           {SECTIONS.map((section) => (
             <Reveal key={section.heading} className="flex flex-col gap-5">
               <h2 className="text-h2">{section.heading}</h2>

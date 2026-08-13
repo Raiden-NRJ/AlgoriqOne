@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { CtaBand, PageHero } from '@/components/page/page-template';
-import { Container, Section } from '@/components/site/primitives';
+import { BulletList, Container, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
 import { PARENT, PLATFORM_FACTS, SITE } from '@/content/site';
 
@@ -11,15 +11,23 @@ export const metadata: Metadata = {
   alternates: { canonical: '/company/about' },
 };
 
+/**
+ * Hoisted out of PRINCIPLES because the caveat above the grid names it in
+ * prose. It used to say "the second principle below" — a positional reference
+ * into a two-column grid, where "second" is ambiguous and wrong the moment the
+ * array is reordered (audit B7). Both places now read the same object.
+ */
+const NO_FABRICATED_DATA = {
+  title: 'No fabricated data',
+  body: 'No invented customer logos, no testimonials we do not have, no certification we have not earned. Empty is better than false — including on this website.',
+};
+
 const PRINCIPLES = [
   {
     title: 'Deny by default',
     body: 'Every service checks a permission before it acts. A hidden button is not a security control, and we do not treat it as one.',
   },
-  {
-    title: 'No fabricated data',
-    body: 'No invented customer logos, no testimonials we do not have, no certification we have not earned. Empty is better than false — including on this website.',
-  },
+  NO_FABRICATED_DATA,
   {
     title: 'Every mutation is auditable',
     body: 'Changes emit events into an append-only trail with per-field diffs. Reconstructing what happened should not require a database archaeologist.',
@@ -40,27 +48,35 @@ export default function AboutPage() {
       />
 
       <Section>
-        <Container width="wide" className="flex flex-col gap-16">
+        <Container width="wide" className="flex flex-col gap-12">
           <Reveal className="flex flex-col gap-5">
             <h2 className="text-h2">Why this exists</h2>
-            <div className="flex max-w-[min(68ch,100%)] flex-col gap-4 leading-relaxed text-[var(--color-fg-muted)]">
-              <p>
-                Suites solve the integration problem at the interface. They share a navigation bar and
-                a login, then keep three permission models, three audit trails and three definitions
-                of “customer” underneath. The reconciliation work never ends, because the screens
-                were integrated and the data was not.
-              </p>
-              <p>
-                So the constraint we set was awkward and, in hindsight, correct: no module ships
-                unless it sits on the same authorization engine, emits into the same audit trail, and
-                answers to the same API gateway as every other module. That made the first year
-                slower and every year after it faster.
-              </p>
-              <p>
-                It is also why this website spends so much time on permissions. It is not a feature
-                we are proud of; it is the structural decision the rest of the platform depends on.
-              </p>
-            </div>
+            <p className="max-w-[min(52ch,100%)] leading-relaxed text-[var(--color-fg-muted)]">
+              Suites integrate the screens and leave the data alone.
+            </p>
+            <BulletList
+              items={[
+                'A shared navigation bar and one login, on top',
+                'Three permission models, three audit trails underneath',
+                'Three different definitions of “customer”',
+                'Reconciliation work that never ends',
+              ]}
+            />
+            <p className="max-w-[min(52ch,100%)] leading-relaxed text-[var(--color-fg-muted)]">
+              So we set one awkward constraint. No module ships unless it:
+            </p>
+            <BulletList
+              items={[
+                'Sits on the same authorization engine',
+                'Emits into the same append-only audit trail',
+                'Answers to the same API gateway',
+              ]}
+            />
+            <p className="max-w-[min(62ch,100%)] leading-relaxed text-[var(--color-fg-muted)]">
+              That made the first year slower and every year after it faster. It is also why this
+              site spends so much time on permissions — not a feature we are proud of, but the
+              structural decision everything else depends on.
+            </p>
           </Reveal>
 
           <Reveal className="flex flex-col gap-5">
@@ -78,11 +94,9 @@ export default function AboutPage() {
                 infrastructure and enterprise systems that other organisations run on.
               </p>
               <p>
-                We mention it because it is the honest answer to a question every buyer of a
-                thirty-service platform should ask, and few vendors answer plainly: who is going to
-                be operating this in five years? {SITE.name} is not a product looking for a parent.
-                It is what an infrastructure company built when it needed the deal-to-cash chain to
-                work properly.
+                Every buyer of a thirty-service platform should ask who will be operating it in five
+                years. {SITE.name} is not a product looking for a parent — it is what an
+                infrastructure company built when it needed the deal-to-cash chain to work properly.
               </p>
             </div>
           </Reveal>
@@ -102,10 +116,27 @@ export default function AboutPage() {
                 </div>
               ))}
             </dl>
+            {/*
+              KEPT, against audit B7's original recommendation — deliberately.
+
+              B7 proposed cutting this as a duplicate of the homepage ProofBand,
+              which carried the same "we are early / no logo wall" caveat under
+              the same PLATFORM_FACTS row. That component was deleted on
+              2026-08-09 at the client's request (see the note in app/page.tsx),
+              so there is no longer a duplicate: this is the only place on the
+              site that explains the absent logo wall. Cutting it now would
+              remove an honesty statement rather than a repetition, which rule 1
+              does not allow. Revisit only if a proof band returns.
+
+              The positional reference *was* the real bug and is fixed: "the
+              second principle below" is ambiguous in a 2-column grid and wrong
+              the moment PRINCIPLES is reordered. It now names the principle and
+              reads the same object the grid renders, so the two cannot drift.
+            */}
             <p className="max-w-[min(68ch,100%)] text-sm leading-relaxed text-[var(--color-fg-subtle)]">
               We are early. There is no logo wall on this site because we have not earned one yet,
-              and inventing one would contradict the second principle below on the day we published
-              it.
+              and inventing one would contradict “{NO_FABRICATED_DATA.title}” below on the day we
+              published it.
             </p>
           </Reveal>
 
@@ -128,18 +159,29 @@ export default function AboutPage() {
 
           <Reveal className="flex flex-col gap-5">
             <h2 className="text-h2">What we have not built</h2>
-            <div className="flex max-w-[min(68ch,100%)] flex-col gap-4 leading-relaxed text-[var(--color-fg-muted)]">
-              <p>
-                There is no payroll — it is compliance-heavy and jurisdiction-specific, and doing it
-                badly would be worse than not doing it. There is no native mobile application; there
-                is a fast web app that installs to a home screen. There is no app marketplace. Some
-                event-driven workflow triggers are still being migrated onto the engine.
-              </p>
-              <p>
-                We publish this list because the alternative is you finding it out after signing, and
-                because a roadmap page that only lists strengths is not a roadmap.
-              </p>
-            </div>
+            {/*
+              The payroll line here read "There is no payroll" until 2026-08-10.
+              That was stale and, worse, contradicted two other surfaces: the
+              owner confirmed the module on 2026-07-31 and both `pages-solutions`
+              (`by-role/hr → payroll`) and the homepage integration diagram were
+              corrected then — this page was missed, so the site simultaneously
+              claimed payroll shipped and did not. The live caveat is
+              jurisdiction coverage, not existence; it now matches
+              pages-solutions.ts, and the two must move together.
+            */}
+            <BulletList
+              items={[
+                'No native mobile app — a PWA that installs to a home screen',
+                'No public app marketplace or connector directory',
+                'Payroll ships, but jurisdiction coverage is limited — ask first',
+                'Some event-driven workflow triggers still moving onto the engine',
+                'No SOC 2 or ISO certification; the architecture is ready, the audit is not done',
+              ]}
+            />
+            <p className="max-w-[min(62ch,100%)] leading-relaxed text-[var(--color-fg-muted)]">
+              A roadmap page that only lists strengths is not a roadmap. The alternative to
+              publishing this is you finding it out after signing.
+            </p>
           </Reveal>
         </Container>
       </Section>

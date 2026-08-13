@@ -6,9 +6,11 @@ import {
   PageHero,
   RelatedLinks,
 } from '@/components/page/page-template';
-import { Container, Section } from '@/components/site/primitives';
+import { BulletList, Container, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
+import { Illustration } from '@/components/site/illustration';
 import { CERTIFICATIONS, COMPLIANCE_STATEMENT, SECURITY_CONTROLS } from '@/content/proof';
+import { CONTACT } from '@/content/site';
 
 export const metadata: Metadata = {
   title: 'Security & trust centre',
@@ -54,7 +56,7 @@ export default function SecurityHubPage() {
       <PageHero
         eyebrow="Trust centre"
         title="Security you can verify, not just read about."
-        intro="Three things are unusual here: authorization is enforced in every service rather than in the interface, there is one audit trail rather than three, and you can take the platform with you. The detail below is published because a security posture you cannot inspect is a claim, not a control."
+        intro="Everything below is published, because a security posture you cannot inspect is a claim rather than a control."
         jobs={[
           'Read the controls without signing anything',
           'Check the posture table, including what is not done',
@@ -63,9 +65,36 @@ export default function SecurityHubPage() {
       />
 
       <Section>
-        <Container width="wide" className="flex flex-col gap-14">
+        <Container width="wide" className="flex flex-col gap-12">
+          {/*
+            The three differentiators used to be a clause list inside the hero
+            intro, where they read as one long sentence and competed with the
+            h1. They are the reason a reviewer stays on this page, so they are
+            now the first thing under it, as three scannable lines. No claim
+            changed — this is the same sentence, broken.
+          */}
+          <Reveal className="flex flex-col gap-6">
+            <h2 className="text-h2">What is unusual here</h2>
+            <BulletList
+              columns
+              items={[
+                'Authorization enforced in every service, not in the interface',
+                'One audit trail, not three',
+                'You can take the platform with you',
+              ]}
+            />
+          </Reveal>
+
           <Reveal className="flex flex-col gap-6">
             <h2 className="text-h2">Control areas</h2>
+            {/* Wider `sizes` than the template default: this page is a single
+                full-width column, not a 7fr/5fr split. */}
+            <Illustration
+              src="/illustrations/security.jpg"
+              alt="The six control areas arranged around a central shield: authorization, identity, audit, isolation, privacy and operations, each connected back to the shield."
+              sizes="(min-width: 1024px) 62vw, 100vw"
+              className="max-w-[46rem]"
+            />
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {SECURITY_CONTROLS.map((control) => (
                 <li
@@ -156,17 +185,23 @@ export default function SecurityHubPage() {
 
           <Reveal className="flex flex-col gap-4">
             <h2 className="text-h2">Reporting a vulnerability</h2>
-            <p className="max-w-[min(62ch,100%)] text-[var(--color-fg-muted)]">
+            <p className="max-w-[min(52ch,100%)] text-[var(--color-fg-muted)]">
               Send it to{' '}
               <a
-                href="mailto:security@algoryq.com"
+                href={`mailto:${CONTACT.security}`}
                 className="font-medium text-[var(--color-brand-700)] underline decoration-[var(--color-brand-300)] underline-offset-4"
               >
-                security@algoryq.com
+                {CONTACT.security}
               </a>
-              . We acknowledge within two business days and will keep you updated until it is closed.
-              We will not take legal action against good-faith research.
+              .
             </p>
+            <BulletList
+              items={[
+                'Acknowledged within two business days',
+                'Updates until it is closed',
+                'No legal action against good-faith research',
+              ]}
+            />
             <Link
               href="/security/permissions"
               className="inline-flex min-h-6 w-fit items-center gap-1.5 py-1 text-sm font-medium text-[var(--color-brand-700)] underline decoration-[var(--color-brand-300)] underline-offset-4"

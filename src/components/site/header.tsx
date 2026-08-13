@@ -79,7 +79,7 @@ export function SiteHeader() {
       {/* Brand accent bar — from the Figma cover (node 3:3). */}
       <div
         aria-hidden="true"
-        className="h-1 w-full bg-linear-to-r from-[var(--color-brand-600)] via-[var(--color-brand-400)] to-[var(--color-accent)]"
+        className="h-1 w-full bg-linear-to-r from-[var(--color-brand-600)] via-[var(--color-brand-400)] to-[var(--color-cyan-500)]"
       />
 
       <Container width="wide">
@@ -210,7 +210,7 @@ export function SiteHeader() {
             </button>
           </div>
 
-          <nav aria-label="Mobile" className="flex flex-col gap-7">
+          <nav aria-label="Mobile" className="flex flex-col gap-6">
             {NAV.map((group) => (
               <div key={group.label} className="flex flex-col gap-3">
                 <p className="text-label text-[var(--color-fg-subtle)]">{group.label}</p>

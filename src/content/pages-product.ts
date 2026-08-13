@@ -4,6 +4,13 @@
  * Every module name, permission key and service name is copied from the
  * codebase. Where a capability is partially delivered, the scopeNote says so
  * rather than blurring it.
+ *
+ * ── Content pass, 2026-08-10 ──────────────────────────────────────────────
+ * Bullet-first, Zoho shape. `body` is now a *lead* — one short line that frames
+ * the block — and is omitted entirely where it only paraphrased the bullets
+ * under it. Everything enumerable is a bullet: concrete noun first, ~10 words,
+ * five per group at most. Nothing was cut that made a claim the bullets do not;
+ * claims that were only in prose were promoted, not dropped (rule 3).
  */
 
 import type { PageContent } from '@/components/page/page-template';
@@ -16,7 +23,11 @@ export const PRODUCT_PAGES: Record<ProductPageId, PageContent> = {
     eyebrow: 'Revenue',
     title: 'Where the chain starts: the deal that becomes the work.',
     intro:
-      'Leads, contacts, companies and activities feed a pipeline with real deal governance. Most CRMs treat the closed deal as the finish line. Here it is step one — the won deal becomes a project, carrying the client record and the commercial terms with it.',
+      'Leads, contacts, companies and activities, feeding a pipeline with real deal governance. Most CRMs treat the closed deal as the finish line. Here it is step one.',
+    image: {
+      src: '/hero/product-revenue.jpg',
+      alt: 'A salesperson standing at a bright office window, phone to their ear and a notebook in hand, mid-conversation with a prospect.',
+    },
     chain: {
       active: ['Deal'],
       note: 'This page covers the first link. A deal closed here becomes a project on the next one, with no re-keying in between.',
@@ -30,12 +41,13 @@ export const PRODUCT_PAGES: Record<ProductPageId, PageContent> = {
       {
         id: 'leads',
         title: 'Leads, contacts, companies, activities',
-        body: 'The relationship graph the rest of the platform reads from. Every entity carries an activity timeline, so the history is in the record rather than in somebody’s memory or inbox.',
+        body: 'The relationship graph every other module reads from.',
         bullets: [
           'Capture from the web, import in bulk, or create by API',
-          'Contacts and companies linked, with a shared timeline per entity',
-          'Activities — calls, meetings, notes — attached to the record they belong to',
-          'Global search across every entity, trimmed to what you are allowed to see',
+          'Contacts and companies linked by one shared timeline',
+          'Calls, meetings and notes attached to the record itself',
+          'History lives in the record, not in an inbox',
+          'Global search, trimmed to what you are allowed to see',
         ],
         panel: {
           label: 'Permissions in this area',
@@ -46,29 +58,37 @@ export const PRODUCT_PAGES: Record<ProductPageId, PageContent> = {
       {
         id: 'pipeline',
         title: 'Pipeline and deals',
-        body: 'A board you can work with a pointer, a touch screen, or a keyboard. Drag a deal between stages, or use the “Move to…” menu — the guaranteed keyboard path, present on every board in the platform.',
         bullets: [
-          'Stages, values and weighted forecast built on the shared chart system',
-          'Deal governance: discount thresholds route to an approver automatically',
-          'Won deals hand off to delivery, carrying the client and the commercial terms',
-          'Accessible drag-and-drop, which most competitors cannot claim',
+          'Stages, values and a weighted forecast',
+          'Discount thresholds route to an approver automatically',
+          'Won deals hand off to delivery with client and terms',
+          'Drag between stages, or use the “Move to…” menu',
+          'Keyboard path on every board — most rivals cannot claim it',
         ],
         chain: ['Lead', 'Qualified', 'Deal', 'Governance approval', 'Won', 'Project created'],
+        image: {
+          src: '/illustrations/product-revenue.jpg',
+          alt: 'A Kanban pipeline board with Lead, Qualified, Deal and Won columns, deal cards showing values and stage progress, one card mid-drag between columns, and a weighted-forecast chart comparing revenue against closed.',
+        },
       },
       {
         id: 'handoff',
         title: 'The handoff that usually breaks',
-        body: 'In a stitched stack, a won deal becomes an email to delivery. Here it becomes a project record, with the client, the value and the approval history intact — and the resourcing view already knows who is available, because capacity and leave live on the same platform.',
+        body: 'In a stitched stack, a won deal becomes an email to delivery.',
         bullets: [
-          'Client and company records are the same records delivery uses',
-          'Capacity reflects approved leave without a nightly sync',
-          'Billable hours logged against the project reconcile to the invoice',
+          'Here it becomes a project record with value and approvals intact',
+          'Client and company records are the ones delivery already uses',
+          'Capacity reflects approved leave, with no nightly sync',
+          'Billable hours reconcile against the invoice',
         ],
       },
       {
         id: 'api',
         title: 'Data and API',
-        body: 'Every entity in this cluster is available through the same gateway your own applications use, with the same permission checks applied.',
+        bullets: [
+          'Every entity reachable through the public gateway',
+          'The same permission checks the interface goes through',
+        ],
         panel: {
           label: 'Services behind this cluster',
           items: ['crm-service', 'sales-service', 'search-service', 'audit-service'],
@@ -87,7 +107,11 @@ export const PRODUCT_PAGES: Record<ProductPageId, PageContent> = {
     eyebrow: 'Delivery',
     title: 'The middle three links, where most margin is lost.',
     intro:
-      'Project, plan and time — the stretch between a signed deal and an invoice you can defend. This is exactly where a CRM-only vendor stops and a PSA vendor starts, and the seam between them is the gap somebody in your business currently owns by hand.',
+      'Project, plan and time — the stretch between a signed deal and an invoice you can defend. Exactly where a CRM vendor stops and a PSA vendor starts.',
+    image: {
+      src: '/hero/product-delivery.jpg',
+      alt: 'Two colleagues at a desk talking over a project timeline on a laptop screen, one pointing at a milestone.',
+    },
     chain: {
       active: ['Project', 'Plan', 'Time'],
       note: 'Three links in one cluster. The project arrives with its client and terms already attached, and the hours leave it ready to invoice.',
@@ -101,12 +125,12 @@ export const PRODUCT_PAGES: Record<ProductPageId, PageContent> = {
       {
         id: 'intake',
         title: 'Clients, projects and project requests',
-        body: 'Client-facing and internal work are tracked the same way, so utilisation is a real number rather than an estimate. Requests come in through a form with an approval chain, not a direct message.',
         bullets: [
-          'Client projects and internal projects, side by side',
-          'Project requests with a configurable approval chain',
-          'Attachments, comments and an activity timeline on every project',
-          'A customer portal where the client sees their own project status',
+          'Client and internal projects tracked identically',
+          'Utilisation becomes a real number, not an estimate',
+          'Requests arrive through a form with an approval chain',
+          'Attachments, comments and a timeline on every project',
+          'A customer portal showing the client their own status',
         ],
         panel: {
           label: 'Permissions in this area',
@@ -117,21 +141,25 @@ export const PRODUCT_PAGES: Record<ProductPageId, PageContent> = {
       {
         id: 'breakdown',
         title: 'WBS, tasks, sprints and epics',
-        body: 'A work breakdown structure for planning and a board for execution, with the hierarchy that connects them. Sprints and epics for teams that work that way; a plain board for teams that do not.',
+        body: 'A breakdown structure for planning, a board for execution.',
         bullets: [
           'WBS plans with their own submission and approval flow',
           'Work items with parent/child hierarchy and rollups',
           'Sprints, epics, backlog and a Kanban board',
-          'Keyboard-accessible board interactions throughout',
+          'A plain board for teams that do not work in sprints',
         ],
         chain: ['Request', 'Approved', 'WBS', 'Tasks', 'Time logged', 'Timesheet approved', 'Billable'],
+        image: {
+          src: '/illustrations/product-delivery.jpg',
+          alt: 'A work breakdown structure expanded as a nested tree of programmes, campaigns and features beside a weekly timesheet grid of hours logged per work item from Monday to Sunday, with an approved stamp over the week.',
+        },
       },
       {
         id: 'time',
         title: 'Timesheets and capacity',
-        body: 'A week editor built for the way people actually fill timesheets — including on a phone at the end of the week, where a stacked layout replaces the desktop grid below 400px. Approvals land in the same inbox as deals and leave.',
         bullets: [
           'Week editor, submission, approval and a calendar view',
+          'Stacked per-day layout on phones below 400px',
           'Capacity planning that accounts for approved leave',
           'Resource engagement across projects, per person',
           'Approved hours reconcile against invoices in billing',
@@ -140,9 +168,9 @@ export const PRODUCT_PAGES: Record<ProductPageId, PageContent> = {
       {
         id: 'accessibility',
         title: 'Accessible by construction',
-        body: 'Every board in the platform ships a “Move to…” menu alongside drag-and-drop, so a keyboard or screen-reader user has a guaranteed path. If your procurement process includes an accessibility requirement, this is the section to send.',
+        body: 'Send this section to procurement if accessibility is scored.',
         bullets: [
-          'Keyboard path for every drag interaction',
+          'A “Move to…” menu beside every drag interaction',
           'Storybook accessibility checks fail the build on violation',
           'Contrast verified by script, not by eye',
         ],
@@ -159,7 +187,11 @@ export const PRODUCT_PAGES: Record<ProductPageId, PageContent> = {
     eyebrow: 'People',
     title: 'The layer that keeps the chain honest about who is actually available.',
     intro:
-      'A delivery plan built on a stale picture of your team is wrong before it starts. Leave, attendance, performance and hiring are not a separate system bolted on here — they feed capacity directly, which is what makes the plan and the forecast worth reading.',
+      'A delivery plan built on a stale picture of your team is wrong before it starts. Leave, attendance, performance and hiring feed capacity directly.',
+    image: {
+      src: '/hero/product-people.jpg',
+      alt: 'An HR professional shaking hands with a new hire in a bright office, welcoming them on their first day.',
+    },
     chain: {
       active: ['Plan'],
       note: 'Capacity and approved leave feed the planning step directly. There is no sync window in which resourcing and HR disagree.',
@@ -173,13 +205,17 @@ export const PRODUCT_PAGES: Record<ProductPageId, PageContent> = {
       {
         id: 'directory',
         title: 'Employees, org chart and skills',
-        body: 'The people record that capacity, projects and reporting all read from. Reporting lines are org units, which the permission engine can also scope access by.',
         bullets: [
           'Employee directory with engagements and reportees',
           'Org chart built on first-class org units',
-          'Skills & Learning: skills matrix, learning, certifications',
+          'Org units the permission engine can scope access by',
+          'Skills matrix, learning and certifications',
           'Capacity and utilisation, shared with delivery',
         ],
+        image: {
+          src: '/illustrations/product-people.jpg',
+          alt: 'An org chart branching from a chief executive through vice presidents to managers and team leads, overlaid with a leave calendar showing booked days and a skills matrix listing each role against its recorded skills and levels.',
+        },
         panel: {
           label: 'Permissions in this area',
           items: ['employee.read', 'employee.capacity', 'talentory.read', 'leave.request.read'],
@@ -189,23 +225,23 @@ export const PRODUCT_PAGES: Record<ProductPageId, PageContent> = {
       {
         id: 'leave-attendance',
         title: 'Leave and attendance',
-        body: 'Policies, accrual and balances, with requests that route through the same approval engine as everything else — and land in the same inbox. Approved leave changes capacity immediately, because there is nothing to sync.',
         bullets: [
           'Leave types, policies, balances and requests',
           'Check-in and check-out, shifts, holiday calendars',
           'Regularisation requests with an approval path',
-          'Capacity and project planning reflect both automatically',
+          'One approval engine and one inbox, as everywhere else',
+          'Approved leave changes capacity immediately — nothing to sync',
         ],
       },
       {
         id: 'performance-hiring',
         title: 'Performance and recruitment',
-        body: 'Goals and review cycles for the people you have; requisitions, pipeline and offers for the people you are hiring. The handoff between them is an onboarding workflow rather than a spreadsheet.',
         bullets: [
           'Goals and OKRs with check-ins',
           'Review cycles and forms',
           'Requisitions, candidate pipeline, interview feedback, offers',
-          'Announcements, policies with acknowledgements, assets and expenses',
+          'Hire-to-onboarding as a workflow, not a spreadsheet',
+          'Announcements, policies, assets and expenses',
         ],
         chain: [
           'Requisition',
@@ -219,11 +255,12 @@ export const PRODUCT_PAGES: Record<ProductPageId, PageContent> = {
       {
         id: 'offboarding',
         title: 'The offboarding story',
-        body: 'This is the strongest security argument the platform has. In a three-system stack, revoking access means three tickets and weeks of drift. Here it is one revoke, propagated by permission version, across every service — and recorded in the audit trail with a change diff.',
+        body: 'The strongest security argument the platform has.',
         bullets: [
           'One revoke reaches every module, not one system at a time',
-          'Permission-version invalidation, so it takes effect without a re-login',
+          'Permission-version invalidation — no re-login required',
           'Every grant and revoke lands in the append-only audit log',
+          'Compare: three tickets and weeks of drift in a stitched stack',
         ],
       },
     ],
@@ -238,7 +275,11 @@ export const PRODUCT_PAGES: Record<ProductPageId, PageContent> = {
     eyebrow: 'Service',
     title: 'What happens after the invoice — and the portal your client sees it in.',
     intro:
-      'The chain does not end at billing; it loops. A help desk with real reply threads, a knowledge base, and a customer-facing portal where your client watches their own project, pays their own invoice and raises their own ticket. It is a shipping product, not a roadmap item.',
+      'The chain does not end at billing; it loops. A help desk, a knowledge base, and a portal where your client watches their own project and pays their own invoice.',
+    image: {
+      src: '/hero/product-service.jpg',
+      alt: 'A support agent laughing at their desk while wearing a headset, mid-call with a customer.',
+    },
     chain: {
       active: ['Invoice'],
       note: 'Your client sees the end of the chain from their side: project status, the invoice, and a way to ask about either without emailing an account manager.',
@@ -252,13 +293,17 @@ export const PRODUCT_PAGES: Record<ProductPageId, PageContent> = {
       {
         id: 'tickets',
         title: 'Tickets, replies and SLA',
-        body: 'Tickets carry a reply thread, assignment and SLA timers. The reply thread matters more than it sounds: without it, the conversation leaves the system and the record becomes fiction.',
         bullets: [
           'Reply threads with rich text and mentions',
           'Assignment and SLA timers',
           'Notifications through the shared multi-channel service',
           'Full history in the audit trail',
+          'Without a reply thread the record becomes fiction',
         ],
+        image: {
+          src: '/illustrations/product-service.jpg',
+          alt: 'A support ticket reply thread alternating between a customer reporting an API error and an agent responding, with an SLA countdown badge above it, beside a customer portal panel showing project status at 75% complete and a paid invoice.',
+        },
         panel: {
           label: 'Permissions in this area',
           items: ['help.ticket.read', 'help.ticket.comment', 'knowledgebase.article.read'],
@@ -268,17 +313,17 @@ export const PRODUCT_PAGES: Record<ProductPageId, PageContent> = {
       {
         id: 'knowledge',
         title: 'Knowledge base',
-        body: 'Categories and articles with a publishing workflow, readable by staff in the portal and by clients in the customer portal — the same content, permission-trimmed.',
         bullets: [
           'Categories, articles, drafts and publishing',
           'Version history with restore',
+          'One set of content, permission-trimmed per audience',
           'Also powers the public resources feed on this site',
         ],
       },
       {
         id: 'customer-portal',
         title: 'The customer portal',
-        body: 'A separate application for your clients: project status, invoices and payment, support tickets and the knowledge base. Scoped to their own tenant and enforced server-side, not just filtered in the interface.',
+        body: 'A separate application for your clients, scoped server-side to their tenant.',
         bullets: [
           'Projects and delivery status, from the same project records',
           'Invoices, with a payment journey',
@@ -299,7 +344,11 @@ export const PRODUCT_PAGES: Record<ProductPageId, PageContent> = {
     eyebrow: 'Intelligence',
     title: 'Read the whole chain at once, without exporting any of it.',
     intro:
-      'Utilisation, billable ratio and forecast are questions that span every link — which is exactly why they are so hard to answer in a stitched stack. Here they are queries over the same records the work was done in, with the same permissions applied.',
+      'Utilisation, billable ratio and forecast span every link, which is why a stitched stack cannot answer them. Here they are queries over the records the work was done in.',
+    image: {
+      src: '/hero/product-intelligence.jpg',
+      alt: 'An analyst studying charts on a large monitor in a dim office, reading a utilisation trend.',
+    },
     chain: {
       note: 'Reporting reads across every step. Because the pipeline, the hours and the invoices are the same records, utilisation is a query rather than a reconstruction.',
     },
@@ -312,13 +361,17 @@ export const PRODUCT_PAGES: Record<ProductPageId, PageContent> = {
       {
         id: 'reports',
         title: 'Report builder and dashboards',
-        body: 'Definitions you save, runs you schedule, dashboards with per-widget permissions. Reports run against read models fed by the same events that drive the audit trail, so a report and an audit entry cannot disagree.',
         bullets: [
           'Entity, columns, filters — saved as a definition',
           'Scheduled delivery through the notification service',
           'Dashboards and widgets, each with its own permission',
-          'CSV export on every list, cursor pagination on the hot ones',
+          'CSV export on every list, cursor pagination on hot ones',
+          'Reports and audit entries read the same events, so they cannot disagree',
         ],
+        image: {
+          src: '/illustrations/product-intelligence.jpg',
+          alt: 'A report builder with a row of filter selectors above a dashboard of saved widgets — a bar chart, a line chart, a donut chart and a single stat number — alongside an assistant panel summarising the trend in the current data.',
+        },
         panel: {
           label: 'Permissions in this area',
           items: ['reporting.report.read', 'reporting.dashboard.read', 'assistant.chat.use'],
@@ -328,21 +381,21 @@ export const PRODUCT_PAGES: Record<ProductPageId, PageContent> = {
       {
         id: 'search',
         title: 'Permission-trimmed global search',
-        body: 'One search across leads, contacts, companies, projects, tasks, tickets and people — returning only records the searcher is allowed to see. Trimming results by permission at query time is uncommon at this size, and it is the difference between a search box and a data leak.',
+        body: 'The difference between a search box and a data leak.',
         bullets: [
-          'Cross-entity index over every module',
-          'Results trimmed by the same permission catalog',
+          'One index across leads, contacts, projects, tasks, tickets, people',
+          'Results trimmed at query time by the same permission catalog',
           'Command palette for keyboard navigation',
         ],
       },
       {
         id: 'assistant',
         title: 'The assistant',
-        body: 'Chat and smart search over your own modules, with retrieval scoped by the asker’s permissions and the interaction recorded. Every vendor claims AI; the useful question is whether their assistant can surface a record you are not allowed to read. Ours cannot.',
+        body: 'Every vendor claims AI. Ask whether theirs can surface a record you may not read.',
         bullets: [
           'Retrieval scoped to the asker’s permissions',
           'AI actions recorded in the audit trail',
-          'An offline engine for environments that cannot call an external model',
+          'An offline engine where no external call is acceptable',
           'Can be turned off per tenant',
         ],
         chain: ['Ask', 'Scope to permissions', 'Retrieve', 'Answer with sources'],

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Algoryq One — Identity Sheet</title>
+<style>
+  :root{
+    --ink:#111826; --ink-2:#555B66; --ink-3:#6B707C;
+    --blue:#044CB6; --blue-500:#3177DC; --blue-300:#9FC6FF; --blue-50:#F3F8FF;
+    --cyan:#00BEC7; --cyan-700:#007A81; --cyan-50:#EAFBFC;
+    --band:#080D18; --line:#E2E4E9; --paper:#FFFFFF;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#F6F7F9;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+  .page{max-width:1000px;margin:0 auto;background:var(--paper);padding:56px 56px 64px}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding-bottom:22px;border-bottom:2px solid var(--ink);flex-wrap:wrap}
+  .lock{display:inline-flex;align-items:center;gap:13px}
+  .wm{font-size:27px;font-weight:650;letter-spacing:-.02em}
+  .wm span{color:var(--blue)}
+  .meta{font-size:11px;color:var(--ink-3);text-align:right;line-height:1.7}
+  h2{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin:44px 0 4px}
+  h2:first-of-type{margin-top:36px}
+  .lede{font-size:13px;color:var(--ink-2);margin:0 0 18px;max-width:76ch;line-height:1.6}
+  .row{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start}
+  .cell{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .cap{font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap}
+  .box{border:1px solid var(--line);border-radius:12px;padding:20px}
+  .dark{background:var(--band);border-radius:10px;padding:14px;display:flex;align-items:center;justify-content:center}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+  th{font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px}
+  .sw{width:34px;height:34px;border-radius:7px;border:1px solid rgba(0,0,0,.08);display:inline-block;vertical-align:middle}
+  .rules{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .rule{font-size:12px;line-height:1.55;padding:11px 13px;border-radius:9px;border:1px solid var(--line)}
+  .rule b{display:block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
+  .do b{color:#00833C}.dont b{color:#A11315}
+  .do{background:#F3FBF6;border-color:#CFE9DA}.dont{background:#FDF4F4;border-color:#F3D6D6}
+  footer{margin-top:46px;padding-top:16px;border-top:1px solid var(--line);font-size:10.5px;color:var(--ink-3);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  @media print{body{background:#fff}.page{padding:22px}h2{margin-top:26px}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <span class="lock">
+      <svg width="46" height="46" viewBox="0 0 100 100" aria-hidden="true"><path fill="#044CB6" fill-rule="evenodd" clip-rule="evenodd" d="M28 4 H72 A24 24 0 0 1 96 28 V72 A24 24 0 0 1 72 96 H28 A24 24 0 0 1 4 72 V28 A24 24 0 0 1 28 4 Z M50 23 L80 75 L66.5 75 L50 46 L33.5 75 L20 75 Z"/></svg>
+      <span class="wm">Algoryq <span>One</span></span>
+    </span>
+    <div class="meta">
+      Identity Sheet · v1<br>
+      An Algoryq Technologies product<br>
+      one.algoryq.com
+    </div>
+  </header>
+
+  <h2>The mark</h2>
+  <p class="lede">An angular <strong>A</strong> knocked out of a rounded container. The container reads as <em>One</em> — a single system holding the whole chain — and doubles as the app icon, avatar and favicon. The A is a knockout rather than a separate shape, so the mark is a single path and works on any background in a single colour.</p>
+  <div class="box row">
+    <div class="cell"><svg width="104" height="104" viewBox="0 0 100 100"><path fill="#044CB6" fill-rule="evenodd" clip-rule="evenodd" d="M28 4 H72 A24 24 0 0 1 96 28 V72 A24 24 0 0 1 72 96 H28 A24 24 0 0 1 4 72 V28 A24 24 0 0 1 28 4 Z M50 23 L80 75 L66.5 75 L50 46 L33.5 75 L20 75 Z"/></svg><span class="cap">Primary</span></div>
+    <div class="cell"><svg width="104" height="104" viewBox="0 0 100 100"><path fill="#000" fill-rule="evenodd" clip-rule="evenodd" d="M28 4 H72 A24 24 0 0 1 96 28 V72 A24 24 0 0 1 72 96 H28 A24 24 0 0 1 4 72 V28 A24 24 0 0 1 28 4 Z M50 23 L80 75 L66.5 75 L50 46 L33.5 75 L20 75 Z"/></svg><span class="cap">One colour</span></div>
+    <div class="cell"><span class="dark"><svg width="104" height="104" viewBox="0 0 100 100"><path fill="#fff" fill-rule="evenodd" clip-rule="evenodd" d="M28 4 H72 A24 24 0 0 1 96 28 V72 A24 24 0 0 1 72 96 H28 A24 24 0 0 1 4 72 V28 A24 24 0 0 1 28 4 Z M50 23 L80 75 L66.5 75 L50 46 L33.5 75 L20 75 Z"/></svg></span><span class="cap">Reversed</span></div>
+    <div class="cell"><span class="dark"><svg width="104" height="104" viewBox="0 0 100 100"><path fill="#00BEC7" fill-rule="evenodd" clip-rule="evenodd" d="M28 4 H72 A24 24 0 0 1 96 28 V72 A24 24 0 0 1 72 96 H28 A24 24 0 0 1 4 72 V28 A24 24 0 0 1 28 4 Z M50 23 L80 75 L66.5 75 L50 46 L33.5 75 L20 75 Z"/></svg></span><span class="cap">Cyan · dark only</span></div>
+  </div>
+
+  <h2>Lockup &amp; clear space</h2>
+  <p class="lede">Clear space on all sides equals the height of the container's corner radius — a quarter of the mark's height. Never place type, rules or image edges inside it. In prose the product is always <strong>Algoryq One</strong>, two words; <code>AlgoryqOne</code> is the code identifier only.</p>
+  <div class="box row" style="align-items:center">
+    <div class="cell">
+      <svg width="290" height="86" viewBox="0 0 290 86">
+        <rect x="1" y="1" width="288" height="84" fill="none" stroke="#9FC6FF" stroke-width="1" stroke-dasharray="4 3"/>
+        <rect x="22" y="22" width="246" height="42" fill="none" stroke="#EAFBFC"/>
+        <g transform="translate(22,22)"><svg width="42" height="42" viewBox="0 0 100 100" x="0" y="0"><path fill="#044CB6" fill-rule="evenodd" clip-rule="evenodd" d="M28 4 H72 A24 24 0 0 1 96 28 V72 A24 24 0 0 1 72 96 H28 A24 24 0 0 1 4 72 V28 A24 24 0 0 1 28 4 Z M50 23 L80 75 L66.5 75 L50 46 L33.5 75 L20 75 Z"/></svg></g>
+        <text x="76" y="52" font-family="Inter,sans-serif" font-size="25" font-weight="650" fill="#111826" letter-spacing="-0.5">Algoryq <tspan fill="#044CB6">One</tspan></text>
+      </svg>
+      <span class="cap">Horizontal lockup · minimum clear space</span>
+    </div>
+  </div>
+
+  <h2>Minimum sizes</h2>
+  <p class="lede">Tested, not assumed. The mark holds its counter down to 16&nbsp;px, which is the favicon floor. Below 16&nbsp;px use the container alone.</p>
+  <div class="box row" style="align-items:flex-end">
+    <div class="cell"><svg width="64" height="64" viewBox="0 0 100 100"><path fill="#044CB6" fill-rule="evenodd" clip-rule="evenodd" d="M28 4 H72 A24 24 0 0 1 96 28 V72 A24 24 0 0 1 72 96 H28 A24 24 0 0 1 4 72 V28 A24 24 0 0 1 28 4 Z M50 23 L80 75 L66.5 75 L50 46 L33.5 75 L20 75 Z"/></svg><span class="cap">64 · app icon</span></div>
+    <div class="cell"><svg width="40" height="40" viewBox="0 0 100 100"><path fill="#044CB6" fill-rule="evenodd" clip-rule="evenodd" d="M28 4 H72 A24 24 0 0 1 96 28 V72 A24 24 0 0 1 72 96 H28 A24 24 0 0 1 4 72 V28 A24 24 0 0 1 28 4 Z M50 23 L80 75 L66.5 75 L50 46 L33.5 75 L20 75 Z"/></svg><span class="cap">40 · avatar</span></div>
+    <div class="cell"><svg width="28" height="28" viewBox="0 0 100 100"><path fill="#044CB6" fill-rule="evenodd" clip-rule="evenodd" d="M28 4 H72 A24 24 0 0 1 96 28 V72 A24 24 0 0 1 72 96 H28 A24 24 0 0 1 4 72 V28 A24 24 0 0 1 28 4 Z M50 23 L80 75 L66.5 75 L50 46 L33.5 75 L20 75 Z"/></svg><span class="cap">28 · site header</span></div>
+    <div class="cell"><svg width="16" height="16" viewBox="0 0 100 100"><path fill="#044CB6" fill-rule="evenodd" clip-rule="evenodd" d="M28 4 H72 A24 24 0 0 1 96 28 V72 A24 24 0 0 1 72 96 H28 A24 24 0 0 1 4 72 V28 A24 24 0 0 1 28 4 Z M50 23 L80 75 L66.5 75 L50 46 L33.5 75 L20 75 Z"/></svg><span class="cap">16 · minimum</span></div>
+  </div>
+
+  <h2>Colour</h2>
+  <p class="lede">Three brand colours. Contrast ratios are computed from the tokens, not estimated. Cyan is a supporting colour only — it never carries text on a light surface.</p>
+  <table>
+    <thead><tr><th></th><th>Name</th><th>Hex</th><th>Role</th><th>On white</th></tr></thead>
+    <tbody>
+      <tr><td><span class="sw" style="background:#111826"></span></td><td>Ink</td><td><code>#111826</code></td><td>All text; dark band <code>#080D18</code></td><td>17.8:1</td></tr>
+      <tr><td><span class="sw" style="background:#044CB6"></span></td><td>Algoryq Blue</td><td><code>#044CB6</code></td><td>Mark, actions, links</td><td>7.7:1</td></tr>
+      <tr><td><span class="sw" style="background:#00BEC7"></span></td><td>Aurora Cyan</td><td><code>#00BEC7</code></td><td>Large fills &amp; dark-band accents only</td><td>2.3:1 — not text</td></tr>
+      <tr><td><span class="sw" style="background:#007A81"></span></td><td>Cyan 700</td><td><code>#007A81</code></td><td>Use when cyan must be text on white</td><td>5.1:1</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Usage</h2>
+  <div class="rules">
+    <div class="rule do"><b>Do</b>Use the single-colour version by default. The mark is designed to work in one colour.</div>
+    <div class="rule dont"><b>Don't</b>Add gradients, shadows, bevels or glows to the mark.</div>
+    <div class="rule do"><b>Do</b>Keep the A as a true knockout so the background shows through.</div>
+    <div class="rule dont"><b>Don't</b>Fill the A with a second colour — it becomes two shapes and breaks at small sizes.</div>
+    <div class="rule do"><b>Do</b>Use cyan for the mark only on the dark band.</div>
+    <div class="rule dont"><b>Don't</b>Set the mark in cyan on white — 2.3:1 fails both text and non-text contrast.</div>
+    <div class="rule do"><b>Do</b>Keep the container's proportions locked; scale uniformly.</div>
+    <div class="rule dont"><b>Don't</b>Stretch, rotate, re-space the lockup, or rebuild the A by hand.</div>
+  </div>
+
+  <footer>
+    <span>Algoryq One — Identity Sheet v1 · Draft for review</span>
+    <span>Algoryq Technologies · algoryq.tech</span>
+  </footer>
+
+</div>
+</body>
+</html>

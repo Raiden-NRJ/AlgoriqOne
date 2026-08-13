@@ -25,7 +25,7 @@ export default async function BlogPage() {
       <PageHero
         eyebrow="Blog"
         title="What we know that is worth writing down."
-        intro="Architecture decisions, permission-model design, multi-tenancy trade-offs and migration write-ups. No listicles, no SEO filler — the audience we want can tell the difference and would discount everything else on this site because of it."
+        intro="Architecture decisions, permission-model design, multi-tenancy trade-offs, migration write-ups. No listicles and no SEO filler — the audience we want can tell."
       />
 
       <Section>
@@ -63,9 +63,8 @@ export default async function BlogPage() {
               <div className="flex max-w-[min(62ch,100%)] flex-col gap-4 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-bg-subtle)] p-8">
                 <h2 className="text-h2">Nothing published here yet.</h2>
                 <p className="leading-relaxed text-[var(--color-fg-muted)]">
-                  This feed is served from the platform’s own knowledge-base service — the same one
-                  our customers publish their internal documentation with. It is either empty or not
-                  reachable from here right now.
+                  This feed comes from the platform’s own knowledge-base service — the one customers
+                  publish their internal documentation with. It is empty or unreachable right now.
                 </p>
                 <p className="leading-relaxed text-[var(--color-fg-muted)]">
                   We would rather show you an empty page than generate articles to fill it. In the

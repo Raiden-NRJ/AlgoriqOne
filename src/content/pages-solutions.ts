@@ -5,6 +5,14 @@
  * No invented customer stories and no "companies like yours see X%" — where a
  * number would normally go, we state a mechanism instead, which is both honest
  * and harder to argue with.
+ *
+ * ── Content pass, 2026-08-10 ──────────────────────────────────────────────
+ * Bullet-first, Zoho shape (see the note at the top of pages-product.ts).
+ *
+ * `by-role/it → exit` was the third copy of the portability argument on this
+ * site. It now carries only what an inheriting IT owner needs on this page and
+ * links to `/security/infrastructure`, which is canonical. See the note in
+ * pages-platform.ts.
  */
 
 import type { PageContent } from '@/components/page/page-template';
@@ -17,7 +25,7 @@ export const INDUSTRY_PAGES: Record<IndustryId, PageContent> = {
     eyebrow: 'Professional services',
     title: 'Your business is the chain. So is this platform.',
     intro:
-      'Consultancies, systems integrators and IT services firms live and die on the sequence from won deal to paid invoice. Whether you can win the work depends on who can staff it, which depends on capacity, which depends on leave — and three systems cannot answer that without a human in the middle doing it by hand.',
+      'Whether you can win the work depends on who can staff it, which depends on capacity, which depends on leave. Three systems cannot answer that without a human in the middle.',
     chain: {
       active: ['Deal', 'Project', 'Plan', 'Time', 'Invoice'],
       note: 'This is the industry the whole chain was shaped around. Every link maps to something you already do on a Tuesday.',
@@ -31,7 +39,7 @@ export const INDUSTRY_PAGES: Record<IndustryId, PageContent> = {
       {
         id: 'week',
         title: 'A week in a services firm',
-        body: 'This is the loop the platform is shaped around. Every step below is a real module, and every arrow between them is a database relationship rather than an integration.',
+        body: 'Every step is a real module. Every arrow is a database relationship, not an integration.',
         chain: [
           'Monday — pipeline review, with real capacity beside each deal',
           'Tuesday — resourcing conflict surfaces because leave is already known',
@@ -44,15 +52,15 @@ export const INDUSTRY_PAGES: Record<IndustryId, PageContent> = {
         id: 'problems',
         title: 'The three problems this solves',
         bullets: [
-          'Utilisation is an estimate because internal and billable work live in different tools',
-          'Resourcing decisions are made without knowing who is on leave next month',
-          'Month-end billing is reconstructed from exports rather than read from a record',
+          'Utilisation is an estimate, because internal and billable work sit in different tools',
+          'Resourcing is decided without knowing who is on leave next month',
+          'Month-end billing is reconstructed from exports, not read from a record',
         ],
       },
       {
         id: 'configuration',
         title: 'How it is usually configured',
-        body: 'Most firms turn on Revenue, Delivery and People first, add Service when they open a client portal, and enable the platform layer as their process outgrows the defaults.',
+        body: 'Revenue, Delivery and People first; Service when a client portal opens.',
         panel: {
           label: 'Typical module set',
           items: ['CRM', 'Sales', 'Projects', 'WBS', 'Tasks', 'Timesheets', 'Capacity', 'Leave', 'Reporting'],
@@ -67,9 +75,8 @@ export const INDUSTRY_PAGES: Record<IndustryId, PageContent> = {
         id: 'replace',
         title: 'What you would consolidate',
         bullets: [
-          'A CRM',
-          'A project or PSA tool',
-          'A separate time-tracking tool',
+          'A CRM, and a separate PSA or project tool',
+          'A standalone time-tracking tool',
           'A resource-planning spreadsheet',
           'An HR system for leave and reviews',
           'Approvals currently living in email',
@@ -78,11 +85,13 @@ export const INDUSTRY_PAGES: Record<IndustryId, PageContent> = {
       {
         id: 'migration',
         title: 'Getting your data across',
-        body: 'Companies, contacts, employees and projects import cleanly through the wizard. Historical activity and anything custom-shaped needs a mapping pass — we will tell you which is which before you start, not after.',
+        body: 'We tell you which parts are clean and which need mapping before you start.',
         bullets: [
+          'Companies, contacts, employees and projects import cleanly',
+          'Historical activity and custom shapes need a mapping pass',
           'Import wizard with mapping, validation and a dry run',
           'API for anything the wizard does not cover',
-          'Run in parallel during the first month if you want a safety net',
+          'Run in parallel for the first month if you want a safety net',
         ],
       },
     ],
@@ -97,7 +106,7 @@ export const INDUSTRY_PAGES: Record<IndustryId, PageContent> = {
     eyebrow: 'Agencies',
     title: 'Retainers, projects and a client who can see both.',
     intro:
-      'Creative and marketing agencies run the same chain, with retainers and projects side by side and a utilisation number that decides whether the month worked. The differentiator here is the last link: your client logs in and watches their own projects and invoices, so “what’s the status?” stops being an email.',
+      'The same chain, with retainers and projects side by side. The differentiator is the last link: your client logs in and watches their own projects and invoices.',
     chain: {
       active: ['Project', 'Plan', 'Time', 'Invoice'],
       note: 'Retainers and projects run the same links. The client sees the end of the chain from their own portal.',
@@ -111,20 +120,22 @@ export const INDUSTRY_PAGES: Record<IndustryId, PageContent> = {
       {
         id: 'portal',
         title: 'The client portal is the hook',
-        body: 'A separate application your clients log into: their projects and status, their invoices with a payment journey, their support tickets, and a knowledge base. Branded as you, on your domain.',
+        body: 'A separate application your clients log into. “What’s the status?” stops being an email.',
         bullets: [
           'Project status straight from the delivery records',
-          'Invoices and payment',
+          'Invoices, with a payment journey',
           'Tickets with a real reply thread',
-          'Your branding and your domain, configured per tenant',
+          'A knowledge base they can read themselves',
+          'Your branding and your domain, per tenant',
         ],
       },
       {
         id: 'retainers',
         title: 'Retainers and projects together',
-        body: 'Both are projects; the difference is how time is budgeted against them. Because internal work is tracked the same way, the utilisation number includes the hours that usually go missing.',
+        body: 'Both are projects; only the time budget differs.',
         bullets: [
           'Client and internal projects tracked identically',
+          'Utilisation includes the hours that usually go missing',
           'Time logged against work items, not free text',
           'Capacity and engagement views per person',
         ],
@@ -154,7 +165,7 @@ export const INDUSTRY_PAGES: Record<IndustryId, PageContent> = {
     eyebrow: 'Technology',
     title: 'For product companies with a delivery organisation attached.',
     intro:
-      'You already have engineering tooling. What you usually do not have is one place where the commercial pipeline, the delivery org and the people data agree — with an API good enough that your team will actually build against it.',
+      'You already have engineering tooling. What you do not have is one place where the commercial pipeline, the delivery org and the people data agree.',
     jobs: [
       'Run services delivery next to product work',
       'Give a security-literate buyer a straight answer',
@@ -163,32 +174,36 @@ export const INDUSTRY_PAGES: Record<IndustryId, PageContent> = {
     blocks: [
       {
         id: 'work',
-        title: 'Work management that engineers will tolerate',
-        body: 'Work items with hierarchy, sprints, epics and a backlog, on a board with keyboard paths. It is not a replacement for your issue tracker — it is where delivery, time and commercial context meet.',
+        title: 'Work management engineers will tolerate',
+        body: 'Not a replacement for your issue tracker — where delivery, time and commercial context meet.',
         bullets: [
           'Work-item hierarchy with rollups',
           'Sprints, epics and a backlog',
+          'A board with real keyboard paths',
           'Time logged against items, feeding utilisation and billing',
         ],
       },
       {
         id: 'platform',
         title: 'Extensible on purpose',
-        body: 'Custom fields, a workflow designer, webhooks, a typed SDK and an open REST API. If your process needs something we did not build, you can build it without asking us.',
+        body: 'If your process needs something we did not build, build it without asking us.',
         bullets: [
           'Custom fields on any entity, per tenant',
+          'A workflow designer and a typed SDK',
           'HMAC-signed webhooks with a delivery log',
           'API keys you rotate yourself',
-          'Self-hosting via Helm or Compose if you want it in your own cluster',
+          'Self-hosting via Helm or Compose, in your own cluster',
         ],
       },
       {
         id: 'security',
         title: 'For the security review',
-        body: 'Deny-by-default authorization in every service, SSO and SCIM, an append-only audit trail with hash-chain tamper evidence, and network isolation between services. The detail is published rather than gated behind an NDA.',
+        body: 'Published rather than gated behind an NDA.',
         bullets: [
+          'Deny-by-default authorization in all thirty services',
           'SSO through OIDC or SAML, SCIM for provisioning',
-          'Server-side permission checks in all thirty services',
+          'Append-only audit trail with hash-chain tamper evidence',
+          'Default-deny network isolation between services',
           'Structured logs, metrics and traces you can ingest yourself',
         ],
       },
@@ -206,7 +221,7 @@ export const ROLE_PAGES: Record<RoleId, PageContent> = {
     eyebrow: 'For sales leaders',
     title: 'Will my reps actually use it?',
     intro:
-      'Fair question, and the honest answer is that adoption follows friction. Activity capture sits on the record rather than in a separate log, the pipeline works with a pointer or a keyboard, and approvals happen in one inbox instead of a chase. The bonus: what your team closes is what delivery receives, so the handover stops being an argument.',
+      'Adoption follows friction. Activity capture sits on the record, the pipeline works with a pointer or a keyboard, and approvals happen in one inbox instead of a chase.',
     chain: {
       active: ['Deal'],
       note: 'You own the first link. What closes here arrives in delivery complete, which is why nobody re-types your client’s name.',
@@ -226,9 +241,10 @@ export const ROLE_PAGES: Record<RoleId, PageContent> = {
         id: 'leader',
         title: 'What you get that they do not see',
         bullets: [
-          'A weighted forecast built from the same records they work in',
+          'A weighted forecast built from the records they work in',
           'Capacity beside the pipeline, so commitments are informed',
           'Approval history on every discount, in the audit trail',
+          'What your team closes is what delivery receives',
         ],
       },
     ],
@@ -242,7 +258,7 @@ export const ROLE_PAGES: Record<RoleId, PageContent> = {
     eyebrow: 'For delivery leaders',
     title: 'Can it handle real project structure?',
     intro:
-      'Intake with an approval chain, a work breakdown structure with its own approvals, execution on a board, and time that reconciles to an invoice. You own the middle of the chain — the part where a deal that sounded profitable either stays that way or quietly does not.',
+      'You own the middle of the chain — the part where a deal that sounded profitable either stays that way or quietly does not.',
     chain: {
       active: ['Project', 'Plan', 'Time'],
       note: 'The three links you are accountable for, with a project that arrives complete and hours that leave ready to invoice.',
@@ -261,7 +277,7 @@ export const ROLE_PAGES: Record<RoleId, PageContent> = {
       {
         id: 'people',
         title: 'Resourcing that knows about people',
-        body: 'Capacity accounts for approved leave, because leave is a module on the same platform. There is no sync window in which the two disagree.',
+        body: 'Leave is a module on the same platform, so there is no sync window.',
         bullets: [
           'Capacity and engagement per person',
           'Approved leave reflected immediately',
@@ -274,7 +290,7 @@ export const ROLE_PAGES: Record<RoleId, PageContent> = {
         bullets: [
           'One approvals inbox for timesheets, requests and plans',
           'Approved hours reconcile against invoices',
-          'Exports on every list when someone insists on a spreadsheet',
+          'Exports on every list, when someone insists on a spreadsheet',
         ],
       },
     ],
@@ -288,24 +304,25 @@ export const ROLE_PAGES: Record<RoleId, PageContent> = {
     eyebrow: 'For people leaders',
     title: 'Is the HR side real, or a checkbox?',
     intro:
-      'Five services back it: leave, attendance, performance, recruitment and workplace, alongside the employee directory, org chart and skills. It is not a form bolted onto a CRM.',
+      'Five services back it — leave, attendance, performance, recruitment and workplace — alongside the directory, org chart and skills. It is not a form bolted onto a CRM.',
     blocks: [
       {
         id: 'modules',
         title: 'What is actually built',
         bullets: [
           'Leave: types, policies, balances, requests, approvals',
-          'Attendance: check-in and out, shifts, holiday calendars, regularisation',
-          'Performance: goals and OKRs, check-ins, review cycles and forms',
+          'Attendance: check-in and out, shifts, calendars, regularisation',
+          'Performance: goals and OKRs, check-ins, review cycles, forms',
           'Recruitment: requisitions, pipeline, interview feedback, offers',
-          'Workplace: announcements, policies with acknowledgements, assets, expenses',
+          'Workplace: announcements, policies, assets, expenses',
         ],
       },
       {
         id: 'advantage',
         title: 'The advantage of sharing a platform',
-        body: 'Because HR sits on the same permission model as the rest of the business, joiner-mover-leaver is one process rather than three. Onboarding provisions access; offboarding revokes it everywhere at once, recorded in the audit trail.',
+        body: 'Joiner-mover-leaver is one process rather than three.',
         bullets: [
+          'HR sits on the same permission model as the rest of the business',
           'Onboarding checklists that provision access',
           'One revoke on exit, propagated across every service',
           'Approved leave visible to resourcing without a sync',
@@ -314,7 +331,12 @@ export const ROLE_PAGES: Record<RoleId, PageContent> = {
       {
         id: 'payroll',
         title: 'Payroll',
-        body: 'Payroll runs on the platform, on the same permission model as the rest of HR — so approved leave and approved attendance reach a pay run as records rather than as a spreadsheet somebody exports on the last Friday of the month. Payroll is jurisdiction-specific by nature; ask us which jurisdictions are live before you plan a migration around it.',
+        body: 'Payroll is jurisdiction-specific by nature — ask which are live before planning around it.',
+        bullets: [
+          'Runs on the platform, on the same permission model as HR',
+          'Approved leave and attendance reach a pay run as records',
+          'Not a spreadsheet exported on the last Friday of the month',
+        ],
       },
     ],
     related: [
@@ -327,7 +349,7 @@ export const ROLE_PAGES: Record<RoleId, PageContent> = {
     eyebrow: 'For IT and security',
     title: 'What exactly would I be inheriting?',
     intro:
-      'This page is written for you, and it is built to the same standard as the architecture page — because you will read them together, and because you are the visitor most able to check whether we are telling the truth.',
+      'Written for you, to the same standard as the architecture page — because you will read them together, and you are the visitor most able to check whether we are telling the truth.',
     jobs: [
       'Understand the operational footprint before you own it',
       'Verify the security posture without an NDA',
@@ -337,9 +359,9 @@ export const ROLE_PAGES: Record<RoleId, PageContent> = {
       {
         id: 'footprint',
         title: 'The operational footprint',
-        body: 'Thirty stateless services behind one gateway, database per service, deployed by Helm onto managed Kubernetes with Terraform-managed infrastructure — or by Docker Compose onto a single machine if you would rather.',
         bullets: [
-          'Managed Kubernetes with autoscaling, or self-hosted',
+          'Thirty stateless services behind one gateway',
+          'Managed Kubernetes with autoscaling, or Compose on one machine',
           'PostgreSQL per service; migrations applied by a deploy job',
           'Structured logs, Prometheus metrics, OpenTelemetry traces',
           'Staged deploys with smoke tests and automatic rollback',
@@ -352,14 +374,14 @@ export const ROLE_PAGES: Record<RoleId, PageContent> = {
           'SSO through OIDC or SAML',
           'SCIM v2 for provisioning and deprovisioning',
           'Deny-by-default authorization enforced in every service',
-          'Permission-version invalidation, so revocation does not wait for a re-login',
-          'Argon2id password hashing, lockout, TOTP MFA, refresh rotation',
+          'Permission-version invalidation — revocation does not wait for a re-login',
+          'Argon2id hashing, lockout, TOTP MFA, refresh rotation',
         ],
       },
       {
         id: 'isolation',
         title: 'Isolation and blast radius',
-        body: 'Database per service means one module’s incident is not another module’s outage. Network policies default to deny between services, and the gateway strips any identity header the client tried to set.',
+        body: 'Database per service means one module’s incident is not another module’s outage.',
         bullets: [
           'Default-deny network policy between services',
           'Internal-auth header verified downstream',
@@ -369,13 +391,18 @@ export const ROLE_PAGES: Record<RoleId, PageContent> = {
       {
         id: 'exit',
         title: 'The exit plan',
-        body: 'We would rather you evaluate this now than discover it later. No cloud SDK in application code, adapters selected by environment variable, CSV export on every list, a REST API for everything else, and a Compose stack that runs the whole platform.',
+        body: 'Evaluate it now rather than discover it later.',
+        bullets: [
+          'No cloud SDK in application code; adapters selected by env var',
+          'CSV export on every list, a REST API for everything else',
+          'Full terms and the failover matrix: /security/infrastructure',
+        ],
       },
     ],
     related: [
       { label: 'Architecture', href: '/platform/architecture', description: 'The full picture.' },
       { label: 'Permissions', href: '/security/permissions', description: 'The deepest page here.' },
-      { label: 'Infrastructure', href: '/security/infrastructure', description: 'Hosting and recovery.' },
+      { label: 'Infrastructure', href: '/security/infrastructure', description: 'Hosting, recovery, exit.' },
     ],
   },
 
@@ -383,7 +410,7 @@ export const ROLE_PAGES: Record<RoleId, PageContent> = {
     eyebrow: 'For finance',
     title: 'Where do the numbers come from?',
     intro:
-      'From the records the business works in, not from an export that was correct on Tuesday. You sit at the end of the chain, which is the worst place to discover that the hours and the invoice disagree — so here they are the same records, and every change carries an audit entry.',
+      'From the records the business works in, not an export that was correct on Tuesday. You sit at the end of the chain — the worst place to find that hours and invoice disagree.',
     chain: {
       active: ['Time', 'Invoice'],
       note: 'You own the last two links. Both read from the same records the work was done in, so month end is a query rather than a reconstruction.',
@@ -417,7 +444,7 @@ export const ROLE_PAGES: Record<RoleId, PageContent> = {
         bullets: [
           'Append-only audit trail with per-field change diffs',
           'Approval history on discounts, timesheets and refunds',
-          'Access reviews from one permission catalog rather than three systems',
+          'Access reviews from one permission catalog, not three systems',
           'Retention policies and legal hold',
         ],
       },

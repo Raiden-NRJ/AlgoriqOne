@@ -30,7 +30,7 @@ export default async function ChangelogPage() {
       />
 
       <Section>
-        <Container className="flex flex-col gap-8">
+        <Container className="flex flex-col gap-12">
           {releases.length > 0 ? (
             <ol className="flex flex-col gap-6">
               {releases.map((release) => (

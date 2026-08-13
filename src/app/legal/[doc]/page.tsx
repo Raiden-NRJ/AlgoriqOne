@@ -43,7 +43,7 @@ export default async function LegalPage({ params }: { params: Promise<Params> })
       <PageHero eyebrow="Legal" title={content.title} intro={content.intro} />
 
       <Section>
-        <Container className="flex flex-col gap-10">
+        <Container className="flex flex-col gap-12">
           {content.draft ? (
             <Reveal>
               <div className="flex gap-3 rounded-[var(--radius-lg)] border border-[var(--color-warning)]/40 bg-[var(--color-warning)]/10 p-5">

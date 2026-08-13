@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ArrowRight, Plus } from 'lucide-react';
+import { faqIntro } from '@/content/homepage';
 import { HOMEPAGE_FAQS } from '@/content/faq';
 import { Container, Section, SectionHeading } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
@@ -28,8 +29,8 @@ export function Faq() {
         <Reveal>
           <SectionHeading
             align="center"
-            eyebrow="Before you ask"
-            title="The questions that actually decide this."
+            eyebrow={faqIntro.eyebrow}
+            title={faqIntro.headline}
           />
         </Reveal>
 
@@ -59,7 +60,7 @@ export function Faq() {
             href="/faq"
             className="inline-flex min-h-6 items-center gap-1.5 py-1 text-sm font-medium text-[var(--color-brand-700)] underline decoration-[var(--color-brand-300)] underline-offset-4 hover:decoration-[var(--color-brand-600)]"
           >
-            All questions
+            {faqIntro.cta}
             <ArrowRight className="size-4" aria-hidden />
           </Link>
         </Reveal>

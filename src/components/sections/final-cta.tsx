@@ -16,7 +16,7 @@ export function FinalCta() {
     <section className="relative overflow-hidden bg-aurora">
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-grid" />
       <Container className="relative">
-        <Reveal className="flex flex-col items-center gap-7 py-24 text-center sm:py-32 lg:py-40">
+        <Reveal className="section-y-lg flex flex-col items-center gap-6 text-center">
           <h2 className="text-display-2 max-w-[min(18ch,100%)]">{finalCta.headline}</h2>
           <p className="text-body-lg max-w-[min(46ch,100%)] text-[var(--color-fg-muted)]">{finalCta.sub}</p>
 

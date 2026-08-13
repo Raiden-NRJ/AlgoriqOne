@@ -94,7 +94,10 @@ function DealPlate() {
         stroke="var(--color-brand-300)"
         strokeWidth={3}
       />
+      {/* Nested inside an aria-hidden <svg>, so already out of the a11y tree;
+          marked explicitly so it stays out if it is ever lifted. */}
       <svg
+        aria-hidden="true"
         x="36"
         y="46"
         width="64"
@@ -308,13 +311,42 @@ function InvoicePlate() {
   );
 }
 
-/** Keyed by `stage` so content/homepage.ts stays the single source of order. */
+/**
+ * Keyed by `stage` so content/homepage.ts stays the single source of order.
+ *
+ * **Superseded on the homepage by CHAIN_PHOTOS below** (2026-08-11), and kept
+ * rather than deleted: these are the flat line plates the photographic set
+ * replaced, and the rest of the site's diagrams are still in this style. If the
+ * photo direction is reversed, or a surface wants the line version at a size
+ * where a photograph would not read, this is it.
+ */
 export const CHAIN_PLATES: Record<string, () => ReactNode> = {
   Deal: DealPlate,
   Project: ProjectPlate,
   Plan: PlanPlate,
   Time: TimePlate,
   Invoice: InvoicePlate,
+};
+
+/**
+ * The photographic chain thumbnails, same keys.
+ *
+ * `alt` is empty on purpose. Each thumbnail sits directly above an `<h3>`
+ * naming its stage — "Deal", "Project" — so a description would make a screen
+ * reader announce the same word twice. An empty alt marks the image decorative
+ * and lets the heading carry the meaning, which is the correct treatment for a
+ * graphic paired with a visible label rather than a shortcut around one.
+ *
+ * Sources are cropped by `scripts/crop-watermark.mjs`; do not point these at
+ * the uncropped originals in `public/images/`, which still carry the
+ * generator's watermark.
+ */
+export const CHAIN_PHOTOS: Record<string, string> = {
+  Deal: '/images/icons-photo/deal.jpg',
+  Project: '/images/icons-photo/project.jpg',
+  Plan: '/images/icons-photo/plan.jpg',
+  Time: '/images/icons-photo/time.jpg',
+  Invoice: '/images/icons-photo/invoice.jpg',
 };
 
 /**
@@ -346,8 +378,8 @@ export function ChainCurrent() {
         <linearGradient id="chain-current" x1="0" x2="1" y1="0" y2="0">
           <stop offset="0%" stopColor="var(--color-brand-500)" stopOpacity="0.5" />
           <stop offset="7%" stopColor="var(--color-brand-500)" stopOpacity="0.45" />
-          <stop offset="16%" stopColor="var(--color-accent)" stopOpacity="0" />
-          <stop offset="84%" stopColor="var(--color-accent)" stopOpacity="0" />
+          <stop offset="16%" stopColor="var(--color-brand-500)" stopOpacity="0" />
+          <stop offset="84%" stopColor="var(--color-brand-500)" stopOpacity="0" />
           <stop offset="93%" stopColor="var(--color-brand-500)" stopOpacity="0.45" />
           <stop offset="100%" stopColor="var(--color-brand-500)" stopOpacity="0.5" />
         </linearGradient>

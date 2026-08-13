@@ -5,8 +5,15 @@ import { Container, Eyebrow, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
 
 /**
- * §9 Automation, AI and customization — beat 7 (platform).
- * One idea: it bends to your process without a rebuild.
+ * §6 Built to fit — beat 7. One idea: it bends to your process without a
+ * rebuild.
+ *
+ * Absorbed §9 Devices on 2026-08-10 as the fourth card. Devices was a whole
+ * section carrying one claim — approvals and timesheets happen away from a
+ * desk, and there is a responsive web app plus an installable PWA — wrapped in
+ * three CSS device frames. The claim is intact in the card; the desktop and
+ * tablet frames were cut as decoration and /platform/mobile keeps the detail,
+ * including both copies of the explicit no-native-app negation.
  *
  * Each card carries a miniature of the thing it describes rather than an icon,
  * so the section shows the capability instead of asserting it.
@@ -14,13 +21,14 @@ import { Reveal } from '@/components/site/reveal';
 export function Capabilities() {
   return (
     <Section>
-      <Container width="wide" className="flex flex-col gap-14">
+      <Container width="wide" className="flex flex-col gap-12">
         <Reveal className="flex flex-col items-center gap-5 text-center">
           <Eyebrow>{capabilities.eyebrow}</Eyebrow>
           <h2 className="text-display-2 max-w-[min(22ch,100%)]">{capabilities.headline}</h2>
         </Reveal>
 
-        <ul className="grid gap-5 lg:grid-cols-3">
+        {/* 2-up at md so four cards never leave a single orphan on a row. */}
+        <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {capabilities.cards.map((card, i) => (
             <Reveal as="li" key={card.title} delay={i * 70}>
               <Link

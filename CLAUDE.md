@@ -1,13 +1,19 @@
 # Algoryq One Website — Operating Guide
 
-**Workstream:** a flagship, enterprise-grade product website, **built from scratch in this folder**.
-**Owner folder:** `website/` — plan *and* code. **Port:** 3500. **Theme:** light mode only.
+**Workstream:** a flagship, enterprise-grade product website, **built from scratch in this repo**.
+**Owner folder:** the repository root — plan *and* code. **Port:** 3500. **Theme:** light mode only.
 **Opened:** 2026-07-31. **Status:** M0 + M1 homepage built and building green.
 
+> **Path correction (2026-08-10).** Earlier revisions of this file described the app as living in a
+> `website/` subdirectory. It does not, and never did in this repository: `src/`, `docs/`,
+> `package.json`, `next.config.mjs` and `scripts/` are all at the **repository root**, and there is
+> no `website/` directory. Every path in this file is repo-root-relative. Historical references to
+> `website/docs/...` inside source comments mean `docs/...`.
+
 > **Scope decision (2026-07-31, user):** the existing `apps/marketing` site is **not** the starting
-> point and is not touched by this workstream. `website/` is a self-contained Next.js application
-> with its own `package.json` and `node_modules` — it does not participate in the root npm workspace
-> and does not pull the 30-service monorepo into an install.
+> point and is not touched by this workstream. This is a self-contained Next.js application with its
+> own `package.json` and `node_modules` — it does not participate in the root npm workspace and does
+> not pull the 30-service monorepo into an install.
 
 > **Rebrand (2026-07-31, user):** the product was renamed **RocketCRM → Algoryq One** and placed
 > under the Algoryq Technologies brand, "powered by Algoryq.tech". The mark, the brand hue (259) and
@@ -19,11 +25,11 @@
 
 ## What this folder is
 
-`website/` holds both the plan (`docs/`) and the site itself (`src/`). It is a standalone Next.js 16
-app: `npm install && npm run dev` inside this folder is the whole setup.
+The repo root holds both the plan (`docs/`) and the site itself (`src/`). It is a standalone Next.js
+16 app: `npm install && npm run dev` at the root is the whole setup.
 
 ```
-website/
+.                                 ← repository root
   package.json  next.config.mjs  tsconfig.json  postcss.config.mjs
   src/
     app/          layout, globals.css (tokens), page.tsx (homepage)
@@ -133,7 +139,7 @@ These are inherited from the root `CLAUDE.md` and tightened for a public-facing 
 ## Build & environment notes
 
 ```bash
-cd website
+# from the repository root
 npm install      # ~48 packages, self-contained
 npm run dev      # http://localhost:3500
 npm run build    # static prerender

@@ -13,8 +13,8 @@ import { PermissionMatrix } from '@/components/interactive/permission-matrix';
 export function Permissions() {
   return (
     <Section tone="band" size="lg">
-      <Container width="wide" className="grid gap-14 lg:grid-cols-[5fr_7fr] lg:items-start lg:gap-16">
-        <Reveal className="flex flex-col gap-6">
+      <Container width="wide" className="grid gap-10 lg:grid-cols-[5fr_7fr] lg:items-start lg:gap-16">
+        <Reveal className="flex flex-col gap-5">
           <Eyebrow tone="band">{permissions.eyebrow}</Eyebrow>
           <h2 className="text-display-2 max-w-[min(18ch,100%)]">{permissions.headline}</h2>
           <p className="text-body-lg max-w-[min(52ch,100%)] text-[var(--color-band-fg-muted)]">

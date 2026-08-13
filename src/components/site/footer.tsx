@@ -8,8 +8,8 @@ export function SiteFooter() {
 
   return (
     <footer className="border-t border-[var(--color-border)] bg-[var(--color-bg-subtle)]">
-      <Container width="wide" className="py-16 lg:py-20">
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_2.4fr]">
+      <Container width="wide" className="py-12 lg:py-16">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_2.4fr]">
           <div className="flex flex-col gap-4">
             <Logo />
             <p className="max-w-[min(34ch,100%)] text-sm leading-relaxed text-[var(--color-fg-muted)]">
@@ -39,7 +39,7 @@ export function SiteFooter() {
           </nav>
         </div>
 
-        <div className="mt-14 flex flex-col gap-4 border-t border-[var(--color-border)] pt-8 text-sm text-[var(--color-fg-subtle)] sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col gap-4 border-t border-[var(--color-border)] pt-8 text-sm text-[var(--color-fg-subtle)] sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {year}{' '}
             <a

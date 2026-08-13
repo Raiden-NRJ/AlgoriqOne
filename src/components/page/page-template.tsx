@@ -9,6 +9,7 @@
 import Link from 'next/link';
 import { ArrowRight, Check } from 'lucide-react';
 import {
+  BulletList,
   Button,
   Container,
   Eyebrow,
@@ -16,6 +17,8 @@ import {
   cn,
 } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
+import { Illustration } from '@/components/site/illustration';
+import { HeroPhoto } from '@/components/site/hero-photo';
 
 /* ─────────────────────────────── Types ───────────────────────────────── */
 
@@ -23,12 +26,26 @@ export interface PageBlock {
   /** Stable anchor id, used by the rail. */
   id: string;
   title: string;
+  /**
+   * A *lead*, not a paragraph: one short line that frames the bullets under it.
+   *
+   * It used to be a 30–50 word body paragraph that, on most blocks, restated
+   * the bullets it sat above (content pass 2026-08-10). Anything enumerable
+   * belongs in `bullets`; anything that only frames belongs here, in one line.
+   * The 52ch measure below is deliberately too narrow to hold a paragraph — if
+   * a lead wraps past two lines it is doing the bullets' job.
+   */
   body?: string;
   bullets?: string[];
   /** Optional side panel: a labelled list, e.g. real permission keys. */
   panel?: { label: string; items: string[]; mono?: boolean };
   /** An ordered chain rendered as a connected sequence. */
   chain?: string[];
+  /**
+   * Subsection illustration, rendered in the side column above any panel or
+   * chain. `alt` must describe *this* block's content — see Illustration.
+   */
+  image?: { src: string; alt: string; chrome?: boolean };
 }
 
 /** The five stages of the homepage chain (docs/01 §8). */
@@ -45,6 +62,12 @@ export interface PageContent {
    * from search rather than the homepage still gets the story.
    */
   chain?: { active?: ChainStage[]; note: string };
+  /**
+   * The hero photograph, right-hand column. Distinct from `PageBlock.image`:
+   * that one is a product diagram inside a section, this is the page's single
+   * establishing visual. See HeroPhoto for why they are different components.
+   */
+  image?: { src: string; alt: string };
   /** Three jobs-to-be-done. What this page is responsible for in a real week. */
   jobs?: string[];
   blocks: PageBlock[];
@@ -97,22 +120,87 @@ function ChainStrip({ active, note }: NonNullable<PageContent['chain']>) {
   );
 }
 
+/**
+ * The page hero.
+ *
+ * ── Two columns, and what goes in which ───────────────────────────────────
+ * With a photograph (2026-08-10) the hero splits: the *pitch* — eyebrow,
+ * headline, intro, CTAs — sits left against the photo on the right, and the
+ * ChainStrip and jobs row drop **below** the split at full width.
+ *
+ * That placement is the whole reason the result stays uncluttered. Both of
+ * those blocks are wide, bordered, card-like objects; beside a photograph they
+ * read as a second and third competing visual, and the jobs grid is
+ * `sm:grid-cols-3`, which in a half-width column becomes three cramped
+ * ~150px cards. Below the fold-line they are a calm secondary row and the
+ * photo has only the headline for company.
+ *
+ * Without a photo the layout collapses to the single column it always was —
+ * the grid's second track simply does not exist — so pages that never get an
+ * image are untouched.
+ */
 export function PageHero({
   eyebrow,
   title,
   intro,
   jobs,
   chain,
-}: Pick<PageContent, 'eyebrow' | 'title' | 'intro' | 'jobs' | 'chain'>) {
+  image,
+}: Pick<PageContent, 'eyebrow' | 'title' | 'intro' | 'jobs' | 'chain' | 'image'>) {
   return (
     <section className="relative overflow-hidden border-b border-[var(--color-border)] bg-aurora">
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-grid" />
+      {/*
+        The grid pattern is masked away from the right-hand column when a photo
+        is there, so the photograph sits on clean ground rather than on ruled
+        lines. `.bg-grid` already carries a radial mask; `mask-composite:
+        intersect` combines this linear one with it instead of replacing it, so
+        the original top-centre falloff survives. Below lg the columns stack and
+        the extra mask is dropped — the grid is behind text again at that width.
+      */}
+      <div
+        aria-hidden
+        className={cn(
+          'pointer-events-none absolute inset-0 bg-grid',
+          image &&
+            'lg:[mask-image:radial-gradient(58rem_30rem_at_50%_0%,#000_20%,transparent_78%),linear-gradient(to_right,#000_0%,#000_42%,transparent_66%)] lg:[mask-composite:intersect]',
+        )}
+      />
       <Container width="wide" className="relative">
-        <div className="flex flex-col gap-8 py-16 sm:py-20 lg:py-24">
-          <div className="flex flex-col gap-6">
-            <Eyebrow>{eyebrow}</Eyebrow>
-            <h1 className="text-display-2 max-w-[min(20ch,100%)]">{title}</h1>
-            <p className="text-body-lg max-w-[min(62ch,100%)] text-[var(--color-fg-muted)]">{intro}</p>
+        {/* section-y, not raw py-*: PageHero and the homepage Hero are the same
+            block in the design's terms and must scale together (audit A2). */}
+        <div className="section-y flex flex-col gap-10">
+          <div
+            className={cn(
+              'grid items-center',
+              // 64px column gap at lg — the top of the brief's 48–64px range,
+              // because the photo has a hard edge and the text does not.
+              image && 'gap-10 lg:grid-cols-[1fr_minmax(0,46%)] lg:gap-16',
+            )}
+          >
+            <div className="flex min-w-0 flex-col gap-6">
+              <Eyebrow>{eyebrow}</Eyebrow>
+              <h1 className="text-display-2 max-w-[min(20ch,100%)]">{title}</h1>
+              {/* 58ch, matching SectionHeading's description measure. PageHero
+                  and SectionHeading are the same block in the design's terms and
+                  sat at 62 and 58 — a visible mismatch once the intros were cut
+                  short enough for the measure to actually bind. */}
+              <p className="text-body-lg max-w-[min(58ch,100%)] text-[var(--color-fg-muted)]">
+                {intro}
+              </p>
+
+              <div className="flex flex-wrap gap-3 pt-2">
+                <Button href="/signup">
+                  Start free
+                  <ArrowRight className="size-4" aria-hidden />
+                </Button>
+                <Button href="/company/contact" variant="secondary">
+                  Talk to us
+                </Button>
+              </div>
+            </div>
+
+            {/* Order: the headline reads first on a stacked layout. */}
+            {image ? <HeroPhoto src={image.src} alt={image.alt} className="lg:order-last" /> : null}
           </div>
 
           {chain ? (
@@ -137,16 +225,6 @@ export function PageHero({
               ))}
             </ul>
           ) : null}
-
-          <div className="flex flex-wrap gap-3">
-            <Button href="/signup">
-              Start free
-              <ArrowRight className="size-4" aria-hidden />
-            </Button>
-            <Button href="/company/contact" variant="secondary">
-              Talk to us
-            </Button>
-          </div>
         </div>
       </Container>
     </section>
@@ -182,37 +260,76 @@ function AnchorRail({ blocks }: { blocks: PageBlock[] }) {
 function Block({ block, index }: { block: PageBlock; index: number }) {
   const flip = index % 2 === 1;
 
+  // With the content pass done, a block is usually title + lead + bullets and
+  // nothing in the side column. Five single-line bullets in a 7fr column is a
+  // tall thin ladder with a half-empty row beside it, so those wrap into two
+  // columns from sm up. Blocks that *do* carry a panel or a chain keep one
+  // column — the 5fr side already balances them.
+  // An illustration counts as side content: it fills the 5fr column, so the
+  // bullets keep one column and the row balances the same way a panel does.
+  const hasAside = Boolean(block.panel || block.chain || block.image);
+  const wrapBullets = !hasAside && (block.bullets?.length ?? 0) > 3;
+
+  /*
+    Padding follows content, 2026-08-11.
+
+    Every block used to pad 128px regardless of what was in it. Measured across
+    four pages, that made dense blocks read correctly — "Pipeline and deals"
+    667px of content, 16% padding — while short ones were mostly air:
+
+      Data and API                117px content, 128px padding  = 52% padding
+      How we test that it holds   162px content, 128px padding  = 44%
+      API keys you control        150px content, 128px padding  = 46%
+      The handoff that breaks     208px content, 128px padding  = 38%
+
+    Only an illustration or a chain earns the full rhythm. Bullet count was
+    tried as a density signal and dropped: the tallest bullets-only block
+    measured 234px, so five bullets do not make a block that needs 128px of
+    padding — with `bullets > 4` counting as dense, "How it holds up" and
+    "Observability and deploys" stayed at 37% padding. `panel` does not count
+    either; it is a row of short chips, and several of the worst offenders
+    above have one.
+
+    Note the measured column heights were already equal on every block, so the
+    "under-filled sidebar leaves a blank rectangle" half of the report did not
+    reproduce: the grid stretches both tracks and the aside simply sits at the
+    top of its own. Nothing to fix there.
+  */
+  const dense = Boolean(block.image || block.chain);
+
   return (
     <Reveal
       as="section"
       className={cn(
-        'scroll-mt-28 border-t border-[var(--color-border)] py-12 first:border-t-0 first:pt-0 lg:py-16',
+        'scroll-mt-28 border-t border-[var(--color-border)] first:border-t-0 first:pt-0',
+        dense ? 'py-12 lg:py-16' : 'py-8 lg:py-10',
       )}
     >
-      <div id={block.id} className="grid gap-8 lg:grid-cols-[7fr_5fr] lg:gap-14">
+      <div id={block.id} className="grid gap-8 lg:grid-cols-[7fr_5fr] lg:gap-12">
         <div className={cn('flex flex-col gap-5', flip && 'lg:order-2')}>
           <h2 className="text-h2">{block.title}</h2>
           {block.body ? (
-            <p className="max-w-[min(62ch,100%)] leading-relaxed text-[var(--color-fg-muted)]">{block.body}</p>
+            <p className="max-w-[min(52ch,100%)] leading-relaxed text-[var(--color-fg-muted)]">{block.body}</p>
           ) : null}
 
           {block.bullets?.length ? (
-            <ul className="flex flex-col gap-2.5">
-              {block.bullets.map((bullet) => (
-                <li key={bullet} className="flex items-start gap-2.5 text-sm leading-relaxed">
-                  <Check
-                    aria-hidden
-                    className="mt-0.5 size-4 shrink-0 text-[var(--color-brand-600)]"
-                  />
-                  <span className="text-[var(--color-fg-muted)]">{bullet}</span>
-                </li>
-              ))}
-            </ul>
+            <BulletList items={block.bullets} columns={wrapBullets} />
           ) : null}
         </div>
 
-        {block.panel || block.chain ? (
-          <div className={cn('flex flex-col gap-4', flip && 'lg:order-1')}>
+        {hasAside ? (
+          // min-w-0: the illustration and the panel are wide children of a grid
+          // column, which defaults to min-width:auto (CLAUDE.md).
+          <div className={cn('flex min-w-0 flex-col gap-4', flip && 'lg:order-1')}>
+            {block.image ? (
+              <Illustration
+                src={block.image.src}
+                alt={block.image.alt}
+                chrome={block.image.chrome}
+                // The 5fr of a 7fr/5fr split inside a 90rem container.
+                sizes="(min-width: 1024px) 38vw, 100vw"
+              />
+            ) : null}
             {block.chain ? <Chain steps={block.chain} /> : null}
             {block.panel ? <Panel {...block.panel} /> : null}
           </div>
@@ -282,8 +399,8 @@ export function RelatedLinks({
   links: NonNullable<PageContent['related']>;
 }) {
   return (
-    <Section tone="subtle">
-      <Container width="wide" className="flex flex-col gap-8">
+    <Section tone="tint">
+      <Container width="wide" className="flex flex-col gap-12">
         <h2 className="text-h2">Related</h2>
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {links.map((link) => (
@@ -313,7 +430,15 @@ export function RelatedLinks({
   );
 }
 
-/* ─────────────────────────────── CTA band ────────────────────────────── */
+/* ─────────────────────────────── CTA band ──────────────────────────────
+ *
+ * Deliberately has no border-t. RelatedLinks above it is tone="tint" and
+ * already draws a sand-200 bottom border; a cool --color-border here stacked a
+ * second hairline against it — two 1px lines in different hues, which reads as
+ * a muddy 2px seam on every page that has a Related section. Only visible in a
+ * zoomed screenshot, which is why it is written down. When there is no Related
+ * section the aurora wash carries the boundary on its own.
+ */
 
 export function CtaBand({
   title = 'See it on your own data.',
@@ -323,9 +448,12 @@ export function CtaBand({
   body?: string;
 }) {
   return (
-    <section className="relative overflow-hidden border-t border-[var(--color-border)] bg-aurora">
+    <section className="relative overflow-hidden bg-aurora">
       <Container className="relative">
-        <div className="flex flex-col items-center gap-6 py-20 text-center sm:py-24">
+        {/* section-y: CtaBand (deep pages) and FinalCta (homepage) are the same
+            closing ask and used to render 67% apart — 96px against 160px — so a
+            visitor moving homepage → product page felt the page shrink (A2). */}
+        <div className="section-y flex flex-col items-center gap-6 text-center">
           <h2 className="text-display-2 max-w-[min(20ch,100%)]">{title}</h2>
           <p className="max-w-[min(48ch,100%)] text-[var(--color-fg-muted)]">{body}</p>
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -354,11 +482,12 @@ export function DetailPage({ content }: { content: PageContent }) {
         intro={content.intro}
         jobs={content.jobs}
         chain={content.chain}
+        image={content.image}
       />
 
       <Section>
         <Container width="wide">
-          <div className="grid gap-12 xl:grid-cols-[minmax(0,1fr)_15rem] xl:gap-16">
+          <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_15rem] xl:gap-16">
             <div className="min-w-0">
               {content.blocks.map((block, i) => (
                 <Block key={block.id} block={block} index={i} />

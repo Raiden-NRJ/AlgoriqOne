@@ -39,10 +39,15 @@ export function ThreeSystemsDiagram() {
 
         {/* The brittle middle */}
         <div className="relative my-5 flex items-center justify-center" aria-hidden="true">
+          {/* role="presentation" drops this element's own semantics but not its
+              children's; aria-hidden removes the subtree, which is what a
+              decorative connector actually wants. The parent div already sets
+              it — stated here too so the svg is correct on its own. */}
           <svg
             viewBox="0 0 320 64"
             className="h-16 w-full text-[var(--color-border-strong)]"
             role="presentation"
+            aria-hidden="true"
           >
             <path
               d="M53 4 C53 32, 160 32, 160 60"
@@ -51,21 +56,26 @@ export function ThreeSystemsDiagram() {
               strokeWidth="1.5"
               strokeDasharray="4 4"
             />
+            {/* Was --color-danger. Semantic colours are functional-only
+                (globals.css): colouring a competitor diagram red is marketing
+                tone, not a state the reader can act on.
+
+                cyan-600, not cyan-500: these are 1.5px strokes on white — a
+                border/icon role, which needs 3:1. cyan-500 is 2.29:1 and is
+                fill-only. */}
             <path
               d="M160 4 L160 60"
               fill="none"
-              stroke="var(--color-danger)"
+              stroke="var(--color-cyan-600)"
               strokeWidth="1.5"
               strokeDasharray="4 4"
-              opacity="0.65"
             />
             <path
               d="M267 4 C267 32, 160 32, 160 60"
               fill="none"
-              stroke="var(--color-danger)"
+              stroke="var(--color-cyan-600)"
               strokeWidth="1.5"
               strokeDasharray="4 4"
-              opacity="0.65"
             />
           </svg>
         </div>
@@ -81,7 +91,7 @@ export function ThreeSystemsDiagram() {
           ))}
         </div>
 
-        <div className="mt-5 rounded-[var(--radius-lg)] border border-dashed border-[var(--color-danger)]/40 bg-[var(--color-danger)]/6 px-4 py-3 text-center">
+        <div className="mt-5 rounded-[var(--radius-lg)] border border-dashed border-[var(--color-cyan-600)] bg-[var(--color-cyan-50)] px-4 py-3 text-center">
           <p className="text-sm font-medium text-[var(--color-fg)]">
             Three permission models. Three audit trails.
           </p>

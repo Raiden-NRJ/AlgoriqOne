@@ -1,4 +1,13 @@
-/** Developer platform pages (docs/03 sitemap, docs/04 §12). */
+/**
+ * Developer platform pages (docs/03 sitemap, docs/04 §12).
+ *
+ * ── Content pass, 2026-08-10 ──────────────────────────────────────────────
+ * Bullet-first, Zoho shape (see the note at the top of pages-product.ts).
+ *
+ * The overview's `events` block is a deliberate teaser for `/developers/webhooks`
+ * rather than a duplicate: it was cut to three lines and the detail — signing,
+ * replay windows, secret rotation, redelivery — lives only on the deep page.
+ */
 
 import type { PageContent } from '@/components/page/page-template';
 
@@ -8,7 +17,7 @@ export const DEVELOPER_OVERVIEW: PageContent = {
   eyebrow: 'Developers',
   title: 'The same gateway our own applications use.',
   intro:
-    'There is no private API. The four Algoryq One applications call the platform through the same REST gateway, with the same authentication and the same permission checks that your integration will hit.',
+    'There is no private API. All four Algoryq One applications go through the same REST gateway, the same authentication and the same permission checks your integration will hit.',
   jobs: [
     'Integrate without waiting for a vendor to expose an endpoint',
     'Automate the things your process needs and ours does not',
@@ -18,12 +27,12 @@ export const DEVELOPER_OVERVIEW: PageContent = {
     {
       id: 'api',
       title: 'REST API for every module',
-      body: 'Consistent resources, a standard response envelope, correlation identifiers on every request, and cursor pagination on the endpoints where it matters. Versioned under /api/v1 with a deprecation policy rather than silent breakage.',
       bullets: [
         'Standard envelope: success, message, data, errors, meta',
         'Cursor pagination on high-volume feeds',
         'Correlation identifiers threaded end to end for tracing',
-        'Versioned paths and a published deprecation header policy',
+        'Versioned under /api/v1',
+        'A published deprecation policy instead of silent breakage',
       ],
       panel: {
         label: 'Auth methods',
@@ -33,33 +42,34 @@ export const DEVELOPER_OVERVIEW: PageContent = {
     {
       id: 'sdk',
       title: 'A typed SDK',
-      body: 'One client for every service, with token refresh, retry, correlation and tenant headers handled for you. It is the same SDK the product applications use, so it does not lag behind the API.',
+      body: 'The same client the product applications use, so it cannot lag the API.',
       bullets: [
         'Typed clients per service',
-        'Automatic refresh and retry',
+        'Automatic token refresh and retry',
         'Interceptors for correlation and tenant context',
       ],
     },
     {
       id: 'keys',
       title: 'API keys you control',
-      body: 'Keys are stored hashed and shown exactly once, at creation. Rotate or revoke them yourself from the admin console — no support ticket, no waiting.',
       bullets: [
         'Hashed at rest, revealed once at creation',
-        'Rotate and revoke without contacting us',
+        'Rotate and revoke yourself — no support ticket',
         'Scoped by the same permission catalog as everything else',
       ],
     },
     {
       id: 'events',
       title: 'Webhooks',
-      body: 'Subscribe to platform events, verify them with an HMAC signature, and inspect the delivery log when something does not arrive. Retries are automatic.',
       bullets: [
-        'Endpoint and subscription management',
-        'HMAC-signed payloads',
-        'Delivery log with attempt history',
-        'Automatic retries with backoff',
+        'Subscribe to platform events instead of polling',
+        'HMAC-signed payloads with automatic retries',
+        'A delivery log for when something does not arrive',
       ],
+      image: {
+        src: '/illustrations/developers.jpg',
+        alt: 'A webhook delivery log listing deliveries by event type, timestamp, status and endpoint URL, with successful and failed rows and a retry control on each, beside the JSON payload shape being posted.',
+      },
     },
   ],
   related: [
@@ -79,7 +89,13 @@ export const DEVELOPER_PAGES: Record<DeveloperPageId, PageContent> = {
       {
         id: 'envelope',
         title: 'The response envelope',
-        body: 'Every endpoint returns the same shape, so error handling is written once. success is a boolean, data carries the payload, errors carries structured failures, and meta carries pagination and correlation.',
+        body: 'One shape everywhere, so error handling is written once.',
+        bullets: [
+          'success — a boolean',
+          'data — the payload',
+          'errors — structured failures',
+          'meta — pagination and correlation',
+        ],
         panel: {
           label: 'Envelope keys',
           items: ['success', 'message', 'data', 'errors', 'meta'],
@@ -89,31 +105,32 @@ export const DEVELOPER_PAGES: Record<DeveloperPageId, PageContent> = {
       {
         id: 'auth',
         title: 'Authentication and tenancy',
-        body: 'Send an API key or a bearer token. The gateway resolves your identity and tenant and stamps them downstream — you never send a tenant identifier yourself, and a request that tries to is stripped, not honoured.',
         bullets: [
-          'Authorization header with a bearer token, or an API key header',
-          'Tenant context is resolved server-side, never accepted from the caller',
-          'Every call is permission-checked against the same catalog as the interface',
+          'A bearer token in Authorization, or an API key header',
+          'The gateway resolves your identity and tenant and stamps them downstream',
+          'Tenant context is never accepted from the caller — it is stripped',
+          'Every call is permission-checked against the catalog the interface uses',
         ],
       },
       {
         id: 'pagination',
         title: 'Pagination, filtering and sorting',
-        body: 'Offset pagination on ordinary lists, keyset cursor pagination on high-volume feeds such as audit and notifications. Sorting is server-side and constrained to an allowlist per resource, so a sort parameter either works or errors — it never silently returns unsorted data.',
         bullets: [
-          'page and pageSize, or cursor on high-volume feeds',
-          'sort with a per-resource allowlist',
+          'page and pageSize on ordinary lists',
+          'Keyset cursors on audit, notifications and other high-volume feeds',
+          'sort against a per-resource allowlist — it works or it errors',
           'Filters, including on custom fields',
         ],
       },
       {
         id: 'errors',
         title: 'Errors and rate limits',
-        body: 'Standard status codes with structured error bodies. 403 means the permission check failed — it is a real answer, not a filtered empty list. Rate limits are applied at the gateway with a stricter class on authentication routes.',
         bullets: [
-          '403 on a failed permission check, with the failing key identified',
+          '403 on a failed permission check, with the failing key named',
+          'A real answer, never a filtered empty list',
           '429 with retry guidance when rate limited',
-          'Correlation identifier on every response for support',
+          'Stricter rate-limit class on authentication routes',
+          'A correlation identifier on every response, for support',
         ],
       },
     ],
@@ -127,12 +144,11 @@ export const DEVELOPER_PAGES: Record<DeveloperPageId, PageContent> = {
     eyebrow: 'Webhooks',
     title: 'Push, signed and retried.',
     intro:
-      'Rather than polling for change, subscribe to events. Every delivery is HMAC-signed so you can verify it came from us, and every attempt is logged so you can see what happened when it did not.',
+      'Subscribe to events rather than polling for change. Every delivery is HMAC-signed, and every attempt is logged so you can see what happened when it did not arrive.',
     blocks: [
       {
         id: 'subscribe',
         title: 'Endpoints and subscriptions',
-        body: 'Register an endpoint, subscribe it to the events you care about, and send a test delivery before you rely on it.',
         bullets: [
           'Endpoint management with a test-send',
           'Per-event subscriptions',
@@ -153,9 +169,10 @@ export const DEVELOPER_PAGES: Record<DeveloperPageId, PageContent> = {
       {
         id: 'signing',
         title: 'Verification',
-        body: 'Each payload carries an HMAC signature computed with a secret only you and the platform hold. Verify before you act — an unverified webhook endpoint is an open door.',
+        body: 'An unverified webhook endpoint is an open door.',
         bullets: [
           'HMAC signature header on every delivery',
+          'A shared secret only you and the platform hold',
           'A timestamp to reject replays',
           'Secret rotation without downtime',
         ],
@@ -163,10 +180,10 @@ export const DEVELOPER_PAGES: Record<DeveloperPageId, PageContent> = {
       {
         id: 'delivery',
         title: 'Delivery and retries',
-        body: 'Failed deliveries retry with backoff, and the attempt history is visible so you can distinguish "we never sent it" from "your endpoint was down".',
         bullets: [
           'Automatic retries with exponential backoff',
           'Per-delivery attempt log with response codes',
+          'Tells "we never sent it" apart from "your endpoint was down"',
           'Manual redelivery from the console',
         ],
       },
@@ -181,12 +198,12 @@ export const DEVELOPER_PAGES: Record<DeveloperPageId, PageContent> = {
     eyebrow: 'Integrations',
     title: 'Standards first, connectors second.',
     intro:
-      'We are early, and we would rather be honest about the connector catalogue than pad it. What we do have is the thing that makes connectors possible: an open API, signed webhooks, and identity standards that your existing stack already speaks.',
+      'We are early, and we would rather be honest about the connector catalogue than pad it. What we do have is what makes connectors possible.',
     blocks: [
       {
         id: 'standards',
         title: 'What is supported today',
-        body: 'These are protocols and standards implemented in the platform — not partner integrations, and not logos we have borrowed.',
+        body: 'Protocols implemented in the platform — not partner logos we have borrowed.',
         panel: {
           label: 'Implemented standards',
           items: [
@@ -212,17 +229,22 @@ export const DEVELOPER_PAGES: Record<DeveloperPageId, PageContent> = {
       {
         id: 'building',
         title: 'Building your own',
-        body: 'Most integrations at this stage are built against the API and webhooks rather than installed from a catalogue. That is slower to start and considerably more durable — you are not waiting on our roadmap for a field you need.',
+        body: 'Slower to start, considerably more durable.',
         bullets: [
           'API keys you create and rotate yourself',
           'Webhooks for the push direction',
           'Custom fields so external identifiers have a home',
+          'No waiting on our roadmap for a field you need',
         ],
       },
       {
         id: 'honesty',
         title: 'What does not exist yet',
-        body: 'There is no public app marketplace and no one-click connector directory. If a specific integration is a requirement for you, ask — we will tell you whether it is a morning of work against the API or genuinely not there.',
+        bullets: [
+          'No public app marketplace',
+          'No one-click connector directory',
+          'Ask about a specific integration and we will tell you: a morning of API work, or genuinely not there',
+        ],
       },
     ],
     related: [

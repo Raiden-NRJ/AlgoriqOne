@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { CONTACT } from '@/content/site';
 import { PageHero } from '@/components/page/page-template';
 import { Container, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 const ROUTES = [
   {
     heading: 'Evaluating the platform',
-    body: 'Most questions are already answered without a call — the interactive demo, the pricing page and the security centre are all public and ungated.',
+    body: 'Public and ungated — no call needed.',
     links: [
       { label: 'Interactive demo', href: '/demo' },
       { label: 'Pricing', href: '/pricing' },
@@ -23,7 +24,7 @@ const ROUTES = [
   },
   {
     heading: 'Technical review',
-    body: 'If you are the person who will own this after the contract, start with the architecture and permissions pages. They are written for you.',
+    body: 'Written for whoever owns this after the contract.',
     links: [
       { label: 'Architecture', href: '/platform/architecture' },
       { label: 'How authorization works', href: '/security/permissions' },
@@ -32,7 +33,7 @@ const ROUTES = [
   },
   {
     heading: 'Security disclosure',
-    body: 'Found something? Email security@algoryq.com. We acknowledge within two business days and will not take legal action against good-faith research.',
+    body: `Email ${CONTACT.security}. Acknowledged within two business days, and no legal action against good-faith research.`,
     links: [],
   },
 ];

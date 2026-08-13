@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import { Check, Plus } from 'lucide-react';
 import { CtaBand, PageHero } from '@/components/page/page-template';
-import { Button, Container, Section } from '@/components/site/primitives';
+import { BulletList, Button, Container, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
+import { Illustration } from '@/components/site/illustration';
+import { RoiTeaser } from '@/components/interactive/roi-teaser';
 import { getPlans, formatPrice } from '@/lib/billing';
-import { CAPABILITY_GROUPS, INCLUDED_EVERYWHERE, PRICING_FAQS } from '@/content/pricing';
+import { CALCULATOR, CAPABILITY_GROUPS, INCLUDED_EVERYWHERE, PRICING_FAQS } from '@/content/pricing';
 
 export const metadata: Metadata = {
   title: 'Pricing — no feature held hostage to a higher tier',
@@ -29,7 +31,7 @@ export default async function PricingPage() {
       />
 
       <Section>
-        <Container width="wide" className="flex flex-col gap-16">
+        <Container width="wide" className="flex flex-col gap-12">
           {plans.length > 0 ? (
             <Reveal>
               <ul className="grid gap-5 lg:grid-cols-3">
@@ -92,12 +94,15 @@ export default async function PricingPage() {
             <Reveal>
               <div className="flex flex-col items-start gap-4 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-bg-subtle)] p-8">
                 <h2 className="text-h2">Per-seat pricing, quoted properly.</h2>
-                <p className="max-w-[min(62ch,100%)] leading-relaxed text-[var(--color-fg-muted)]">
-                  Published plan prices come straight out of our billing system so they cannot drift
-                  from what you would actually be charged. They are not being served right now, and
-                  we would rather show you nothing than a number this page invented. Tell us your
-                  team size and the modules you need and you will get a real figure the same day.
-                </p>
+                <BulletList
+                  items={[
+                    'Plan prices come straight from our billing system',
+                    'They cannot drift from what you would be charged',
+                    'The service is not answering right now',
+                    'We would rather show nothing than a number this page invented',
+                    'Send your team size and modules — you get a real figure the same day',
+                  ]}
+                />
                 <div className="flex flex-wrap gap-3">
                   <Button href="/company/contact">Get a quote</Button>
                   <Button href="/roi" variant="secondary">
@@ -130,11 +135,16 @@ export default async function PricingPage() {
           <Reveal className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
               <h2 className="text-h2">What you can switch on</h2>
-              <p className="max-w-[min(62ch,100%)] text-[var(--color-fg-muted)]">
-                Modules are licensed per tenant, so you can start with two clusters and add the rest
-                as your process grows into them.
+              <p className="max-w-[min(52ch,100%)] text-[var(--color-fg-muted)]">
+                Licensed per tenant. Start with two clusters, add the rest as you grow into them.
               </p>
             </div>
+            <Illustration
+              src="/illustrations/pricing.jpg"
+              alt="The six module clusters — Revenue, Delivery, People, Service, Intelligence and Platform — each shown as a labelled switch that a tenant can turn on independently."
+              sizes="(min-width: 1024px) 62vw, 100vw"
+              className="max-w-[46rem]"
+            />
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {CAPABILITY_GROUPS.map((group) => (
                 <li
@@ -157,6 +167,33 @@ export default async function PricingPage() {
                 </li>
               ))}
             </ul>
+          </Reveal>
+
+          {/*
+            The consolidation calculator, moved off the homepage 2026-08-10.
+
+            Placed after the plans and the module list, before the FAQ: by this
+            point the visitor has a per-seat price and knows what they would
+            switch on, which is exactly when "what does consolidating save me"
+            becomes a real question rather than a hypothetical one.
+
+            Rendered as a sibling Reveal block rather than its own <Section>.
+            Everything on this page lives inside one Section with a gap-12
+            Container, so transplanting the homepage's `tone="tint"` wrapper
+            would have nested a Section inside a Section and broken the rhythm.
+            The island, its state and its arithmetic are untouched.
+
+            `id` is new — nothing linked to this section on the homepage (it had
+            no anchor), but it is worth one here so the block can be linked to.
+          */}
+          <Reveal id="calculator" className="flex flex-col gap-6 scroll-mt-28">
+            <div className="flex flex-col gap-2">
+              <h2 className="text-h2">{CALCULATOR.heading}</h2>
+              <p className="max-w-[min(62ch,100%)] text-[var(--color-fg-muted)]">
+                {CALCULATOR.sub}
+              </p>
+            </div>
+            <RoiTeaser />
           </Reveal>
 
           <Reveal className="flex flex-col gap-6">

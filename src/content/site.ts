@@ -112,6 +112,24 @@ export const FOOTER_COLUMNS: NavGroup[] = [
     ],
   },
   {
+    /*
+      The last two entries are load-bearing for reachability, not decoration.
+
+      A group with `links` renders as a <button> in header.tsx, so a group-level
+      `href` is inert — the only way to link an index page is to list it. Until
+      2026-08-10 nothing on the site linked to `/solutions` at all, which left
+      the index and the three by-role pages it alone links to
+      (delivery, hr, sales) unreachable by crawl. "All solutions" fixes that in
+      one link: the index carries all five roles.
+
+      "For delivery leaders" restores a direct path the homepage used to
+      provide. Its §13 routing section was deleted in the same pass, and it was
+      the only thing linking that page from outside /solutions.
+
+      Keep this group in sync with what `/solutions` actually offers, and re-run
+      `npm run check:links` after touching it — an orphaned route stays green in
+      every other check.
+    */
     label: 'Solutions',
     links: [
       { label: 'Professional services', href: '/solutions/professional-services' },
@@ -119,6 +137,8 @@ export const FOOTER_COLUMNS: NavGroup[] = [
       { label: 'Technology', href: '/solutions/technology' },
       { label: 'For IT & security', href: '/solutions/by-role/it' },
       { label: 'For finance', href: '/solutions/by-role/finance' },
+      { label: 'For delivery leaders', href: '/solutions/by-role/delivery' },
+      { label: 'All solutions', href: '/solutions' },
     ],
   },
   {

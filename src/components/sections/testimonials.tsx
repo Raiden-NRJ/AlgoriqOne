@@ -1,3 +1,4 @@
+import { testimonialsIntro } from '@/content/homepage';
 import { TESTIMONIALS, hasTestimonials } from '@/content/proof';
 import { Container, Section, SectionHeading } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
@@ -21,8 +22,8 @@ export function Testimonials() {
         <Reveal>
           <SectionHeading
             align="center"
-            eyebrow="In their words"
-            title="What teams say after they consolidate."
+            eyebrow={testimonialsIntro.eyebrow}
+            title={testimonialsIntro.headline}
           />
         </Reveal>
 

@@ -13,58 +13,19 @@ export const DEMO_TENANT = {
   note: 'Sample data',
 } as const;
 
-export interface DemoCompany {
-  name: string;
-  kind: string;
-  detail: string;
-}
+/*
+  DEMO_COMPANIES, DEMO_PROJECTS and DEMO_PEOPLE (with their DemoCompany and
+  DemoPerson interfaces) were deleted on 2026-08-10 as dead code (audit B10):
+  38 lines of fixture records with zero readers anywhere in the tree.
 
-export const DEMO_COMPANIES: DemoCompany[] = [
-  {
-    name: 'Nimbus Retail Group',
-    kind: 'Customer company',
-    detail: 'Retail chain, 4,200 employees. Active client project, open deal, support tickets.',
-  },
-  {
-    name: 'Vertex Manufacturing',
-    kind: 'Customer company',
-    detail: 'Industrial manufacturer. Deal in negotiation, ERP integration project in delivery.',
-  },
-  {
-    name: 'Orbit Health',
-    kind: 'Customer company',
-    detail: 'Healthcare network. New lead qualified this quarter; compliance-sensitive engagement.',
-  },
-];
-
-export const DEMO_PROJECTS = [
-  {
-    name: 'Atlas CRM Rollout',
-    kind: 'Client project',
-    detail: 'Flagship delivery for Nimbus Retail Group — sprints, WBS, timesheets and approvals all reference it.',
-  },
-  {
-    name: 'Beacon Employee Experience',
-    kind: 'Internal program',
-    detail: 'HRMS initiative — onboarding workflows, announcements, performance cycle.',
-  },
-] as const;
-
-export interface DemoPerson {
-  initials: string;
-  name: string;
-  role: string;
-}
-
-export const DEMO_PEOPLE: DemoPerson[] = [
-  { initials: 'DA', name: 'Demo Admin', role: 'Owner · VP Customer Operations' },
-  { initials: 'AK', name: 'Ava Kapoor', role: 'Senior Project Manager' },
-  { initials: 'NC', name: 'Noah Chen', role: 'CRM Consultant' },
-  { initials: 'MR', name: 'Mia Rivera', role: 'People Partner' },
-  { initials: 'LS', name: 'Lena Sorenson', role: 'Finance / Billing Admin' },
-  { initials: 'PO', name: 'Priya Oberoi', role: 'Platform Ops Admin' },
-  { initials: 'JW', name: 'Jordan Wells', role: 'Customer · Nimbus Retail' },
-];
+  Unlike the gated arrays in content/proof.ts, these were not scaffolding for a
+  blocked milestone — the names they held are still used, but they are written
+  where they render: the hero feed rows in `heroVisual` (content/homepage.ts),
+  the report bars in sections/intelligence.tsx, and the device miniatures in
+  sections/devices.tsx. That duplication is worth noting if the demo dataset is
+  ever centralised again; the Figma "Demo Tenant Context" frame remains the
+  source for all of them.
+*/
 
 /** The four applications, from the Figma "Product Overview" frame. */
 export const APPS = [

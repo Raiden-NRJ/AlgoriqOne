@@ -1,44 +1,53 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { security } from '@/content/homepage';
 import { COMPLIANCE_STATEMENT, CERTIFICATIONS, SECURITY_CONTROLS } from '@/content/proof';
 import { Container, Eyebrow, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
 
 /**
- * §13 Security & trust — beat 8. One idea: you can get this through procurement.
+ * §12 Security & trust — beat 8. One idea: you can get this through procurement.
  *
- * Each card states a mechanism, not an adjective. The compliance line is
- * deliberately precise, and no certification badge renders unless an auditor's
- * report is on file — see content/proof.ts and docs/07 §1. This is the rule
- * that a CISO will check, and the one most vendors quietly break.
+ * A teaser, not a summary. Until 2026-08-10 this section rendered all six
+ * SECURITY_CONTROLS as cards under a headline that was word-for-word /security's
+ * H1 — so "See the security controls" landed on the same six cards under the
+ * same sentence, and the click bought nothing (audit B2.1, B2.4). It now shows
+ * three area labels and routes; the mechanisms stay canonical on /security.
+ *
+ * The compliance line is deliberately precise, and no certification badge
+ * renders unless an auditor's report is on file — see content/proof.ts and
+ * docs/07 §1. This is the rule a CISO will check, and the one most vendors
+ * quietly break. It is unchanged by the trim.
  */
 export function Security() {
   const certified = CERTIFICATIONS.filter((c) => c.reportOnFile);
 
+  /*
+    Three of the six, resolved against SECURITY_CONTROLS rather than retyped —
+    so an area renamed or removed in content/proof.ts cannot leave a stale label
+    rendering here. The statements stay on /security; repeating them was the
+    duplication B2.4 found.
+  */
+  const teasers = security.teaserAreas
+    .map((area) => SECURITY_CONTROLS.find((control) => control.area === area))
+    .filter((control) => control !== undefined);
+
   return (
-    <Section tone="band">
-      <Container width="wide" className="flex flex-col gap-14">
+    <Section tone="band" size="lg">
+      <Container width="wide" className="flex flex-col gap-12">
         <Reveal className="flex flex-col items-center gap-5 text-center">
-          <Eyebrow tone="band">Security & trust</Eyebrow>
-          <h2 className="text-display-2 max-w-[min(22ch,100%)]">
-            Security you can verify, not just read about.
-          </h2>
+          <Eyebrow tone="band">{security.eyebrow}</Eyebrow>
+          <h2 className="text-display-2 max-w-[min(22ch,100%)]">{security.headline}</h2>
           <p className="text-body-lg max-w-[min(58ch,100%)] text-[var(--color-band-fg-muted)]">
-            Six control areas, stated as mechanisms. If you want the detail, it is published — no
-            NDA required to read how the platform works.
+            {security.sub}
           </p>
         </Reveal>
 
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {SECURITY_CONTROLS.map((control, i) => (
+        <ul className="grid gap-4 sm:grid-cols-3">
+          {teasers.map((control, i) => (
             <Reveal as="li" key={control.area} delay={i * 50}>
-              <div className="flex h-full flex-col gap-2 rounded-[var(--radius-xl)] border border-[var(--color-band-border)] bg-[var(--color-band-surface)] p-5">
-                <h3 className="text-sm font-semibold text-[var(--color-band-fg)]">
-                  {control.area}
-                </h3>
-                <p className="text-sm leading-relaxed text-[var(--color-band-fg-muted)]">
-                  {control.statement}
-                </p>
+              <div className="flex h-full items-center justify-center rounded-[var(--radius-xl)] border border-[var(--color-band-border)] bg-[var(--color-band-surface)] px-5 py-8">
+                <h3 className="text-h2 text-center text-[var(--color-band-fg)]">{control.area}</h3>
               </div>
             </Reveal>
           ))}
@@ -64,7 +73,7 @@ export function Security() {
             href="/security"
             className="inline-flex min-h-6 items-center gap-1.5 py-1 text-sm font-medium text-[var(--color-brand-300)] underline decoration-[var(--color-brand-400)]/50 underline-offset-4 transition-colors hover:decoration-[var(--color-brand-300)]"
           >
-            See the security controls
+            {security.cta}
             <ArrowRight className="size-4" aria-hidden />
           </Link>
         </Reveal>

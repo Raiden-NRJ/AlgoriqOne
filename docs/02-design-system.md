@@ -97,18 +97,77 @@ globals.css" comment, and when the ramp was re-hued it reported *all 26 pairs me
 violet tokens that had just been deleted. A checker that can pass against colours the site no longer
 ships is worse than no checker, because it is trusted. Do not reintroduce a mirrored copy.
 
-### 2.3 Accent — used sparingly, with intent
+### 2.4 Aurora cyan ramp — the third brand colour
 
-`--accent: oklch(0.72 0.14 195)` (restrained teal). **Rule: accent appears at most twice per viewport**,
-and only to mark the single most important thing in a section (a highlighted data point, an active
-node in a diagram). The current site's violet→cyan gradient-on-everything is the exact failure mode
-we are correcting.
+**Added 2026-08-09** when the palette collapsed from 8 non-semantic hues to 3 (client-approved). Hue
+**200**, Algoryq's "aurora" family. Cyan replaces the single-value `--color-accent`, promoted to a
+full ramp. All ratios below are computed by `check:contrast`, not estimated.
 
-### 2.4 Semantic
+```
+--cyan-50   oklch(0.975 0.018 200)  #EAFBFC   ← tinted section surface (tone="tint")
+--cyan-100  oklch(0.945 0.038 200)  #D0F5F7   ← tinted card / hover
+--cyan-300  oklch(0.835 0.088 200)  #7FDBDF   ← text on dark band 12.08:1; tint section border
+--cyan-400  oklch(0.775 0.115 200)  #43CCD3   ← accents on dark band
+--cyan-500  oklch(0.720 0.140 200)  #00BEC7   ← LARGE FILLS ONLY — see §2.5
+--cyan-600  oklch(0.620 0.125 200)  #009CA4   ← borders / icons on white 3.35:1
+--cyan-700  oklch(0.520 0.105 200)  #007A81   ← text on white 5.11:1
+```
+
+### 2.5 The cyan contrast rules — non-negotiable
+
+**`--color-cyan-500` (#00BEC7) is 2.29:1 on white.** It fails the 4.5:1 text threshold *and* the 3:1
+non-text threshold.
+
+> The old comment on `--color-accent` claimed this value "holds 3:1 as a non-text accent on white."
+> **That was false** — it was never measured. It is recorded here so nobody reinstates it.
+
+| Need | Use | Ratio |
+|---|---|---|
+| Cyan as a **large decorative fill** on white, ink text on top | `cyan-500` | ink on it = **7.74:1** ✓ |
+| Cyan as **text** on white | `cyan-700` | **5.11:1** ✓ |
+| Cyan as a **border or icon** on white | `cyan-600` | **3.35:1** ✓ |
+| Cyan on the **dark band** | `cyan-300` / `cyan-400` | **12.08:1** / 9.97:1 ✓ |
+
+`cyan-500` is never a border, never a meaning-carrying icon, never text.
+
+**This is enforced, not documented.** `check:contrast` carries a `FILL_ONLY` list that asserts *both*
+halves for `cyan-500`: that ink on it clears 4.5:1 (what makes the fill legal), **and** that it stays
+*below* 3:1 on white (the reason for the restriction). If the second assertion ever starts passing,
+someone changed the ramp and the fill-only rule needs a deliberate revisit — so the checker fails.
+
+### 2.6 The three-colour system
+
+| | Token | Value | Role |
+|---|---|---|---|
+| **INK** | `--color-neutral-*` (hue 265) | `#111826` at 900 | All text; the dark band at `#080D18` |
+| **BLUE** | `--color-brand-*` (hue 259/260) | `#044CB6` at 600 | Every action, link, primary accent |
+| **CYAN** | `--color-cyan-*` (hue 200) | `#00BEC7` at 500 | Secondary accent, tinted surfaces |
+
+**Deleted in the collapse:** `--color-info` (hue 250, zero usages) and `--color-bg-warm` (hue 85 —
+warm parchment would have been a fourth hue). The four app-identity colours were re-hued off violet
+onto blue, cyan and ink (§2.8). Migration record with the full blast radius and every replacement
+decision: [palette-migration.md](palette-migration.md).
+
+### 2.7 Semantic — QUARANTINED, functional use only
 
 `--color-success oklch(0.53 0.15 152)` · `--color-success-band oklch(0.75 0.16 152)` ·
-`--color-warning oklch(0.72 0.16 70)` · `--color-danger oklch(0.58 0.22 27)` ·
-`--color-info oklch(0.62 0.17 250)`.
+`--color-warning oklch(0.72 0.16 70)` · `--color-danger oklch(0.58 0.22 27)`.
+
+These four survive the collapse because form validation genuinely needs them, but **as of 2026-08-08
+they are functional-only.** Permitted, exhaustively:
+
+- form validation (invalid fields, error messages)
+- error and empty states
+- destructive confirmations
+- genuine status indicators — e.g. the Implemented / In progress / Planned pills on `/security`
+
+**Not permitted:** decoration, marketing emphasis, diagram mood, or "this bit is bad" colouring in a
+comparison. A red rule beside a marketing bullet (`problem.tsx`) and a red dashed box around the
+competitor diagram (`three-systems.tsx`) were both removed in this pass. Reach for cyan or the neutral
+ramp instead. The rule is restated in `globals.css` so it is visible at the point of use.
+
+**One exemption:** `--color-success` marking a *settled* step in the chain diagram and the hero wires
+is product semantics — the record really is settled — not decoration. It stays.
 
 **Why success has two values.** No single lightness clears 4.5:1 against *both* white and the
 near-black band: at 0.53 it passes on white (4.87) and fails on the band (3.69); at 0.62 it fails on
@@ -116,7 +175,28 @@ white (3.36). Rather than accept a failure on one surface, there are two tokens 
 for light surfaces, `--color-success-band` for the dark band. Any future semantic colour used on both
 surfaces needs the same treatment; `check:contrast` will tell you.
 
-### 2.5 Surface tokens
+### 2.8 App identity colours
+
+Four dots in the architecture diagram, on blue steps + cyan + ink — **no fifth hue**. Violet (hue 285)
+is gone.
+
+| App | Token | Value | On white |
+|---|---|---|---|
+| Portal | `--color-app-portal` | `oklch(0.275 0.100 260)` = brand-900 | 15.02:1 |
+| Admin | `--color-app-admin` | `oklch(0.450 0.180 260)` = brand-600 | 7.71:1 |
+| Platform | `--color-app-platform` | `oklch(0.545 0.019 265)` = neutral-500 (ink) | 4.96:1 |
+| Customer | `--color-app-customer` | `oklch(0.620 0.125 200)` = **cyan-600** | 3.35:1 |
+
+Separation is two-dimensional, which is what makes four legible at 8px: Portal and Admin differ by
+lightness (0.275 / 0.450), Platform by chroma (0.019 — reads grey), Customer by hue (200 vs 260 —
+reads cyan).
+
+**Customer is cyan-600, not cyan-500.** A bare dot is a mark, not a fill, so it is held to 3:1;
+cyan-500 would be 2.29:1. This is the fill-only rule doing its job at a real call site.
+
+Every dot is paired with its app name in text, so colour is never the sole carrier (WCAG 1.4.1).
+
+### 2.9 Surface tokens
 
 Semantic names only — components never reference a ramp step directly. Implemented in
 `src/app/globals.css`.
@@ -125,6 +205,7 @@ Semantic names only — components never reference a ramp step directly. Impleme
 |---|---|---|
 | `--color-bg` | `--neutral-0` | Page background |
 | `--color-bg-subtle` | `--neutral-50` | Alternating section bands |
+| `--color-cyan-50` | hue 200 | Alternating section bands, tinted (`<Section tone="tint">`) |
 | `--color-surface` | `--neutral-0` | Cards, raised panels (elevation carries them) |
 | `--color-border` | `--neutral-200` | Default hairline |
 | `--color-border-strong` | `--neutral-300` | Hover, emphasis |
@@ -136,7 +217,38 @@ Semantic names only — components never reference a ramp step directly. Impleme
 `--color-band` (`--neutral-950`) · `--color-band-surface` · `--color-band-border` ·
 `--color-band-fg` · `--color-band-fg-muted`.
 
-### 2.6 Contrast contract (enforced, not aspirational)
+### 2.10 Section rhythm — tone
+
+This section covers the *tonal* half of section rhythm: which background a section gets, and in what
+order. The *vertical* half — the `.section-y` / `.section-y-lg` clamps, retuned 2026-08-13 — is
+specified in §4. The two are independent levers and both are needed: tone says "new idea", space says
+how big an idea.
+
+The site alternated only white against one cool grey, so every section read the same and the page felt
+flat. The cyan tint is the fix. `<Section tone="tint">` renders `--color-cyan-50` with a
+`--color-cyan-300` border — a cool `--color-border` hairline against a tinted surface reads as a seam.
+
+> The border is cyan-300, not cyan-100. cyan-100 measured **1.09:1** against cyan-50 — fainter than
+> the neutral border it replaces, i.e. an invisible section boundary. `check:contrast` caught it.
+
+**Three rules, binding:**
+
+1. **Never two tinted sections adjacent.** The tint is the accent in the rhythm, not the default.
+2. **A tinted section never directly abuts the dark band.** Put a white or subtle section between
+   them — cyan against near-black is the one pairing in this palette that looks like a mistake.
+3. **The dark band stays exclusive to permissions and security.** It is a tonal device, not a theme
+   (rule 10).
+
+Homepage as rendered — Testimonials is gated and returns `null`:
+
+```
+aurora · subtle · TINT · white · TINT · white · subtle · BAND ·
+white · TINT · white · subtle · BAND · white · TINT · white · aurora
+```
+
+Shared page template (~40 routes): `aurora → white → TINT (Related) → aurora (CtaBand)`.
+
+### 2.11 Contrast contract (enforced, not aspirational)
 
 - Body text ≥ **7:1** (AAA). Headlines and large text ≥ 4.5:1.
 - `--color-fg-muted` on `--color-bg` ≥ **4.5:1** — the token values above were chosen to satisfy this.
@@ -147,11 +259,13 @@ Semantic names only — components never reference a ramp step directly. Impleme
 - Enforcement: port `scripts/check-dark-contrast.mjs` from the platform repo (already CI-gated there,
   already caught a real AA failure) to cover this token set.
 
-### 2.7 Gradients — a strict, small vocabulary
+### 2.12 Gradients — a strict, small vocabulary
 
 Three permitted gradients, nothing else:
-1. **Aurora wash** — a very low-chroma brand→accent radial at ≤12% opacity, background only, behind the
-   hero and the final CTA. Never behind body copy.
+1. **Aurora wash** — two low-chroma radials, background only, behind the hero, the page heroes, the
+   final CTA and 404. Never behind body copy. **Blue top-right (`brand-500` at 0.11 alpha), cyan
+   top-left (`cyan-500` at 0.07).** This is `cyan-500`'s sanctioned role: a large decorative fill at
+   low alpha with ink text on top, never a border or an icon (§2.5).
 2. **Surface lift** — 2% lightness delta top-to-bottom on elevated cards. Almost subliminal.
 3. **Edge light** — a 1px border gradient on the primary CTA and on featured cards only.
 
@@ -203,8 +317,32 @@ three lines of body text. Never set body below 16px on mobile.
 
 - **Base unit 4px.** Scale: 0, 1(4), 2(8), 3(12), 4(16), 5(20), 6(24), 8(32), 10(40), 12(48), 16(64),
   20(80), 24(96), 32(128), 40(160), 48(192).
-- **Section rhythm** (the Apple-spacing lever): vertical padding `clamp(5rem, 10vw, 12rem)`. Adjacent
-  sections never share a rhythm value if they share a background — space is how we signal "new idea".
+- **Section rhythm** (the Apple-spacing lever): two fluid tokens in `src/app/globals.css`, applied
+  only through `<Section size>`, plus the five blocks that apply the class directly because they are
+  not `<Section>`s: the homepage `Hero` and `FinalCta`, the template's `PageHero` and `CtaBand`, and
+  `not-found.tsx`. Adjacent sections never share a rhythm value if they share a background — space is
+  how we signal "new idea".
+
+  | Class | `<Section>` | Value | Renders (375 / 1280 / 1920) |
+  |---|---|---|---|
+  | `.section-y` | `size="default"` | `clamp(3.5rem, 6vw, 6rem)` | 56 / 77 / 96px |
+  | `.section-y-lg` | `size="lg"` | `clamp(4.5rem, 8vw, 8rem)` | 72 / 102 / 128px |
+
+  **Retuned 2026-08-13** from `clamp(5rem, 9vw, 9rem)` / `clamp(6rem, 11vw, 12rem)`. Section padding
+  is paid twice at every boundary, and measured against the rendered page it was **24% of the
+  homepage's total height at 1920px** (20% at 1280) — boundary gaps of 256px at 1280 and 336px at
+  1920. The new values cut that ~30–35% across the range while keeping both tokens fluid clamps and
+  keeping `lg` the rarer, roomier one (ceiling ratio unchanged at 1.333). Both now leave their floor
+  at ~900px and reach their ceiling at 1600px, so the two scale over the same window.
+
+  > The previous entry here read `clamp(5rem, 10vw, 12rem)` — a single value that matched neither
+  > token as shipped. The table above is measured from the running site, not aspirational.
+
+- **Internal section spacing** comes from the Tailwind scale above, never a new class. The
+  heading-block-to-content gap is `gap-12`; two-column feature splits are `gap-10 lg:gap-16` (the
+  `lg` value is a column gutter, not vertical rhythm). Same 2026-08-13 pass moved every off-scale
+  value in the section components onto the scale — `gap-14`, `gap-7` and `mt-14` were the only
+  offenders and were also the loosest, so tightening and conforming were the same edit.
 - **Containers:** `--container-prose` 68ch · `--container-default` 1200px · `--container-wide` 1440px ·
   `--container-full` 1600px (device showcases only). Gutters: 20px mobile, 32px tablet, 48px desktop.
 - **Grid:** 12-column, 24px gutter desktop; 8-column tablet; 4-column mobile. Asymmetric 7/5 and 5/7

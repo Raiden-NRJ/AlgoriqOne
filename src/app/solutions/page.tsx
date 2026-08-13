@@ -26,7 +26,7 @@ export default function SolutionsIndexPage() {
       />
 
       <Section>
-        <Container width="wide" className="flex flex-col gap-14">
+        <Container width="wide" className="flex flex-col gap-12">
           {[
             { heading: 'By industry', items: industries },
             { heading: 'By role', items: roles },

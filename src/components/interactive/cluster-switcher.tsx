@@ -10,6 +10,7 @@
 
 import Link from 'next/link';
 import { useRef, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, Check } from 'lucide-react';
 import { CLUSTERS, type ClusterId } from '@/content/clusters';
 import { cn } from '@/components/site/primitives';
@@ -17,6 +18,7 @@ import { cn } from '@/components/site/primitives';
 export function ClusterSwitcher() {
   const [active, setActive] = useState<ClusterId>(CLUSTERS[0]!.id);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const reduced = useReducedMotion();
 
   const cluster = CLUSTERS.find((c) => c.id === active)!;
 
@@ -78,12 +80,27 @@ export function ClusterSwitcher() {
         })}
       </div>
 
-      <div
-        role="tabpanel"
-        id={`cluster-panel-${cluster.id}`}
-        aria-labelledby={`cluster-tab-${cluster.id}`}
-        className="grid gap-10 lg:grid-cols-[5fr_7fr] lg:items-center"
-      >
+      {/*
+        Panel content fades in on cluster change instead of hard-swapping.
+        No AnimatePresence/exit here on purpose: an earlier version used
+        mode="wait" with an exit animation, and on this React 19 + framer-
+        motion combination the exit-complete callback never fired, so the old
+        panel stayed on screen forever after the first click — confirmed live
+        (tab state updated, content did not). key={cluster.id} still forces a
+        clean remount; the old panel just disappears instantly instead of
+        fading out, and the new one fades in. useReducedMotion collapses that
+        to an instant swap (rule 5).
+      */}
+      <motion.div
+          key={cluster.id}
+          role="tabpanel"
+          id={`cluster-panel-${cluster.id}`}
+          aria-labelledby={`cluster-tab-${cluster.id}`}
+          initial={reduced ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: reduced ? 0 : 0.18, ease: 'easeOut' }}
+          className="grid gap-10 lg:grid-cols-[5fr_7fr] lg:items-center"
+        >
         <div className="flex flex-col gap-5">
           <h3 className="text-h2">{cluster.name}</h3>
           <p className="text-body-lg text-[var(--color-fg-muted)]">{cluster.valueProp}</p>
@@ -142,7 +159,7 @@ export function ClusterSwitcher() {
             ))}
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

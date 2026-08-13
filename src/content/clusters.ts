@@ -132,6 +132,9 @@ export const CLUSTERS: Cluster[] = [
   },
 ];
 
-export const CLUSTER_BY_ID = Object.fromEntries(
-  CLUSTERS.map((c) => [c.id, c]),
-) as Record<ClusterId, Cluster>;
+/*
+  `CLUSTER_BY_ID` — a derived id → cluster lookup — was deleted here on
+  2026-08-10 as dead code (audit B10). Nothing ever queried it; every consumer
+  either maps CLUSTERS or finds by href. Rebuild it at the point of use if a
+  lookup is genuinely needed.
+*/

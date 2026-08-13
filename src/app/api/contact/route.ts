@@ -8,11 +8,12 @@
  */
 
 import { NextResponse } from 'next/server';
+import { CONTACT } from '@/content/site';
 
 const CRM_URL = process.env.CRM_SERVICE_URL;
 const LEAD_TENANT_ID = process.env.LEAD_TENANT_ID;
 const INTERNAL_AUTH = process.env.INTERNAL_AUTH_SECRET;
-const FALLBACK_EMAIL = 'hello@algoryq.com';
+const FALLBACK_EMAIL = CONTACT.general;
 
 interface Payload {
   name?: string;

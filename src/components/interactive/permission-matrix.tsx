@@ -13,6 +13,7 @@
  */
 
 import { useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Check, Minus } from 'lucide-react';
 import { cn } from '@/components/site/primitives';
 
@@ -66,6 +67,7 @@ export function PermissionMatrix() {
   const [roleId, setRoleId] = useState(ROLES[1]!.id);
   const role = ROLES.find((r) => r.id === roleId)!;
   const visible = NAV_ITEMS.filter((item) => role.grants.includes(item.permission));
+  const reduced = useReducedMotion();
 
   return (
     <div className="flex flex-col gap-6">
@@ -132,16 +134,38 @@ export function PermissionMatrix() {
                       </code>
                     </th>
                     <td className="px-4 py-3">
+                      {/*
+                        key={granted} forces a clean remount instead of an
+                        AnimatePresence exit/enter pair — an earlier version
+                        used mode="wait" here and, on this React 19 + framer-
+                        motion combination, the exit-complete callback never
+                        fired: the badge froze on its first value and never
+                        updated on later role clicks (confirmed live). This
+                        version has no exit lifecycle to get stuck in; the old
+                        badge just disappears and the new one fades in.
+                      */}
                       {granted ? (
-                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-success-band)]">
+                        <motion.span
+                          key="allowed"
+                          initial={reduced ? false : { opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: reduced ? 0 : 0.12 }}
+                          className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-success-band)]"
+                        >
                           <Check className="size-4" aria-hidden />
                           Allowed
-                        </span>
+                        </motion.span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 text-xs text-[var(--color-band-fg-muted)]">
+                        <motion.span
+                          key="denied"
+                          initial={reduced ? false : { opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: reduced ? 0 : 0.12 }}
+                          className="inline-flex items-center gap-1.5 text-xs text-[var(--color-band-fg-muted)]"
+                        >
                           <Minus className="size-4" aria-hidden />
                           Denied
-                        </span>
+                        </motion.span>
                       )}
                     </td>
                   </tr>
@@ -157,15 +181,29 @@ export function PermissionMatrix() {
             What {role.name} sees in the portal
           </p>
 
+          {/*
+            No AnimatePresence here either, for the same reason as the badge
+            above: mode="popLayout" has the identical exit-complete problem on
+            this React 19 + framer-motion pairing — removed items never
+            actually unmounted, so switching roles kept accumulating every
+            item ever granted instead of showing only the current role's set
+            (confirmed live: Sales Rep, who holds one permission, showed all
+            six). React's own key-based reconciliation removes the old items
+            instantly and mounts the new ones, which still fade/grow in.
+          */}
           <ul className="flex flex-col gap-1.5">
-            {visible.map((item) => (
-              <li
-                key={item.label}
-                className="rounded-[var(--radius-sm)] bg-[var(--color-band)] px-3 py-2 text-sm text-[var(--color-band-fg)]"
-              >
-                {item.label}
-              </li>
-            ))}
+              {visible.map((item) => (
+                <motion.li
+                  key={item.label}
+                  layout={!reduced}
+                  initial={reduced ? false : { opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  transition={{ duration: reduced ? 0 : 0.16 }}
+                  className="overflow-hidden rounded-[var(--radius-sm)] bg-[var(--color-band)] px-3 py-2 text-sm text-[var(--color-band-fg)]"
+                >
+                  {item.label}
+                </motion.li>
+              ))}
             {visible.length === 0 ? (
               <li className="rounded-[var(--radius-sm)] border border-dashed border-[var(--color-band-border)] px-3 py-2 text-sm text-[var(--color-band-fg-muted)]">
                 Nothing in this set

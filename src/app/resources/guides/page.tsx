@@ -17,25 +17,30 @@ export const metadata: Metadata = {
  * Rather than invent a separate guide library and leave it half-full, this page
  * routes to the real material and is honest about what is planned.
  */
+/**
+ * Card descriptions were 22–25 word sentences that re-summarised the page they
+ * link to. Cut to the reader-facing hook plus who it is for — a card is a
+ * signpost, not an abstract (content pass 2026-08-10).
+ */
 const AVAILABLE = [
   {
     title: 'How authorization actually works',
-    body: 'The permission catalog, overrides, delegation, scoped assignments, and the published resolution order. Start here if you are the person signing off access control.',
+    body: 'Catalog, overrides, delegation, resolution order. For whoever signs off access control.',
     href: '/security/permissions',
   },
   {
     title: 'What you would be operating',
-    body: 'Thirty services, the gateway trust boundary, scale mechanics, observability, and the portability story. Written for whoever inherits this after the contract.',
+    body: 'Thirty services, the trust boundary, scale and observability. For whoever inherits it.',
     href: '/platform/architecture',
   },
   {
     title: 'Designing your approval chains',
-    body: 'Sequential and parallel steps, role- or org-unit-based approvers, escalation timers and delegation — and honestly, what is still being migrated onto the engine.',
+    body: 'Steps, approvers, escalation timers — and what is still moving onto the engine.',
     href: '/platform/workflows',
   },
   {
     title: 'Planning the consolidation',
-    body: 'The maths on your own numbers, with every assumption visible and the formula shown.',
+    body: 'Your own numbers, every assumption visible, the formula shown.',
     href: '/roi',
   },
 ];
@@ -53,11 +58,11 @@ export default function GuidesPage() {
       <PageHero
         eyebrow="Guides"
         title="Practical material, not a content library."
-        intro="We publish guides when we have something specific to say. Right now the most useful material lives on the product and security pages themselves, so this page routes you there rather than duplicating it."
+        intro="We publish a guide when we have something specific to say. The most useful material already lives on the product and security pages, so this page routes you there."
       />
 
       <Section>
-        <Container width="wide" className="flex flex-col gap-14">
+        <Container width="wide" className="flex flex-col gap-12">
           <Reveal className="flex flex-col gap-6">
             <h2 className="text-h2">Available now</h2>
             <ul className="grid gap-4 sm:grid-cols-2">
@@ -92,9 +97,8 @@ export default function GuidesPage() {
                 </li>
               ))}
             </ul>
-            <p className="max-w-[min(62ch,100%)] text-sm text-[var(--color-fg-subtle)]">
-              If one of these would be useful to you now, ask and we will write it for your situation
-              rather than in the abstract.
+            <p className="max-w-[min(52ch,100%)] text-sm text-[var(--color-fg-subtle)]">
+              Need one now? Ask, and we will write it for your situation rather than in the abstract.
             </p>
           </Reveal>
         </Container>

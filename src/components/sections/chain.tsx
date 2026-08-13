@@ -2,7 +2,8 @@ import { ArrowRight, ArrowDown } from 'lucide-react';
 import { chain } from '@/content/homepage';
 import { Container, Eyebrow, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
-import { CHAIN_PLATES, ChainCurrent } from '@/components/diagrams/chain-steps';
+import Image from 'next/image';
+import { CHAIN_PHOTOS, ChainCurrent } from '@/components/diagrams/chain-steps';
 
 /**
  * §3 The chain — the centrepiece of the site (docs/01 §8, beat 1).
@@ -21,7 +22,7 @@ import { CHAIN_PLATES, ChainCurrent } from '@/components/diagrams/chain-steps';
  */
 export function Chain() {
   return (
-    <Section id="chain" tone="warm" className="relative overflow-hidden">
+    <Section id="chain" tone="tint" size="lg" className="relative overflow-hidden">
       {/* The current runs behind the cards, edge to edge. Sits under the whole
           section, not inside the Container, so it can leave the viewport. */}
       <div
@@ -31,17 +32,19 @@ export function Chain() {
         <ChainCurrent />
       </div>
 
-      <Container width="wide" className="relative flex flex-col gap-14">
+      <Container width="wide" className="relative flex flex-col gap-12">
         <Reveal className="flex flex-col items-center gap-5 text-center">
           <Eyebrow>{chain.eyebrow}</Eyebrow>
           <h2 className="text-display-2 max-w-[min(24ch,100%)]">{chain.headline}</h2>
-          <p className="text-body-lg max-w-[min(62ch,100%)] text-[var(--color-fg-muted)]">{chain.sub}</p>
+          <p className="text-body-lg max-w-[min(62ch,100%)] text-[var(--color-fg-muted)]">
+            {chain.sub}
+          </p>
         </Reveal>
 
         <Reveal>
           <ol className="flex flex-col gap-2 xl:flex-row xl:items-stretch xl:gap-0">
             {chain.links.map((link, index) => {
-              const Plate = CHAIN_PLATES[link.stage];
+              const photo = CHAIN_PHOTOS[link.stage];
 
               return (
                 <li
@@ -61,19 +64,39 @@ export function Chain() {
                     <h3 className="text-lg font-semibold">{link.stage}</h3>
 
                     {/*
-                      aspect-[10/7] + mt-auto: the plates all share one viewBox,
-                      so fixing the ratio here keeps the five illustrations on a
-                      common baseline even though the titles above them are
-                      different lengths. Without it a two-word module tag wraps
-                      and drags one plate 20px out of line with its neighbours.
+                      Photographic thumbnail, replacing the flat line plate
+                      (2026-08-11). Deliberately small and square rather than a
+                      full-bleed illustration:
 
-                      max-w-64 below xl: once the row becomes a column the card
-                      is the full container, and a full-width plate at that
-                      ratio is ~650px tall — five of them turned the section
-                      into a 4,500px scroll on a tablet.
+                      - `mt-auto` still pins it to a common baseline across the
+                        five cards, which is what stopped a wrapped two-word
+                        module tag dragging one graphic out of line with its
+                        neighbours. That was the original reason for the fixed
+                        ratio and it still applies.
+                      - A square at 88px keeps the card the same shape at every
+                        breakpoint. The old plate was `aspect-[10/7] w-full`,
+                        which at full container width below xl rendered ~650px
+                        tall — the reason it needed a `max-w-64` clamp. A fixed
+                        square has no such failure mode.
+                      - `object-cover` on a fixed box: these are 880px squares,
+                        so they downscale rather than stretch.
                     */}
-                    <div className="mt-auto aspect-[10/7] w-full max-w-64 self-center xl:max-w-none">
-                      {Plate ? <Plate /> : null}
+                    {/* Guarded like the plate it replaced: the map is keyed by
+                        a content string, so a renamed stage yields undefined
+                        rather than a crash. */}
+                    <div className="mt-auto pt-1">
+                      {photo ? (
+                        <Image
+                          src={photo}
+                          // Empty by design — the <h3> above names the stage, so
+                          // a description would announce it twice. See CHAIN_PHOTOS.
+                          alt=""
+                          width={88}
+                          height={88}
+                          sizes="88px"
+                          className="size-22 rounded-[var(--radius-lg)] border border-[var(--color-border)] object-cover"
+                        />
+                      ) : null}
                     </div>
 
                     {/*
@@ -105,8 +128,11 @@ export function Chain() {
                   >
                     {index < chain.links.length - 1 ? (
                       <span className="grid size-7 place-items-center rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-brand-600)] shadow-[var(--shadow-e1)]">
-                        <ArrowDown className="size-4 xl:hidden" />
-                        <ArrowRight className="hidden size-4 xl:block" />
+                        {/* Already inside an aria-hidden wrapper; marked
+                            individually too so the intent survives a refactor
+                            that moves them out of it. */}
+                        <ArrowDown aria-hidden className="size-4 xl:hidden" />
+                        <ArrowRight aria-hidden className="hidden size-4 xl:block" />
                       </span>
                     ) : (
                       <span className="block size-7" />
@@ -118,6 +144,20 @@ export function Chain() {
           </ol>
         </Reveal>
 
+        {/*
+          No illustration here. `public/illustrations/home.jpg` was placed under
+          this grid on 2026-08-10 and removed the same day: it draws the same
+          five stages — Deal, Project, Plan, Time, Invoice — immediately below
+          the cards that already draw them, so the section stated its one idea
+          twice in a row.
+
+          The grid above is the better artefact and is not replaceable by a
+          picture of itself: it carries the real service names, the per-stage
+          plates, the connectors, and it is live DOM that reflows into a column
+          on narrow screens. The image is a flat 1376×768 render of the same
+          concept. The file is kept in the repo for a future non-duplicate use;
+          it just has no home on this page.
+        */}
         <Reveal className="mx-auto flex max-w-[min(72ch,100%)] items-center gap-4">
           <span aria-hidden="true" className="hidden shrink-0 sm:block">
             <FootnoteStack />

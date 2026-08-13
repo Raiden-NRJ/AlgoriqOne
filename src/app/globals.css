@@ -59,12 +59,38 @@
   --color-fg-subtle: var(--color-neutral-500);
   --color-fg-inverse: var(--color-neutral-50);
 
-  /* Warm parchment — §3, the chain, and nowhere else yet. That section is the
-     centrepiece of the argument and every other band on the page is the same
-     cool grey, so it needs a surface the eye registers as "stop and read this".
-     Hue 85 is the only warm value in the system: it is a *surface* token, never
-     text, never a border, and it stays light (rule 10 still holds). */
-  --color-bg-warm: oklch(0.972 0.009 85);
+  /* ── Aurora cyan (hue 200) — the third brand colour ──────────────────────
+     Ink · Blue · Cyan. Promoted from the single `--color-accent` value to a
+     real ramp when the palette collapsed to 3 hues (2026-08-09). Hue 200 is
+     Algoryq's "aurora" family.
+
+     ┌── CYAN CONTRAST RULES. Non-negotiable. Read before using any step. ──┐
+
+     cyan-500 (#00BEC7) is **2.29:1 on white**. It fails the 4.5:1 text
+     threshold AND the 3:1 non-text threshold. An earlier comment on
+     --color-accent claimed this value "holds 3:1 as a non-text accent on
+     white". That was measured and is FALSE. Do not reinstate it.
+
+       · cyan-500 on white → LARGE DECORATIVE FILLS ONLY, ink text on top
+                             (ink on cyan-500 is 7.8:1 ✓). Never a border,
+                             never a meaning-carrying icon, never text.
+       · cyan as TEXT on white          → cyan-700 (5.1:1)
+       · cyan as BORDER or ICON on white → cyan-600 (3.3:1)
+       · cyan on the DARK BAND           → cyan-300 (12.1:1) or cyan-400
+
+     Every one of these is asserted in scripts/check-contrast.mjs, including
+     cyan-500-on-white, which is pinned as fill-only so the failure can never
+     silently become a text colour.
+     └──────────────────────────────────────────────────────────────────────┘
+
+     It stays light: rule 10 still holds. Cyan is not a second theme. */
+  --color-cyan-50: oklch(0.975 0.018 200);
+  --color-cyan-100: oklch(0.945 0.038 200);
+  --color-cyan-300: oklch(0.835 0.088 200);
+  --color-cyan-400: oklch(0.775 0.115 200);
+  --color-cyan-500: oklch(0.72 0.14 200);
+  --color-cyan-600: oklch(0.62 0.125 200);
+  --color-cyan-700: oklch(0.52 0.105 200);
 
   /* Dark band — used deliberately for the "serious" sections (permissions,
      security). Not a theme: a tonal device. See docs/04 §8. Its ink is the
@@ -75,23 +101,54 @@
   --color-band-fg: oklch(0.97 0.005 265);
   --color-band-fg-muted: oklch(0.78 0.014 265);
 
-  /* ── Accent + semantic ──────────────────────────────────────────────── */
-  /* Algoryq's "aurora" cyan (--color-aurora-500: oklch(76% .13 200)), pulled
-     down in lightness to hold 3:1 as a non-text accent on white. */
-  --color-accent: oklch(0.72 0.14 200);
-  /* Two greens: no single lightness clears 4.5:1 against both white and the
+  /* ── Semantic — QUARANTINED (2026-08-08) ────────────────────────────────
+     These four are the ONLY colours outside Ink / Blue / Sand, and they are
+     kept because form validation genuinely needs them. They are FUNCTIONAL
+     ONLY.
+
+     Permitted uses, exhaustively:
+       · form validation (invalid fields, error messages)
+       · error and empty states
+       · destructive confirmations
+       · genuine status indicators (e.g. the /security posture table)
+
+     NOT permitted: decoration, marketing emphasis, diagram mood, "this bit is
+     bad" colouring in a comparison, or any use where the colour is carrying a
+     tone rather than a state. A red rule beside a marketing bullet and a red
+     dashed box around a competitor diagram were both removed in this pass —
+     do not reintroduce them. Reach for sand or the neutral ramp instead.
+
+     ONE EXEMPTION: --color-success marking a *settled* step in the chain
+     diagram (chain-steps.tsx) and the hero wires (integration-web.tsx) is
+     product semantics — the record really is settled — not decoration. Leave it.
+
+     Two greens: no single lightness clears 4.5:1 against both white and the
      dark band, so text on the band uses --color-success-band. */
   --color-success: oklch(0.53 0.15 152);
   --color-success-band: oklch(0.75 0.16 152);
   --color-warning: oklch(0.72 0.16 70);
   --color-danger: oklch(0.58 0.22 27);
-  --color-info: oklch(0.62 0.17 250);
 
-  /* App colours from the Figma module map, re-hued onto the Algoryq family */
-  --color-app-portal: oklch(0.42 0.12 265);
-  --color-app-admin: oklch(0.45 0.18 260);
-  --color-app-customer: oklch(0.66 0.12 200);
-  --color-app-platform: oklch(0.55 0.19 285);
+  /* App identity dots in the architecture diagram (architecture.tsx).
+     Four apps on blue steps + cyan + ink — no fifth hue. Violet (hue 285) is
+     gone.
+
+     These are 8px dot FILLS, so they are held to the 3:1 non-text minimum.
+     That is why Customer is cyan-600 and not cyan-500: cyan-500 would be
+     2.29:1 and is fill-only-with-ink-on-top, which a bare dot is not.
+
+     Separation is two-dimensional, which is what makes four legible:
+       portal   0.275 L  deep blue   ┐ separated from each other by lightness
+       admin    0.450 L  brand blue  ┘
+       platform 0.545 L  grey        — separated by chroma (0.019)
+       customer 0.620 L  cyan        — separated by hue (200 vs 260)
+
+     Every dot is paired with its app name in text, so colour is never the sole
+     carrier of information regardless (WCAG 1.4.1). */
+  --color-app-portal: oklch(0.275 0.1 260); /* = brand-900,  15.02:1 */
+  --color-app-admin: oklch(0.45 0.18 260); /* = brand-600,   7.71:1 */
+  --color-app-platform: oklch(0.545 0.019 265); /* = neutral-500 (ink), 4.96:1 */
+  --color-app-customer: oklch(0.62 0.125 200); /* = cyan-600,    3.3:1 */
 
   /* ── Type ───────────────────────────────────────────────────────────── */
   --font-sans: var(--font-inter), ui-sans-serif, -apple-system, BlinkMacSystemFont,
@@ -114,6 +171,11 @@
   /* ── Motion ─────────────────────────────────────────────────────────── */
   --ease-out-quint: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out-quint: cubic-bezier(0.65, 0, 0.35, 1);
+  /* Entrance durations. --duration-rise backs .reveal-in; --duration-scan is
+     longer because the code sample reveals ~15 lines and needs to read as the
+     block arriving, not as a wipe. */
+  --duration-rise: 480ms;
+  --duration-scan: 900ms;
 }
 
 /* Runs an element from wherever it starts out to the right viewport edge.
@@ -215,7 +277,14 @@
     text-transform: uppercase;
   }
 
-  /* The one permitted background gradient: a low-chroma aurora wash. */
+  /* The one permitted background gradient: a low-chroma aurora wash.
+     Blue top-right, cyan top-left — the two accent brand colours, nothing
+     else.
+
+     This is cyan-500's sanctioned use: a large decorative fill at low alpha
+     with ink text on top. It is never a border or an icon here. Values are
+     literal rather than var() because a colour stop needs an alpha channel;
+     they are brand-500 and cyan-500 with one applied. */
   .bg-aurora {
     background-image:
       radial-gradient(58rem 34rem at 78% -12%, oklch(0.58 0.17 258 / 0.11), transparent 68%),
@@ -230,12 +299,26 @@
     mask-image: radial-gradient(58rem 30rem at 50% 0%, #000 20%, transparent 78%);
   }
 
-  /* Section rhythm — how we signal "new idea". */
+  /* Section rhythm — how we signal "new idea".
+     docs/02 §4 is the spec; keep the two in step.
+
+     Retuned 2026-08-13. These are paid twice at every boundary (bottom of
+     section N + top of section N+1), so measured against the rendered page
+     they were 24% of the homepage's total height at 1920px and 20% at 1280px
+     — a quarter of the scroll was section padding alone. Boundary gaps ran
+     256px at 1280 and 336px at 1920. Now ~30-35% tighter across the range:
+
+       default  80→56 (floor) · 144→96  (ceiling)
+       lg       96→72 (floor) · 192→128 (ceiling)
+
+     Still fluid clamps, and lg still reads as the rarer, roomier one — the
+     ceiling ratio is unchanged at 1.333. Both now leave their floor at ~900px
+     and hit their ceiling at 1600px, so the two scale over the same window. */
   .section-y {
-    padding-block: clamp(5rem, 9vw, 9rem);
+    padding-block: clamp(3.5rem, 6vw, 6rem);
   }
   .section-y-lg {
-    padding-block: clamp(6rem, 11vw, 12rem);
+    padding-block: clamp(4.5rem, 8vw, 8rem);
   }
 
   /* Entrance: Rise. Applied by <Reveal> once, never on scroll-back. */
@@ -247,13 +330,43 @@
     opacity: 1;
     transform: none;
     transition:
-      opacity 480ms var(--ease-out-quint),
-      transform 480ms var(--ease-out-quint);
+      opacity var(--duration-rise) var(--ease-out-quint),
+      transform var(--duration-rise) var(--ease-out-quint);
   }
   @media (prefers-reduced-motion: reduce) {
     .reveal {
       opacity: 1;
       transform: none;
+    }
+  }
+
+  /* Entrance: Scan. The Developers §12 code sample reveals itself once, on
+     view. Sibling of .reveal above — same contract, different motion — and
+     applied the same way: the class only lands once JS has confirmed it can
+     run, so the block is complete on first paint and with JS disabled.
+
+     This clips what is *painted*, nothing else. The code stays a single real
+     text node at every moment, so selection, copy, view-source and assistive
+     technology always get the whole sample, never a half-typed string. It also
+     cannot move anything: clip-path is not a layout property, so the <pre>
+     holds its full height from first paint and CLS stays 0. */
+  .code-scan {
+    clip-path: inset(0 0 100% 0);
+  }
+  .code-scan-in {
+    animation: code-scan-in var(--duration-scan) var(--ease-out-quint) forwards;
+  }
+  @keyframes code-scan-in {
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .code-scan {
+      clip-path: none;
+    }
+    .code-scan-in {
+      animation: none;
     }
   }
 

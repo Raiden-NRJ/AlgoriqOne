@@ -255,7 +255,7 @@ function PortalWindow() {
         <span className="size-[0.55em] rounded-full bg-[var(--color-border-strong)]" />
         <span className="size-[0.55em] rounded-full bg-[var(--color-border-strong)]" />
         <span className="mx-auto inline-flex min-w-0 items-center gap-[0.4em] rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-[1em] py-[0.3em] font-mono text-[0.72em] text-[var(--color-fg-subtle)]">
-          <Lock className="size-[1.1em] shrink-0" strokeWidth={2} />
+          <Lock aria-hidden className="size-[1.1em] shrink-0" strokeWidth={2} />
           <span className="truncate">{portal.url}</span>
         </span>
       </div>

@@ -7,7 +7,7 @@ export default function NotFound() {
     <section className="relative overflow-hidden bg-aurora">
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-grid" />
       <Container className="relative">
-        <div className="flex flex-col items-start gap-7 py-24 sm:py-32">
+        <div className="section-y-lg flex flex-col items-start gap-6">
           <p className="text-label text-[var(--color-fg-subtle)]">404</p>
           <h1 className="text-display-2 max-w-[min(18ch,100%)]">That page isn’t here.</h1>
           <p className="max-w-[min(52ch,100%)] text-body-lg text-[var(--color-fg-muted)]">

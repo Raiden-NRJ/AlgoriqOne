@@ -12,6 +12,22 @@ export interface CapabilityGroup {
   items: { capability: string; note?: string }[];
 }
 
+/**
+ * The consolidation calculator's heading block.
+ *
+ * Was `roiIntro` in content/homepage.ts, titling a homepage section, until
+ * 2026-08-10. The calculator moved here because this is the page where the
+ * question it answers actually gets asked — the visitor has just read a
+ * per-seat price and is doing the arithmetic anyway.
+ *
+ * The `RoiTeaser` island itself is unchanged and is still shared with /roi,
+ * which remains the full calculator this one links out to.
+ */
+export const CALCULATOR = {
+  heading: 'What consolidating is worth',
+  sub: 'Run it on your numbers, not ours. No email, no hidden multipliers — every assumption is on screen where you can argue with it.',
+} as const;
+
 export const INCLUDED_EVERYWHERE = [
   'Single sign-on (OIDC and SAML) and SCIM provisioning',
   'The full audit trail, with change diffs',

@@ -4,16 +4,21 @@ import { Container, Section, SectionHeading, TextLink } from '@/components/site/
 import { Reveal } from '@/components/site/reveal';
 
 /**
- * §12 Integrations & API — beat 7. One idea: open by default.
+ * §8 Integrations & API — beat 7. One idea: open by default.
  *
  * The "logos" here are standards we implement, not partner marks — labelled as
  * such, because a wall of borrowed logos implying partnerships we don't have is
  * the same lie as a fake customer wall.
+ *
+ * Keeps TerminalVideo. The unused `CodeScan` import was removed 2026-08-10 —
+ * the island stopped being rendered when the video replaced the inline <pre>,
+ * but the import stayed behind. `TerminalVideo` still takes `fallbackCode`, so
+ * the sample text below is what reduced-motion users and no-video browsers get.
  */
 export function Developers() {
   return (
     <Section tone="subtle">
-      <Container width="wide" className="grid gap-12 lg:grid-cols-[5fr_7fr] lg:items-center lg:gap-16">
+      <Container width="wide" className="grid gap-10 lg:grid-cols-[5fr_7fr] lg:items-center lg:gap-16">
         <Reveal className="flex flex-col gap-6">
           <SectionHeading
             eyebrow={developers.eyebrow}
@@ -61,27 +66,12 @@ export function Developers() {
   );
 }
 
-function CodeSample() {
-  return (
-    <div className="min-w-0 overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-band-border)] bg-[var(--color-band)] shadow-[var(--shadow-e3)]">
-      <div className="flex items-center gap-2 border-b border-[var(--color-band-border)] px-4 py-2.5">
-        <span className="rounded-[var(--radius-sm)] bg-[var(--color-band-surface)] px-2.5 py-1 text-xs font-medium text-[var(--color-band-fg)]">
-          TypeScript SDK
-        </span>
-        <span className="px-2.5 py-1 text-xs text-[var(--color-band-fg-muted)]">cURL</span>
-        <span className="px-2.5 py-1 text-xs text-[var(--color-band-fg-muted)]">
-          Webhook
-        </span>
-      </div>
-
-      <pre
-        tabIndex={0}
-        role="region"
-        aria-label="Code sample, scrollable"
-        className="overflow-x-auto p-5 font-mono text-[0.8125rem] leading-relaxed text-[var(--color-band-fg-muted)]"
-      >
-        <code>
-          {`import { AlgoryqOne } from '@algoryq/one-sdk';
+/**
+ * The sample, verbatim. Lifted out of the JSX unchanged so it can be handed to
+ * the CodeScan island as a single string — every character, including the blank
+ * lines, is the same text that was inline here before.
+ */
+const SAMPLE = `import { AlgoryqOne } from '@algoryq/one-sdk';
 
 const one = new AlgoryqOne({ apiKey: process.env.ALGORYQ_ONE_KEY });
 
@@ -95,9 +85,10 @@ await one.webhooks.create({
   event: 'sales.deal.won',
   url: 'https://example.com/hooks/deal-won',
   // Deliveries are HMAC-signed and retried.
-});`}
-        </code>
-      </pre>
-    </div>
-  );
+});`;
+
+import { TerminalVideo } from '@/components/interactive/terminal-video';
+
+function CodeSample() {
+  return <TerminalVideo fallbackCode={SAMPLE} />;
 }

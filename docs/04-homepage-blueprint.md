@@ -454,3 +454,98 @@ every commit. §6 (interactive overview) is the long pole and starts in parallel
 - [ ] `prefers-reduced-motion` pass: no transform animation anywhere
 - [ ] LCP < 1.6s (4G, mid-tier mobile), CLS < 0.02, INP < 150ms
 - [ ] Copy reviewed against `01` §6 banned-word list
+
+---
+
+## Completion Status
+
+**🟡 Built and verified, but this document is out of date against the code. Updated 2026-08-10.**
+
+| | |
+|---|---|
+| **Implemented** | ✅ Yes — the homepage is live and building green |
+| **Sections spec'd here** | 20 |
+| **Sections that exist** | 12 declared, **11 render** (`Testimonials` returns `null` by design) — restructured 2026-08-10, see below |
+| **Responsive pass, 320→2560** | ✅ 13 viewports, Playwright |
+| **A11y pass** | ✅ axe, zero serious/critical; ⬜ manual screen-reader pass still outstanding (site-wide gap, disclosed on `/legal/accessibility`) |
+| **Motion / reduced-motion** | ✅ honoured globally |
+| **Copy review** | ✅ `check:content` clean, banned-word list included |
+| **Lighthouse / bundle** | ⬜ Not started — M5 |
+
+### Where this document and the code disagree
+
+Recorded rather than silently corrected, because rewriting this spec is a task in its own right and
+is listed as step 6 of the section-reduction proposal.
+
+1. **It targets `apps/marketing/src/app/page.tsx`.** That is not where the site lives. The homepage
+   is `src/app/page.tsx` at the repository root.
+2. **The §1 hero spec is superseded.** It specifies the headline *"Revenue, delivery, and people. One
+   permission model."* — the wedge that was **replaced on 2026-07-31** by "deal → delivery → cash"
+   (`MASTER_PROGRESS`, decisions). It also specifies a screenshot-based composition; the hero visual
+   is a looping video with a poster, and the DOM diagram it replaced is kept as the fallback in
+   `components/diagrams/integration-web.tsx`.
+3. **The §2 trust bar does not exist.** Removed 2026-08-09 at the client's request, component
+   deleted. The homepage now carries no proof element between hero and chain.
+4. **§3 Chain is not in this document at all.** It was added on 2026-07-31 as the new centrepiece
+   when the wedge changed, and it is now the most important section on the page.
+5. **Section numbering in this document no longer matches render order.** The component comments
+   drifted too; several are off by one or two and two of them both claim "§3".
+
+### Changed by the spacing / content audit's Phase 2, 2026-08-10
+
+Full record and the four documented deviations: `spacing-content-audit.md`. Summary of what a reader
+of this spec would otherwise find surprising:
+
+- **All homepage copy is now in `content/homepage.ts`.** Seven sections held theirs inline in JSX,
+  against the stated architecture; that was the root cause of four homepage headlines being
+  word-for-word identical to their own destination page.
+- **Three homepage headlines were rewritten** (Security, FAQ, Solutions) so they tease their
+  destination instead of repeating it. The destination pages are canonical and were not touched.
+- **§13 Security shows three control-area teasers, not six cards.** All six statements stay on
+  `/security`.
+- **§8 Permissions carries two bullets, not four**; the two cut were near-verbatim restatements of
+  `/security/permissions` block titles, one of them identical but for a hyphen.
+- **§5 Thesis carries three before/after rows, not six.** Four duplicated §4 Problem.
+- **Vertical rhythm is now tokens everywhere.** Hero, PageHero, FinalCta, CtaBand and 404 no longer
+  use raw `py-*`; Chain and Security joined Permissions at `size="lg"`.
+
+### Restructured to 12 sections, 2026-08-10
+
+Client brief: fewer sections, tighter headers, less text — **and every video stays.** The rendered
+list is now, in order:
+
+| # | Section | Tone / size | Video |
+|---|---|---|---|
+| 1 | Hero | aurora, `section-y-lg` | `hero-loop` (gated ≥1024px, poster below) |
+| 2 | Chain | tint, **lg** | — |
+| 3 | Problem | default | `system-arch` |
+| 4 | Platform | subtle | — |
+| 5 | Permissions | band, **lg** | — |
+| 6 | Capabilities | default | — |
+| 7 | Intelligence | tint | `graph` |
+| 8 | Developers | subtle | `terminal` |
+| 9 | Security | band, **lg** | — |
+| — | ~~Testimonials~~ | subtle | gated, renders `null` |
+| 10 | Faq | default | — |
+| 11 | FinalCta | aurora, `section-y-lg` | — |
+
+Tone alternates on every boundary; the three structural pivots carry `size="lg"`. Check both before
+adding a section.
+
+**Gone as standalone sections:** Thesis (→ Problem), Clusters and Architecture (→ Platform), Devices
+(→ Capabilities' fourth card), Solutions (deleted — six links, no copy; its destinations now resolve
+through a repaired Solutions nav group), Roi (→ **`/pricing`**, see below).
+
+**The consolidation calculator moved to `/pricing`** on the same day. It sits between "What you can
+switch on" and the pricing FAQ, as a sibling `Reveal` block rather than its own `Section` — that page
+keeps everything inside one `Section` with a `gap-12` Container, so transplanting the homepage's
+`tone="tint"` wrapper would have nested a Section in a Section. The `RoiTeaser` island, its state and
+its arithmetic are byte-for-byte unchanged and still shared with `/roi`, which remains the full
+calculator it links out to. Its heading copy moved from `homepage.ts` `roiIntro` to `pricing.ts`
+`CALCULATOR`. Nothing anchored to it on the homepage — it had no `id` — so no link needed updating;
+the new block carries `id="calculator"` so it can be linked to in future.
+
+**The video constraint drove the shape.** Four sections host a video, so four sections were
+un-mergeable. That is why Thesis folded into Problem rather than Problem into Chain, and why
+Intelligence and Developers are still full sections instead of cards. Full reasoning and the options
+that are no longer reachable: `homepage-section-reduction-proposal.md`.

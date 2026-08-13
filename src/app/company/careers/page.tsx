@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { CtaBand, PageHero } from '@/components/page/page-template';
-import { Container, Section } from '@/components/site/primitives';
+import { CONTACT } from '@/content/site';
+import { BulletList, Container, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
 
 export const metadata: Metadata = {
@@ -25,35 +26,42 @@ export default function CareersPage() {
       />
 
       <Section>
-        <Container width="wide" className="flex flex-col gap-14">
+        {/* Default width, not wide. This section is two 68ch/62ch prose blocks
+            and a mailto — a 90rem field around a 68ch column left the headings
+            floating with nothing on the right to balance them (audit A6). */}
+        <Container className="flex flex-col gap-12">
           <Reveal className="flex flex-col gap-5">
             <h2 className="text-h2">What the work is actually like</h2>
-            <div className="flex max-w-[min(68ch,100%)] flex-col gap-4 leading-relaxed text-[var(--color-fg-muted)]">
-              <p>
-                Thirty services, four applications, one design system, and a rule that no module
-                ships until it sits on the shared authorization engine. That constraint is the job:
-                it makes shortcuts visible and it makes the platform coherent.
-              </p>
-              <p>
-                Accessibility checks fail the build. Contrast is verified by script. Permission keys
-                are validated in continuous integration. None of that is decoration — it is how a
-                small team keeps a large surface honest.
-              </p>
-            </div>
+            <p className="max-w-[min(52ch,100%)] leading-relaxed text-[var(--color-fg-muted)]">
+              How a small team keeps a large surface honest.
+            </p>
+            <BulletList
+              items={[
+                'Thirty services, four applications, one design system',
+                'No module ships until it sits on the shared authorization engine',
+                'Accessibility checks fail the build',
+                'Contrast verified by script, not by eye',
+                'Permission keys validated in continuous integration',
+              ]}
+            />
           </Reveal>
 
           <Reveal className="flex flex-col gap-5">
             <h2 className="text-h2">Reach out anyway</h2>
-            <p className="max-w-[min(62ch,100%)] leading-relaxed text-[var(--color-fg-muted)]">
-              Send something you have built and what you would want to work on here. We read all of
-              it, and we reply — including when the answer is no.
-            </p>
+            <BulletList
+              items={[
+                'Send something you have built',
+                'Tell us what you would want to work on here',
+                'We read all of it, and we reply — including when the answer is no',
+              ]}
+            />
+
             <p>
               <a
-                href="mailto:careers@algoryq.com"
+                href={`mailto:${CONTACT.careers}`}
                 className="font-medium text-[var(--color-brand-700)] underline decoration-[var(--color-brand-300)] underline-offset-4"
               >
-                careers@algoryq.com
+                {CONTACT.careers}
               </a>
             </p>
           </Reveal>
