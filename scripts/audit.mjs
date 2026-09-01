@@ -148,8 +148,29 @@ for (const viewport of VIEWPORTS) {
       }
       window.scrollTo(0, 0);
     });
-    // Let entrance transitions settle so measurements are of the final layout.
-    await page.waitForTimeout(600);
+    /*
+     * Let entrance transitions settle so measurements are of the final layout.
+     *
+     * 2600ms, not the 600ms this used to be. `Reveal` resolves via three paths
+     * (src/components/site/reveal.tsx) and the slowest is a **2000ms failsafe**
+     * — so any block whose observer did not fire during the fast scroll above
+     * is still at opacity 0 at 600ms, and its `--duration-rise` (480ms)
+     * transition has not even started. axe then samples a half-faded element,
+     * blends it against its background and reports a *serious* color-contrast
+     * violation on a token pair that passes by arithmetic.
+     *
+     * That made this run non-deterministic in the worst way: the finding moved
+     * between viewports run to run (375 in one pass, 320 in the next, class
+     * `.reveal` vs `.reveal-in`), and it surfaced only when a layout change
+     * shifted the scroll geometry — it was latent here long before it fired.
+     * A gate that reports a real-looking a11y failure depending on timing
+     * trains you to ignore it, which is worse than no gate.
+     *
+     * 2000 (failsafe) + 480 (rise) + headroom. Verified: with a 4s settle the
+     * homepage reports 0 colour-contrast violations at 320 in both motion
+     * modes, with the previously-flagged eyebrow measured at opacity 1.
+     */
+    await page.waitForTimeout(2600);
     checks += 1;
 
     // ── 1. Horizontal overflow ──────────────────────────────────────────

@@ -1,6 +1,10 @@
 node_modules/
 .next/
+# NEXT_DIST_DIR builds — an isolated dist dir so a running `next dev` cannot
+# overwrite the build a verification run is serving (see next.config.mjs).
+.next-*/
 next-env.d.ts
 *.tsbuildinfo
 .env*.local
 audit-shots/
+*.log

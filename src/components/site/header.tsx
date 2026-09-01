@@ -7,6 +7,7 @@
  */
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronDown, Menu, X } from 'lucide-react';
 import { NAV } from '@/content/site';
@@ -16,7 +17,19 @@ import { Logo } from './logo';
 const OPEN_DELAY = 120;
 const CLOSE_DELAY = 200;
 
+/**
+ * Routes whose hero runs full-bleed video *behind* the header, so the header
+ * renders transparent over it until the first scroll.
+ *
+ * A list, not a `pathname === '/'` check, because the condition is "this page
+ * has a video hero", not "this page is the homepage" — and the two will stop
+ * being the same the moment a second one gets one. The hero on such a route
+ * must pull itself up by --header-h; see hero.tsx.
+ */
+const OVERLAY_HEADER_ROUTES = ['/'];
+
 export function SiteHeader() {
+  const pathname = usePathname();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -67,13 +80,31 @@ export function SiteHeader() {
     if (timer.current) clearTimeout(timer.current);
   }, []);
 
+  /*
+   * Overlay mode: transparent header sitting on the hero video.
+   *
+   * Only at the top of an overlay route — the moment you scroll, `scrolled`
+   * takes over and the normal solid header returns. That is deliberate rather
+   * than staying transparent for the hero's full height: past the fold the
+   * header is over ordinary light sections, where light-on-light nav links
+   * would be unreadable, and tying the swap to scroll keeps one trigger for
+   * both instead of a second observer that could disagree with it.
+   *
+   * No background of its own: the hero's flat scrim is already behind it and
+   * is what the nav's contrast was measured against. Adding a second veil here
+   * would darken the strip under the header relative to the rest of the hero,
+   * which is exactly the visible seam this change is meant to remove.
+   */
+  const overlay = OVERLAY_HEADER_ROUTES.includes(pathname) && !scrolled && !mobileOpen;
+
   return (
     <header
       className={cn(
         'sticky top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-200',
         scrolled
           ? 'border-b border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-bg)_85%,transparent)] backdrop-blur-md'
-          : 'border-b border-transparent bg-[var(--color-bg)]',
+          : 'border-b border-transparent',
+        overlay ? 'bg-transparent' : !scrolled && 'bg-[var(--color-bg)]',
       )}
     >
       {/* Brand accent bar — from the Figma cover (node 3:3). */}
@@ -85,7 +116,7 @@ export function SiteHeader() {
       <Container width="wide">
         <div ref={navRef} className="flex h-16 items-center justify-between gap-6">
           <Link href="/" className="shrink-0 rounded-[var(--radius-md)]" aria-label="Algoryq One home">
-            <Logo size="sm" />
+            <Logo size="sm" tone={overlay ? 'band' : 'default'} />
           </Link>
 
           {/* Desktop navigation */}
@@ -100,7 +131,12 @@ export function SiteHeader() {
                     <li key={group.label}>
                       <Link
                         href={group.href ?? '#'}
-                        className="rounded-[var(--radius-md)] px-3 py-2 text-sm font-medium text-[var(--color-fg-muted)] transition-colors hover:text-[var(--color-fg)]"
+                        className={cn(
+                          'rounded-[var(--radius-md)] px-3 py-2 text-sm font-medium transition-colors',
+                          overlay
+                            ? 'text-[var(--color-band-fg)] hover:text-white'
+                            : 'text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]',
+                        )}
                       >
                         {group.label}
                       </Link>
@@ -125,9 +161,11 @@ export function SiteHeader() {
                       }}
                       className={cn(
                         'inline-flex items-center gap-1 rounded-[var(--radius-md)] px-3 py-2 text-sm font-medium transition-colors',
-                        isOpen
-                          ? 'text-[var(--color-fg)]'
-                          : 'text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]',
+                        overlay
+                          ? 'text-[var(--color-band-fg)] hover:text-white'
+                          : isOpen
+                            ? 'text-[var(--color-fg)]'
+                            : 'text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]',
                       )}
                     >
                       {group.label}
@@ -173,7 +211,7 @@ export function SiteHeader() {
           </nav>
 
           <div className="hidden items-center gap-2 lg:flex">
-            <Button href="/login" variant="ghost">
+            <Button href="/login" variant={overlay ? 'ghostOnBand' : 'ghost'}>
               Sign in
             </Button>
             <Button href="/signup">Start free</Button>
@@ -181,7 +219,10 @@ export function SiteHeader() {
 
           <button
             type="button"
-            className="rounded-[var(--radius-md)] p-2 text-[var(--color-fg)] lg:hidden"
+            className={cn(
+              'rounded-[var(--radius-md)] p-2 lg:hidden',
+              overlay ? 'text-[var(--color-band-fg)]' : 'text-[var(--color-fg)]',
+            )}
             aria-expanded={mobileOpen}
             aria-controls="mobile-nav"
             onClick={() => setMobileOpen((v) => !v)}

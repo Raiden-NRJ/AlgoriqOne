@@ -23,7 +23,14 @@
 
 export const hero = {
   eyebrow: 'CRM · Projects · Time · Billing — one chain',
-  headline: ['From won deal to paid invoice,', 'without leaving the platform.'],
+  /*
+   * Two segments because the second is set in the accent colour, not because
+   * of where the line breaks. The separator moved from a comma to an em dash
+   * on 2026-08-31: with the halves in two different colours on footage, a
+   * comma at the end of the first line read as a stray mark rather than as
+   * punctuation joining them.
+   */
+  headline: ['From won deal to paid invoice —', 'without leaving the platform.'],
   // Tightened from 30 words. Deliberately still echoes SITE.description — one
   // is the H1 subhead, one is the meta description, and the overlap is good
   // for SEO (spacing-content-audit B9).
@@ -31,6 +38,13 @@ export const hero = {
   primaryCta: { label: 'Start free', href: '/signup' },
   secondaryCta: { label: 'See the chain', href: '#chain' },
   proofPoints: ['14-day free trial', 'No credit card', 'Self-hosted option available'],
+  /*
+   * Rule 1 disclosure for the background footage, which shows an interface
+   * carrying invented deals, clients and amounts. Deliberately does *not* say
+   * "Demo tenant": this is not that dataset, and claiming it would be the
+   * fabricated-provenance problem rather than a fix for it.
+   */
+  visualNote: 'Background footage. Any interface shown is illustrative, not a product screenshot.',
 } as const;
 
 /**

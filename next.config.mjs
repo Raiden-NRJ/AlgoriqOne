@@ -5,6 +5,18 @@
 const PORTAL_URL = process.env.PORTAL_URL ?? 'https://portal.one.algoryq.com';
 
 const nextConfig = {
+  /*
+   * `next dev` and `next build` both write to `.next`, so a dev server left
+   * running on :3500 recompiles into the same directory a production build is
+   * being verified from and silently replaces its hashed chunks — the built
+   * HTML then points at CSS/JS that no longer exists, and `check:links` reports
+   * 404s on `/_next/...` that have nothing to do with the site.
+   *
+   * Setting NEXT_DIST_DIR gives a verification build its own directory so the
+   * two cannot collide. Unset — the normal case, including CI and deploys —
+   * this is exactly the default.
+   */
+  distDir: process.env.NEXT_DIST_DIR || '.next',
   reactStrictMode: true,
   poweredByHeader: false,
   // This app is self-contained; pin the root so Next doesn't walk up into the

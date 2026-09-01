@@ -112,11 +112,15 @@ itself:
 | Horizontal overflow on `/` at 320–480px | **Real, and the first diagnosis was wrong.** The audit named the heading as the offending element, so `max-w-[Nch]` looked like the cause — but capping all 55 of them at `min(Nch,100%)` changed nothing. The real cause was in the *other* grid cell: a `<pre>` code block. Grid and flex items default to `min-width: auto`, so the `<pre>` contributed its full unwrapped min-content width (499px) to the column, and its sibling stretched to match. `overflow-x-auto` does not reduce min-content. | `min-w-0` on the grid items containing scrollable content (code sample, permission matrix). The `min(Nch,100%)` change was kept — it is correct defensively — but it was not the fix. |
 | 56 tap-target failures on standalone links | **Real.** Inline text links rendered 20px tall. WCAG 2.2's "inline in a sentence" exception does not cover a standalone call-to-action. | `min-h-6` + `py-1` on `TextLink` and the ad-hoc inline links. |
 | 21 `color-contrast` violations across routes | **Artefact.** Entrance reveals start at `opacity: 0`; auditing without scrolling measures below-fold text pre-animation, where axe correctly computes zero contrast. | The audit now scrolls the full page before measuring, so every observer has fired. Confirmed by probing the same routes directly — all clean. |
+| 1 `color-contrast` + 1 tap-target, **2026-08-13** (sequel to the row above) | **Artefact, and the scroll fix above was only half of it.** Scrolling fires the observers, but `Reveal` resolves through three paths and the slowest is a **2000ms failsafe** — so a block the fast scroll missed was still at `opacity: 0`, its 480ms rise not started, when axe sampled it at the script's **600ms** settle. Same cause reported the `/roi` slider as undersized at exactly its 24px height. Tell that it was not real: **the finding moved between viewports run to run** (375, then 320; `.reveal`, then `.reveal-in`). At a 4s settle the homepage reports 0 contrast violations at 320 in *both* motion modes, with the flagged eyebrow at `opacity: 1`. | Settle raised 600ms → **2600ms** (2000 failsafe + 480 rise + headroom). Latent since the failsafe was added on 2026-08-11; it fired only when the whitespace pass shortened the page and changed the scroll geometry. |
 
-Two traps worth remembering from this:
+Three traps worth remembering from this:
 
 1. **An audit that does not exercise the page's own progressive enhancement will report the
    un-enhanced state as broken.** The reveal animation produced 21 phantom contrast failures.
+   And *exercising* it is not enough — the audit must also **wait out the slowest path**, which
+   here is a 2000ms failsafe, not the 480ms animation anyone would think to time against. When a
+   finding moves between viewports from one run to the next, suspect the harness before the page.
 2. **The element an overflow report names is usually the victim, not the cause.** A stretched sibling
    is what you see; the item with an unconstrained `min-content` is what did it. When a layout
    overflows inside a grid or flex container, check `min-width: auto` on every child before touching

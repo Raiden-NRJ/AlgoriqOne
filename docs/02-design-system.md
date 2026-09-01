@@ -271,6 +271,49 @@ Three permitted gradients, nothing else:
 
 Banned: full-bleed multi-stop hero gradients, gradient body text, gradient icons, blob shapes.
 
+### 2.13 Text over video — the scrim contract
+
+Added 2026-08-31 with the full-bleed hero. One utility, `.hero-scrim` in `globals.css`, and four
+rules that are not negotiable because §2.11 does not stop applying just because the background is
+moving.
+
+1. **Never a light or white layer over footage.** A light wash behind or over a video is what
+   produced the white halo the full-bleed hero was built to fix. The veil is always
+   `--color-band`.
+2. **Flat, never a gradient — and no shadow or glow behind the text.** The scrim shipped as a
+   gradient first: vertical below lg, a 95deg left-anchored wipe above it, so the footage opened
+   up on the right. It measured fine and it still failed in use.
+   > A gradient guarantees contrast at the points you sampled. A hero video is 30 seconds of
+   > moving picture, so a bright highlight only has to drift into the light end of the ramp to
+   > take the copy with it — text that measured 8:1 visibly dropped out at some moments. This is
+   > not fixable by re-tuning stops: every ramp has a light end, and anything can move into it.
+   > A flat veil has no light end, so the worst case is the same everywhere and at every frame.
+3. **Opacity is measured, not chosen.** Footage has no single background colour, so the ratio is
+   computed against the *frames*: sample across the video's full length, composite against the
+   scrim **in gamma-encoded sRGB** — which is what the browser does — and take the **brightest
+   pixel found**, not a percentile, because flat means one number has to cover everything.
+   > Compositing in linear light is the trap. It is the intuitive model, it is wrong, and it
+   > overstates the required alpha by ~0.15 — enough to turn a veil that shows the footage into
+   > one that hides it. The first pass on this hero did exactly that.
+4. **`--color-band-fg-muted` is unavailable over video.** It measures ~3.0:1 there. Secondary copy
+   uses `--color-band-fg` and reads as secondary through size and weight instead.
+
+At the shipped **0.74**, measured on the rendered page at the brightest pixel of the whole video —
+identical for the nav strip and the copy column, at 1280 and 1920, because the veil is flat:
+
+| Role | Token | Ratio | Rule |
+|---|---|---|---|
+| Nav, headline, body, proof points | `--color-band-fg` | **7.89:1** | §2.11 body ≥7:1 ✓ |
+| Headline accent | `--color-brand-300` | **4.92:1** | §2.11 headline ≥4.5:1 ✓ |
+
+`--color-brand-600`, the accent on light surfaces, measures **2.3:1** over the scrim and is not
+used there; `--color-brand-400` was the closer match to the requested colour and was rejected at
+2.95:1. `Button` gained a `ghostOnBand` variant for the same reason — plain `ghost` is
+`--color-fg-muted`.
+
+Do not lighten below 0.72. Re-run the measurement after any change to the footage: a new cut is a
+new background and none of these numbers transfer.
+
 ---
 
 ## 3. Typography

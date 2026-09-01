@@ -147,7 +147,7 @@ export function SectionHeading({
 
 type ButtonProps = {
   href: string;
-  variant?: 'primary' | 'secondary' | 'ghost' | 'onBand';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'ghostOnBand' | 'onBand';
   size?: 'md' | 'lg';
   children: ReactNode;
   className?: string;
@@ -169,6 +169,10 @@ export function Button({
     secondary:
       'border border-[var(--color-border-strong)] bg-[var(--color-surface)] text-[var(--color-fg)] hover:bg-[var(--color-bg-subtle)] hover:-translate-y-px',
     ghost: 'text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]',
+    // The ghost treatment for a dark surface — the transparent header sitting
+    // on the hero video. `ghost` itself is fg-muted, which measures ~3:1 over
+    // the hero scrim and is not usable there; band-fg measures 7.9:1.
+    ghostOnBand: 'text-[var(--color-band-fg)] hover:text-white',
     onBand:
       'border border-[var(--color-band-border)] bg-[var(--color-band-surface)] text-[var(--color-band-fg)] hover:bg-[var(--color-band-border)]',
   } as const;

@@ -514,12 +514,28 @@ of this spec would otherwise find surprising:
 Client brief: fewer sections, tighter headers, less text — **and every video stays.** The rendered
 list is now, in order:
 
+> **Hero rebuilt full-bleed, 2026-08-31.** §1 was copy-left / boxed-video-right on a light
+> `.bg-aurora` wash. The video is now the section's background, edge to edge, with the copy on a
+> measured dark scrim (`.hero-scrim`, `02` §2.12). `.bg-aurora` and `.bg-grid` were **removed from
+> §1 only** — the light wash behind a boxed video was what produced the white halo around it, and
+> the grid was drawn for a plain surface. Both are unchanged at their four other call sites.
+> `hero-loop` was not retired. It went to §2 first and that was wrong — §2 is a *sequence*
+> (Deal → Project → Plan → Time → Invoice) and the loop draws a *hub* (one portal, seven modules
+> wired to it, one feed carrying all their events). It now opens **§4**, whose thesis is exactly
+> that, at full container width. The architecture diagram still closes §4 with the ClusterSwitcher
+> between them, so "what it looks like" and "how it is built" never read as one restating the other.
+>
+> **The navbar is part of the hero on `/`.** The header renders transparent over the video until
+> the first scroll (`OVERLAY_HEADER_ROUTES` in `header.tsx`); the hero pulls itself up by
+> `--header-h` so the footage runs behind it. Past the fold the normal solid header returns,
+> because beyond the hero it sits over light sections where light nav links would be unreadable.
+
 | # | Section | Tone / size | Video |
 |---|---|---|---|
-| 1 | Hero | aurora, `section-y-lg` | `hero-loop` (gated ≥1024px, poster below) |
+| 1 | Hero | **full-bleed video**, `section-y-lg` | `hero-office` (gated ≥1024px, poster below) |
 | 2 | Chain | tint, **lg** | — |
 | 3 | Problem | default | `system-arch` |
-| 4 | Platform | subtle | — |
+| 4 | Platform | subtle | `hero-loop` (full width, plays on view, paused off-screen) |
 | 5 | Permissions | band, **lg** | — |
 | 6 | Capabilities | default | — |
 | 7 | Intelligence | tint | `graph` |
