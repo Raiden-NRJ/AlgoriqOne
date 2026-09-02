@@ -1,6 +1,7 @@
 /*
  * Algoryq One website — design tokens.
- * Tailwind v4, CSS-first. LIGHT MODE ONLY (decision 2026-07-31).
+ * Tailwind v4, CSS-first. ONE GROUND, DARK — "Azure" (owner decision 2026-09-02,
+ * superseding light-only 2026-07-31). No toggle, no prefers-color-scheme branch.
  *
  * Brand hue 259 (Algoryq blue), adopted from Algoryq Technologies
  * (algoryq.com --color-brand-500: oklch(58% .17 258), --color-brand-600:
@@ -8,8 +9,8 @@
  * the ramp is interpolated around them, so a swatch lifted from either site
  * matches. The neutrals move to the parent's ink hue 265.
  *
- * The parent brand is dark-first; we are not. Only the hue family crosses over
- * — the surfaces stay light (rule 10). See docs/02-design-system.md.
+ * The parent brand is dark-first and so are we now. The hue family and the
+ * ramps are unchanged; the surfaces read from the dark end. See rule 10.
  */
 @import "tailwindcss";
 
@@ -48,16 +49,84 @@
   --color-neutral-950: oklch(0.16 0.026 265);
   --color-neutral-1000: oklch(0.125 0.022 265);
 
-  /* ── Semantic surfaces (light only) ─────────────────────────────────── */
-  --color-bg: var(--color-neutral-0);
-  --color-bg-subtle: var(--color-neutral-50);
-  --color-surface: var(--color-neutral-0);
-  --color-border: var(--color-neutral-200);
-  --color-border-strong: var(--color-neutral-300);
-  --color-fg: var(--color-neutral-900);
-  --color-fg-muted: var(--color-neutral-600);
-  --color-fg-subtle: var(--color-neutral-500);
-  --color-fg-inverse: var(--color-neutral-50);
+  /* ── Semantic surfaces — AZURE, dark ground ─────────────────────────────
+     Rewritten 2026-09-02 (owner instruction; CLAUDE.md rule 10 rewritten in the
+     same pass). The M6 deck: "Dark ground. Light on the line."
+
+     The ground is sampled from the deck itself, not invented — its slides read
+     #030a1b–#050d21 with #dfecfa text, which is within a hair of the ink ramp's
+     existing dark end. So this is a re-point of the ink ramp, not a new palette:
+     the same hue-265 neutrals the site already had, read from the other end.
+
+     Still ONE ground. No toggle, no prefers-color-scheme branch, no light
+     variant — the single-theme commitment is the part of the old rule that was
+     load-bearing and it is unchanged. */
+  --color-bg: var(--color-neutral-950);
+  --color-bg-subtle: oklch(0.205 0.03 265);
+  /* Raised above the ground, not equal to it. On the light design bg and
+     surface could both be white because the border did the work; on dark a card
+     that matches the ground disappears between its own hairlines. */
+  --color-surface: oklch(0.19 0.028 265);
+  --color-border: oklch(0.3 0.028 265);
+  --color-border-strong: oklch(0.38 0.03 265);
+  --color-fg: oklch(0.97 0.005 265);
+  --color-fg-muted: oklch(0.78 0.014 265);
+  --color-fg-subtle: oklch(0.65 0.016 265);
+  /* Text on a filled action — and it stays LIGHT, which is worth spelling out
+     because the name invites the opposite conclusion. The primary action is
+     still brand-600, a *dark* blue; a dark ground does not make it lighter. So
+     the text on it is light on both grounds, exactly as before. Setting this
+     dark measured 2.5:1 and the contrast gate caught it immediately. */
+  --color-fg-inverse: oklch(0.97 0.005 265);
+
+  /* The azure ground, ready to swap in once the call sites have migrated.
+     Sampled from the M6 deck (#030a1b–#050d21 ground, #dfecfa text), which sits
+     within a hair of this ramp's existing dark end — so it is a re-point of the
+     ink ramp, not a new palette.
+
+       bg             → var(--color-neutral-950)
+       bg-subtle      → oklch(0.205 0.03  265)
+       surface        → oklch(0.19  0.028 265)  raised, not equal to bg: on dark
+                          a card matching the ground disappears between its own
+                          hairlines
+       border         → oklch(0.3   0.028 265)
+       border-strong  → oklch(0.38  0.03  265)
+       fg             → oklch(0.97  0.005 265)
+       fg-muted       → oklch(0.78  0.014 265)
+       fg-subtle      → oklch(0.65  0.016 265)
+       fg-inverse     → var(--color-neutral-950)  text on a filled action
+
+     Written with arrows, not colons, on purpose. check-contrast.mjs parses this
+     file with a regex that does not skip comments, so a commented-out custom
+     property written in normal declaration form is read as a real one and
+     crashes the gate — which is exactly what happened when this block was
+     first written. Keep the arrows.
+  */
+
+  /* ── Semantic actions ───────────────────────────────────────────────────
+     THE reason this layer exists. On white, brand-600 was both the button fill
+     and the link colour. On a dark ground it is still a perfectly good fill —
+     white on it measures 7.7:1 — but as *text* it is 2.3:1 and unreadable.
+     One token cannot be both, so the roles are split and components reference
+     the role, never the ramp step.
+
+     Reaching past these to `--color-brand-600` for text is the single easiest
+     way to reintroduce a contrast failure here. Don't. */
+  --color-action: var(--color-brand-600); /* fill; --color-fg-inverse rides on it */
+  --color-action-hover: var(--color-brand-500);
+  --color-link: var(--color-brand-300); /* link and label text on the ground */
+  --color-link-strong: oklch(0.88 0.07 259); /* hover / emphasis */
+  /* Chips and soft brand panels. brand-50 was a near-white wash; its dark
+     counterpart has to be built, not inverted, or it turns into a light slab. */
+  --color-chip: oklch(0.26 0.06 260);
+  --color-chip-fg: oklch(0.86 0.08 259);
+  --color-chip-border: oklch(0.36 0.07 260);
+  /* Tint sections. cyan-50 was the lightest surface on the site; on the ground
+     the same role is a deep aurora panel. */
+  --color-tint: oklch(0.205 0.035 200);
+  --color-tint-border: oklch(0.32 0.05 200);
+  --color-accent-text: var(--color-cyan-300);
+  --color-accent-line: var(--color-cyan-400);
 
   /* ── Aurora cyan (hue 200) — the third brand colour ──────────────────────
      Ink · Blue · Cyan. Promoted from the single `--color-accent` value to a
@@ -66,10 +135,12 @@
 
      ┌── CYAN CONTRAST RULES. Non-negotiable. Read before using any step. ──┐
 
-     cyan-500 (#00BEC7) is **2.29:1 on white**. It fails the 4.5:1 text
-     threshold AND the 3:1 non-text threshold. An earlier comment on
-     --color-accent claimed this value "holds 3:1 as a non-text accent on
-     white". That was measured and is FALSE. Do not reinstate it.
+     ⚠ REWRITTEN 2026-09-02. These rules were written for the white ground and
+     they inverted with it. cyan-500 was 2.29:1 on white and therefore
+     fill-only; on the azure ground it is 8.5:1 against the surface, so it is a
+     legitimate border and icon colour — that is what --color-accent-line is.
+     The trap did not vanish, it flipped: text on a cyan FILL must now be dark,
+     because --color-fg is light and measures 2.1:1 on it.
 
        · cyan-500 on white → LARGE DECORATIVE FILLS ONLY, ink text on top
                              (ink on cyan-500 is 7.8:1 ✓). Never a border,
@@ -83,7 +154,7 @@
      silently become a text colour.
      └──────────────────────────────────────────────────────────────────────┘
 
-     It stays light: rule 10 still holds. Cyan is not a second theme. */
+     Cyan is not a second theme — it is the third brand colour on one ground. */
   --color-cyan-50: oklch(0.975 0.018 200);
   --color-cyan-100: oklch(0.945 0.038 200);
   --color-cyan-300: oklch(0.835 0.088 200);
@@ -95,9 +166,13 @@
   /* Dark band — used deliberately for the "serious" sections (permissions,
      security). Not a theme: a tonal device. See docs/04 §8. Its ink is the
      parent brand's --color-ink-950 family, so the band reads as algoryq.com. */
-  --color-band: var(--color-neutral-950);
-  --color-band-surface: oklch(0.205 0.03 265);
-  --color-band-border: oklch(0.3 0.028 265);
+  /* On a dark ground a dark band is invisible, so the band device inverts: it is
+     now a *raised* panel rather than a well. Re-pointing the token keeps every
+      call site and all the band-fg text working untouched — the
+     alternative was editing every one of them to tone="subtle". */
+  --color-band: oklch(0.235 0.035 265);
+  --color-band-surface: oklch(0.285 0.038 265);
+  --color-band-border: oklch(0.4 0.035 265);
   --color-band-fg: oklch(0.97 0.005 265);
   --color-band-fg-muted: oklch(0.78 0.014 265);
 
@@ -124,10 +199,10 @@
 
      Two greens: no single lightness clears 4.5:1 against both white and the
      dark band, so text on the band uses --color-success-band. */
-  --color-success: oklch(0.53 0.15 152);
+  --color-success: oklch(0.75 0.16 152);
   --color-success-band: oklch(0.75 0.16 152);
   --color-warning: oklch(0.72 0.16 70);
-  --color-danger: oklch(0.58 0.22 27);
+  --color-danger: oklch(0.7 0.19 27);
 
   /* App identity dots in the architecture diagram (architecture.tsx).
      Four apps on blue steps + cyan + ink — no fifth hue. Violet (hue 285) is
@@ -145,10 +220,20 @@
 
      Every dot is paired with its app name in text, so colour is never the sole
      carrier of information regardless (WCAG 1.4.1). */
-  --color-app-portal: oklch(0.275 0.1 260); /* = brand-900,  15.02:1 */
-  --color-app-admin: oklch(0.45 0.18 260); /* = brand-600,   7.71:1 */
-  --color-app-platform: oklch(0.545 0.019 265); /* = neutral-500 (ink), 4.96:1 */
-  --color-app-customer: oklch(0.62 0.125 200); /* = cyan-600,    3.3:1 */
+  /* Re-derived from the LIGHT end for the azure ground (2026-09-02). The old
+     values were read from the dark end — portal at 0.275 L measured 1.2:1 on
+     the dark surface, i.e. an invisible dot. The two-dimensional separation
+     that makes four legible is preserved, just mirrored:
+       portal   0.86 L  pale blue  ┐ separated from each other by lightness
+       admin    0.70 L  brand blue ┘
+       platform 0.72 L  grey       — separated by chroma (0.015)
+       customer 0.78 L  cyan       — separated by hue (200 vs 260)
+     Each still pairs with its app name in text, so colour is never the sole
+     carrier (WCAG 1.4.1). */
+  --color-app-portal: oklch(0.86 0.08 259);
+  --color-app-admin: oklch(0.702 0.145 259);
+  --color-app-platform: oklch(0.72 0.015 265);
+  --color-app-customer: oklch(0.78 0.11 200);
 
   /* ── Type ───────────────────────────────────────────────────────────── */
   --font-sans: var(--font-inter), ui-sans-serif, -apple-system, BlinkMacSystemFont,
@@ -178,10 +263,58 @@
   /* ── Motion ─────────────────────────────────────────────────────────── */
   --ease-out-quint: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out-quint: cubic-bezier(0.65, 0, 0.35, 1);
-  /* Entrance durations. --duration-rise backs .reveal-in; --duration-scan is
-     longer because the code sample reveals ~15 lines and needs to read as the
-     block arriving, not as a wipe. */
-  --duration-rise: 480ms;
+
+  /* ── The six patterns · M5 motion deck, 2026-09-01 ──────────────────────
+     Every duration below is a redline read off the motion-choreography deck,
+     not a chosen value. Full transcription, slide by slide, with the frame
+     evidence: docs/ANIMATION_SPEC_FROM_VIDEO.md.
+
+     "Six patterns. Nothing else." (deck slide 02) is a constraint, not a
+     description — Rise, Stagger, Draw, Cross-fade, Lift, Parallax, and nothing
+     outside them. A seventh pattern is a spec violation, not a flourish.
+
+     --duration-rise was 480ms until this pass. The deck specifies 320ms and
+     titles that slide "the rhythm everything inherits", which is an explicit
+     claim to global authority — so this is retuned site-wide rather than
+     forked per section (owner decision, 2026-09-01). It backs .reveal-in, so
+     it reaches every Reveal on all ~48 routes, not just the homepage. Two rise
+     speeds on one site was the rejected alternative: the shared page template
+     would visibly differ from the homepage on the same scroll gesture. */
+  --duration-rise: 320ms;
+  --duration-cross-fade: 200ms;
+  --duration-lift: 120ms;
+  --duration-draw: 800ms;
+  /* P5's rule sweeps in under the four capability cards, scaleX from the left. */
+  --duration-sweep: 480ms;
+  /* P2's token travels the chain rail after it draws. The deck's only value
+     above 900ms, and its only ease-in-out — everything else is ease-out. */
+  --duration-transit: 1400ms;
+  /* P6's code rows. A *typing* cadence, not Stagger — the deck gives it its
+     own redline row (`ROWS 220ms · 180ms apart`) precisely because 180ms is
+     far outside the 60–80ms stagger band. It was the last hard-coded duration
+     left in this file; tokenised 2026-09-02 so rule 8 holds without exception. */
+  --duration-row: 220ms;
+
+  /* ── Interaction states · M6 Azure slide 08 ─────────────────────────────
+     "Nothing left to the browser." 100–240ms. These are micro-interactions,
+     not a seventh pattern — the deck lists them on their own slide, exactly as
+     docs/09 keeps §4 separate from §2's vocabulary. The deck's four values are
+     button 100ms, link 120ms, tabs 240ms, focus ring 2px/offset 2px; the link
+     already uses --duration-lift and the focus ring is already correct, so
+     only these two are new. */
+  --duration-press: 100ms;
+  --duration-indicator: 240ms;
+
+  /* Stagger step. The deck gives a 60–80ms band and two values in it: 70ms for
+     four of the beats, 80ms where there are fewer children to get through.
+     There is no third value — a stagger outside this band is drift. */
+  --stagger-tight: 70ms;
+  --stagger-wide: 80ms;
+
+  /* --duration-scan backs .code-scan, which the deck supersedes for §8: P6
+     respecifies Developers as chrome rise → rows → output rather than one
+     900ms wipe. Kept until that section is rebuilt (matrix stage 5); deleting
+     it now would break the block that still uses it. */
   --duration-scan: 900ms;
 }
 
@@ -220,7 +353,7 @@
 
   /* Focus is always visible, 3:1 against both the control and its backdrop. */
   :focus-visible {
-    outline: 2px solid var(--color-brand-600);
+    outline: 2px solid var(--color-link);
     outline-offset: 2px;
     border-radius: var(--radius-sm);
   }
@@ -294,8 +427,8 @@
      they are brand-500 and cyan-500 with one applied. */
   .bg-aurora {
     background-image:
-      radial-gradient(58rem 34rem at 78% -12%, oklch(0.58 0.17 258 / 0.11), transparent 68%),
-      radial-gradient(42rem 28rem at 8% 4%, oklch(0.72 0.14 200 / 0.07), transparent 70%);
+      radial-gradient(58rem 34rem at 78% -12%, oklch(0.58 0.17 258 / 0.22), transparent 68%),
+      radial-gradient(42rem 28rem at 8% 4%, oklch(0.72 0.14 200 / 0.14), transparent 70%);
   }
 
   /* Hero scrim — the dark veil that makes copy legible over the hero video.
@@ -334,8 +467,8 @@
 
   .bg-grid {
     background-image:
-      linear-gradient(to right, oklch(0.21 0.03 265 / 0.045) 1px, transparent 1px),
-      linear-gradient(to bottom, oklch(0.21 0.03 265 / 0.045) 1px, transparent 1px);
+      linear-gradient(to right, oklch(0.97 0.005 265 / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, oklch(0.97 0.005 265 / 0.05) 1px, transparent 1px);
     background-size: 56px 56px;
     mask-image: radial-gradient(58rem 30rem at 50% 0%, #000 20%, transparent 78%);
   }
@@ -362,6 +495,42 @@
     padding-block: clamp(4.5rem, 8vw, 8rem);
   }
 
+  /* ── Shared pattern keyframes ───────────────────────────────────────────
+     Added 2026-09-02 with the architecture rail and the pipeline.
+
+     Three of the deck's patterns are now used by more than one composition,
+     and each had its keyframe written inline under whichever beat built it
+     first — so the Draw keyframe was called `chain-draw` and the scaleY one
+     `bar-grow`. Naming a *pattern* after its first call site is how the second
+     call site ends up copying the three lines instead of reusing them, which
+     is the same duplication `stagger()` and `motion.ts` were introduced to
+     stop on the numbers.
+
+     They are named for the pattern now, and every user references these:
+
+       draw-in  Draw     stroke-dashoffset 100→0   ChainRail · ArchitectureRail
+       fade-in  Stagger  opacity 0→1               chain nodes · pipeline dots
+       grow-y   —        scaleY 0→1                P7 bars · pipeline segments
+
+     `grow-y` carries no transform-origin on purpose: the bars grow from the
+     bottom and the pipeline segments from the top, so the origin belongs to
+     the element, not to the keyframe. */
+  @keyframes draw-in {
+    from {
+      stroke-dashoffset: 100;
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes grow-y {
+    from {
+      transform: scaleY(0);
+    }
+  }
+
   /* Entrance: Rise. Applied by <Reveal> once, never on scroll-back. */
   .reveal {
     opacity: 0;
@@ -378,6 +547,450 @@
     .reveal {
       opacity: 1;
       transform: none;
+    }
+  }
+
+  /* P3 — the gaps, named off the video's clock (deck slide 05).
+     The island sets --shown to how many cues have passed; each line compares
+     its own index against it. Opacity only: these sit in a text column and a
+     translate would make the whole list shuffle as each one lands.
+
+     Default is visible. The island starts at "all shown" and only ever counts
+     up from 0 once it has confirmed a video to read, so no path through this
+     leaves copy hidden. */
+  [data-gap-callouts] li {
+    transition: opacity var(--duration-cross-fade) var(--ease-out-quint);
+  }
+  [data-gap-callouts] li[data-cue] {
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-gap-callouts] li,
+    [data-gap-callouts] li[data-cue] {
+      opacity: 1;
+      transition: none;
+    }
+  }
+
+  /* P7 Intelligence — bars, then the halo, then the annotation.
+     Deck slide 09: BARS scaleY 320ms · 70ms apart · HALO 320ms, one KPI only ·
+     ANNOTATION cross-fade 200ms.
+
+     scaleY from the bottom, so it is a transform and never a height. The bar's
+     own value lives in an inline --bar height on the track; the transform only
+     scales what is already sized, which keeps layout entirely out of the
+     animation and the axis steady.
+
+     The halo is a CSS radial-gradient rather than the deck's named
+     `kpi-highlight.svg` (owner decision, 2026-09-01): it reads
+     --color-cyan-500 directly so it cannot drift from the palette, needs no
+     request, and scales with the bar. */
+  [data-bar] {
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
+  .reveal-seen [data-bar] {
+    animation: grow-y var(--duration-rise) var(--ease-out-quint) backwards;
+  }
+
+  /* One KPI only — the deck's rule, and it is enforced by there being exactly
+     one peak in the data rather than by styling discipline. */
+  [data-kpi-halo] {
+    opacity: 1;
+    background-image: radial-gradient(
+      closest-side,
+      color-mix(in srgb, var(--color-cyan-500) 55%, transparent),
+      transparent 100%
+    );
+  }
+  .reveal-seen [data-kpi-halo] {
+    animation: kpi-halo var(--duration-rise) var(--ease-out-quint) backwards;
+  }
+  @keyframes kpi-halo {
+    from {
+      opacity: 0;
+    }
+  }
+
+  [data-annotation] {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal-seen [data-annotation] {
+    animation: annotation-in var(--duration-cross-fade) var(--ease-out-quint) backwards;
+  }
+  @keyframes annotation-in {
+    from {
+      opacity: 0;
+      transform: translateX(8px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-seen [data-bar],
+    .reveal-seen [data-kpi-halo],
+    .reveal-seen [data-annotation] {
+      animation: none;
+    }
+  }
+
+  /* P6 Developers — chrome, then the code rows.
+     M6/M5 slide 08: CHROME rise 320ms · ROWS 220ms · 180ms apart.
+
+     The rows are a *typing* cadence, not Stagger — 180ms is far outside the
+     60–80ms band, which is exactly why the deck gives it its own line rather
+     than calling it Stagger.
+
+     **Capped at STAGGER_CAP rows**, and that is a deliberate deviation worth
+     stating: this sample is 15 lines, and 180ms × 15 is a 2.7-second entrance.
+     docs/09 principle 3 says nothing waits on an animation, so rows past the
+     sixth share the sixth's delay and the block completes in ~1.1s. The deck's
+     own mock shows five rows, so the literal reading was never tested against
+     a real sample.
+
+     Row opacity only — no translate. A row sliding while its neighbours hold
+     reads as a list assembling; the point here is text appearing. */
+  [data-code-row] {
+    opacity: 1;
+  }
+  .reveal-seen [data-code-row] {
+    animation: fade-in var(--duration-row) var(--ease-out-quint) backwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-seen [data-code-row] {
+      animation: none;
+    }
+  }
+
+  /* Accordion height — M6 Azure slide 08, `grid-template-rows 0fr → 1fr`.
+     Also what docs/09 §4 has specified since it was written, unbuilt until now.
+
+     This is the one correct CSS-only height animation. `height: auto` is not
+     animatable, and `max-height` guessing either clips long answers or makes
+     short ones ease against dead space — the timing changes with the content,
+     which is why it always looks wrong on at least one item.
+
+     The wrapper is a grid whose single row goes 0fr → 1fr; the inner element
+     needs `min-height: 0` or it refuses to shrink below its content and the
+     row never collapses.
+
+     Honest limitation: native <details> stops rendering its content the
+     instant it closes, so only the *open* direction animates. The alternative
+     is taking the disclosure into JavaScript, which would cost the
+     works-without-JS guarantee this component was built for (rule 6) — a bad
+     trade for a close transition. `::details-content` will make the closing
+     half work without that cost once it is broadly supported. */
+  .accordion-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration-cross-fade) var(--ease-out-quint);
+  }
+  [open] > .accordion-body {
+    grid-template-rows: 1fr;
+  }
+  .accordion-body > * {
+    min-height: 0;
+    overflow: hidden;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .accordion-body {
+      transition: none;
+    }
+  }
+
+  /* Pattern: Lift. Hover only — the one pattern in the deck that is not an
+     entrance. translateY(-2px) with the elevation stepping e1 → e2, 120ms.
+
+     One class, because four call sites had hand-rolled it at `duration-200`
+     with `hover:-translate-y-0.5`: the distance was already right (0.5 × 4px =
+     2px) and only the duration drifted, which is exactly the failure mode a
+     shared class prevents.
+
+     Two guards, both required:
+       - `@media (hover: hover)` — a touch device resolves :hover on tap and
+         then *sticks* in the lifted state until you tap elsewhere.
+       - reduced motion drops the translate but keeps the shadow step, so the
+         control still acknowledges the pointer. "Held still", not inert
+         (deck slide 10). */
+  /* border-color is in the transition list but not set on :hover here — the
+     card decides its own hover border and Tailwind's `hover:border-*` handles
+     it. Keeping the property in *this* declaration is what stops a call site
+     needing its own `transition-[border-color]`, which would replace the whole
+     `transition` shorthand and silently drop the lift. */
+  .lift {
+    transition:
+      transform var(--duration-lift) var(--ease-out-quint),
+      box-shadow var(--duration-lift) var(--ease-out-quint),
+      border-color var(--duration-lift) var(--ease-out-quint);
+  }
+  @media (hover: hover) {
+    .lift:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-e2);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lift {
+      transition: box-shadow var(--duration-lift) var(--ease-out-quint);
+    }
+    .lift:hover {
+      transform: none;
+    }
+  }
+
+  /* Pattern: Cross-fade. 200ms, opacity plus an 8px slide — used where one
+     panel replaces another in place (tab and cluster switches), never as an
+     entrance.
+
+     The outgoing panel is taken out of flow so the two never stack and the
+     container cannot jump; the incoming one is in flow and sets the height.
+     `visibility` rather than `display` keeps the transition running at all,
+     and it is what removes the hidden panel from the tab order — an
+     opacity-0 panel is still focusable, which is the classic keyboard trap
+     in this pattern.
+
+     Direction is fixed: out to the left, in from the right. It reads as one
+     object moving, not two fading. */
+  .cross-fade {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-8px);
+    pointer-events: none;
+    transition:
+      opacity var(--duration-cross-fade) var(--ease-out-quint),
+      transform var(--duration-cross-fade) var(--ease-out-quint),
+      visibility 0s linear var(--duration-cross-fade);
+  }
+  .cross-fade-in {
+    position: relative;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    pointer-events: auto;
+    transition:
+      opacity var(--duration-cross-fade) var(--ease-out-quint),
+      transform var(--duration-cross-fade) var(--ease-out-quint),
+      visibility 0s linear 0s;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cross-fade,
+    .cross-fade-in {
+      transition: none;
+      transform: none;
+    }
+  }
+
+  /* Pattern: Stagger, at grid level — one observer for the whole group.
+     Added 2026-09-01 (Stage 2).
+
+     Deck slide 06 is explicit: "OBSERVER: one, on the grid". The site was
+     doing the opposite — a <Reveal> per child, so each child carried its own
+     IntersectionObserver: four on the capability grid, eight across Problem,
+     three on Security. Same visual result, N times the observers, and it
+     contradicted the one line in the deck that talks about cost.
+
+     So the group gets one <Reveal>, and its children animate off the
+     `.reveal-seen` marker with their own `animation-delay`, set inline from
+     stagger(). Identical safety — the container's Reveal still has all three
+     resolution paths — with one observer instead of N.
+
+     As everywhere else here, the *default* state is the finished state and
+     only the marker winds it back, so a child can never be left invisible by
+     a marker that never arrives (rule 6). */
+  [data-rise-item] {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal-seen [data-rise-item] {
+    /* backwards: hold the from-state through the delay, so an item is not
+       briefly visible before its own turn. */
+    animation: rise-item var(--duration-rise) var(--ease-out-quint) backwards;
+  }
+  @keyframes rise-item {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-seen [data-rise-item] {
+      animation: none;
+    }
+  }
+
+  /* Pattern: Sweep. P5's "one claim" — a rule that scales in from the left
+     under the four capability cards. Deck slide 07: RULE 480ms scaleX, origin
+     left, --color-brand-600.
+
+     scaleX on a 1px-tall element, so it is a transform and not a width
+     animation. Default is the drawn state, same contract as everything else. */
+  [data-sweep] {
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+  .reveal-seen [data-sweep] {
+    animation: sweep var(--duration-sweep) var(--ease-out-quint) backwards;
+  }
+  @keyframes sweep {
+    from {
+      transform: scaleX(0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-seen [data-sweep] {
+      animation: none;
+    }
+  }
+
+  /* P2 signature moment: the chain rail draws, its nodes stagger in, then the
+     token travels the rail and parks on the last stage.
+     Deck slide 04. Component: components/diagrams/chain-steps.tsx ChainRail.
+
+     ── The default state is the FINISHED state, deliberately ────────────────
+     Rail painted, nodes shown, token parked. Only `.reveal-seen` — the marker
+     <Reveal> sets when a block is in view — winds them back and runs them.
+
+     That direction matters. Written the other way round, with the undrawn
+     state as the default, the rail would be invisible whenever the marker
+     never arrives: JavaScript disabled, or a hydration failure. An entrance
+     animation must not be able to hide content, which is the same rule the
+     three-path resolve in reveal.tsx exists to enforce (rule 6).
+
+     No visible rewind in practice: the section is below the fold, so the block
+     arms while off-screen. A visitor arriving directly at /#chain gets it
+     already in view, which is exactly when it should animate on arrival. */
+  [data-chain-rail] {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+  }
+  [data-chain-node] {
+    opacity: 1;
+  }
+  [data-chain-token] {
+    /* --rail-travel is set per-instance from the node geometry, in viewBox
+       units, so the token lands on the last node at every viewport width. */
+    transform: translateX(var(--rail-travel));
+  }
+
+  .reveal-seen [data-chain-rail] {
+    animation: draw-in var(--duration-draw) var(--ease-out-quint) backwards;
+  }
+  .reveal-seen [data-chain-node] {
+    /* backwards: hold the from-state through the stagger delay, so a node is
+       not briefly visible before its own turn. */
+    animation: fade-in var(--duration-rise) var(--ease-out-quint) backwards;
+  }
+  .reveal-seen [data-chain-token] {
+    /* 500ms in, per the deck: the rail is most of the way drawn before the
+       token starts, so it travels a line that already exists. */
+    animation: chain-transit var(--duration-transit) var(--ease-in-out-quint) 500ms backwards;
+  }
+
+  @keyframes chain-transit {
+    from {
+      transform: translateX(0);
+    }
+  }
+
+  /* Deck slide 10, verbatim: "path painted, token parked on Invoice". The
+     end state, rendered immediately — not the pre-animation state, and not a
+     stripped version. The base rules above are already that state, so this
+     only has to stop the animations from winding anything back. */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-seen [data-chain-rail],
+    .reveal-seen [data-chain-node],
+    .reveal-seen [data-chain-token] {
+      animation: none;
+    }
+  }
+
+  /* P4 Platform — the architecture rail. The site's second Draw.
+     Component: components/diagrams/architecture-rail.tsx.
+
+     §4's "How it fits together" rendered three stacked boxes — apps, gateway,
+     spine — with no connector of any kind between them, while the copy above
+     it claimed "all of them sit on one gateway and one shared spine". The
+     diagram was not drawing the relationship it exists to show. These are the
+     lines that draw it.
+
+     Same contract as the chain rail in every respect that matters: the default
+     state is the FINISHED state (drawn), only `.reveal-seen` winds it back, so
+     no-JS and a failed observer both leave a complete diagram. `pathLength=100`
+     means nothing is measured and editing a path's `d` cannot break the draw.
+
+     One difference from ChainRail, and it is deliberate. The chain is a single
+     path; this is one path *per line*, each with its own `stagger()` delay, so
+     the four converging lines arrive in the 70ms band rather than as one
+     gesture. That is Draw and Stagger composed — both existing patterns, no
+     seventh — and it is what makes the fan read as four things converging
+     rather than as one wire being pulled. Six paths repaint their dashoffset
+     concurrently, which is inside what ANIMATION_SPEC_FROM_VIDEO §7 permits
+     ("must not be applied to many paths at once"); it is one section, once. */
+  [data-arch-rail] {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+  }
+  .reveal-seen [data-arch-rail] {
+    animation: draw-in var(--duration-draw) var(--ease-out-quint) backwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-seen [data-arch-rail] {
+      animation: none;
+    }
+  }
+
+  /* The pipeline — a stage list that rebuilds itself.
+     Call sites: page-template.tsx `Chain` (server, ~12 blocks across the
+     product / platform / security / solutions routes) and
+     interactive/cluster-switcher.tsx (homepage §4 and /demo).
+
+     Both render the identical composition — a dot per stage with a hairline
+     segment between — and both were fully static. On the ClusterSwitcher that
+     mattered most: it sits beside a tablist whose indicator *does* animate, so
+     switching clusters read as "the label changed" rather than "the pipeline
+     rebuilt", which is the weaker of the two readings for a section whose one
+     idea is that every step in the chain is a full product.
+
+     **Deviation from the brief, stated.** The brief specifies framer variants
+     keyed off `cluster.id`. This is CSS instead, for a reason that only shows
+     up once both call sites are in view: `Chain` is a server component and
+     cannot use framer at all, so a framer implementation would have meant two
+     implementations of one pattern, with the durations written out twice.
+     docs/09 §7 is "CSS-first… most of this site's motion needs no JS", and the
+     brief's own intent — "keyed to cluster switching" — is satisfied for free,
+     because the panel already remounts on `key={cluster.id}` and a CSS
+     animation restarts whenever its element is inserted. Same trigger, one
+     implementation, no numbers duplicated into JS.
+
+     The segment grows by `scaleY` from `transform-origin: top` — never a
+     height. This list is HTML rather than SVG, so a `stroke-dashoffset` reveal
+     is unavailable, and animating `height` is a layout property that janks
+     (docs/09 principle 5). The Sweep precedent in capabilities.tsx is the same
+     trade for the same reason: "a transform, never a width".
+
+     Default state is finished, as everywhere here. */
+  [data-pipe-dot] {
+    opacity: 1;
+  }
+  [data-pipe-line] {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  .reveal-seen [data-pipe-dot] {
+    animation: fade-in var(--duration-rise) var(--ease-out-quint) backwards;
+  }
+  .reveal-seen [data-pipe-line] {
+    /* Same delay as the dot it leaves, not a later one: the stage lands and
+       reaches for the next in one motion. A separate delay was tried and only
+       made the cascade read as two lists animating rather than one pipeline. */
+    animation: grow-y var(--duration-rise) var(--ease-out-quint) backwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-seen [data-pipe-dot],
+    .reveal-seen [data-pipe-line] {
+      animation: none;
     }
   }
 

@@ -29,15 +29,31 @@ and focus-ring treatment are shared; everything else is free to diverge.
 
 ## 2. Color system
 
-**Light mode only** (decision 2026-07-31, user). No dark theme, no toggle, no
-`prefers-color-scheme` branch. Enterprise buyers browse in light, and committing to one theme means
-every surface gets designed once, properly, instead of twice, adequately.
+**Dark ground only — "Azure"** (owner decision 2026-09-02, superseding light-only 2026-07-31; see
+CLAUDE.md rule 10). No toggle, no `prefers-color-scheme` branch, no light variant. One ground,
+designed once.
 
-**The dark bands are not a theme.** §8 (permissions) and §13 (security) render on a near-black band
-using the `--color-band-*` tokens. That is a deliberate tonal device inside a light design — it marks
-the serious, technical part of the page — and it is the only place dark surfaces appear.
+The ground was **sampled from the M6 deck**, not invented: its slides read `#030a1b`–`#050d21` with
+`#dfecfa` text, which lands within a hair of this ramp's existing dark end. So the migration was a
+re-point of the ink ramp rather than a new palette — no hue moved, and rule 12 is untouched.
 
-Color space is **oklch**, matching the product system — perceptually uniform lightness makes
+**What the inversion actually required**, because flipping six surface tokens is the easy part:
+
+| | Before (white ground) | After (azure) |
+|---|---|---|
+| Text colour source | ramp steps inline — `brand-700`, `cyan-700` | **semantic layer** — `--color-link`, `--color-accent-text` |
+| `brand-600` | button fill **and** link text | fill only; 2.3:1 as text on the ground |
+| `--color-fg-inverse` | light | **still light** — the action is still a dark blue |
+| Band device | a darker well | a **raised** panel; a dark band is invisible on dark |
+| `cyan-500` | fill-only, 2.29:1 on white | **border/icon legal**, 8.5:1 — premise gone, trap flipped |
+| App identity dots | read from the dark end | re-derived from the **light** end |
+
+> **The semantic layer is the whole lesson.** 26 component files referenced ramp steps directly for
+> text. On the ground those are 2–3:1, so the surfaces could not be flipped until the call sites
+> moved to roles. Order: semantic layer → call sites → surfaces → contrast gate. Any other order
+> ships a site failing its own gate on all 48 routes.
+
+Colour space is **oklch**, matching the product system — perceptually uniform lightness makes
 programmatic contrast guarantees possible.
 
 ### 2.1 Brand ramp
@@ -113,22 +129,30 @@ full ramp. All ratios below are computed by `check:contrast`, not estimated.
 --cyan-700  oklch(0.520 0.105 200)  #007A81   ← text on white 5.11:1
 ```
 
-### 2.5 The cyan contrast rules — non-negotiable
+### 2.5 The cyan contrast rules — rewritten for the ground, 2026-09-02
 
-**`--color-cyan-500` (#00BEC7) is 2.29:1 on white.** It fails the 4.5:1 text threshold *and* the 3:1
-non-text threshold.
+**The fill-only restriction is retired, and its premise is what changed.** `cyan-500` was 2.29:1 on
+white, so on that ground it could not be text, a border, or a meaning-carrying icon. On the azure
+ground it is **8.5:1** against the surface. The rule was not relaxed — the white it was measured
+against no longer exists.
 
-> The old comment on `--color-accent` claimed this value "holds 3:1 as a non-text accent on white."
-> **That was false** — it was never measured. It is recorded here so nobody reinstates it.
+> **The trap inverted rather than vanishing.** Text on a cyan *fill* must now be **dark**, because
+> `--color-fg` is light and measures **2.1:1** on `cyan-500`. Nothing on the site currently puts
+> text on a cyan fill, so `check:contrast` asserts no such pair — deliberately, because asserting a
+> pair the site does not render is how the old mirrored table came to pass against deleted colours.
+> If text ever lands on a cyan fill, add the pair then, and it has to be the dark ink.
 
-| Need | Use | Ratio |
+| Need, on the azure ground | Use | Ratio |
 |---|---|---|
-| Cyan as a **large decorative fill** on white, ink text on top | `cyan-500` | ink on it = **7.74:1** ✓ |
-| Cyan as **text** on white | `cyan-700` | **5.11:1** ✓ |
-| Cyan as a **border or icon** on white | `cyan-600` | **3.35:1** ✓ |
-| Cyan on the **dark band** | `cyan-300` / `cyan-400` | **12.08:1** / 9.97:1 ✓ |
+| Cyan as **text** | `--color-accent-text` (cyan-300) | **11.5:1** on surface ✓ |
+| Cyan as a **border or icon** | `--color-accent-line` (cyan-400) | **9.97:1** on bg ✓ |
+| Cyan as a **large fill** | `cyan-500` | 8.5:1 — legal as a bare shape; dark ink if text lands on it |
+| Cyan on the **raised band** | `cyan-300` / `cyan-400` | **10.39:1** / 8.57:1 ✓ |
 
-`cyan-500` is never a border, never a meaning-carrying icon, never text.
+> **Superseded:** the pre-2026-09-02 rule read *"`cyan-500` is never a border, never a
+> meaning-carrying icon, never text"*, and before that a comment on `--color-accent` claimed it
+> "holds 3:1 as a non-text accent on white" — which was false and never measured. Both are recorded
+> because comments elsewhere in the repo still refer to the fill-only regime.
 
 **This is enforced, not documented.** `check:contrast` carries a `FILL_ONLY` list that asserts *both*
 halves for `cyan-500`: that ink on it clears 4.5:1 (what makes the fill legal), **and** that it stays
@@ -418,22 +442,86 @@ three lines of body text. Never set body below 16px on mobile.
 
 ## 7. Motion tokens
 
-Full choreography in `09-motion-and-interaction.md`; the tokens live here.
+Full choreography in `09-motion-and-interaction.md`; the tokens live here. Redlines and their
+provenance: `ANIMATION_SPEC_FROM_VIDEO.md`.
+
+> **Rewritten 2026-09-01, and the previous version of this table was fiction.** It listed
+> `--ease-out`, `--ease-in-out`, `--ease-spring`, `--dur-instant`, `--dur-fast`, `--dur-base`,
+> `--dur-slow` and `--dur-cinematic`. **None of those eight tokens has ever existed in
+> `globals.css`** — they were written at plan time and never reconciled with what got built. The
+> cost was real and not hypothetical: an implementation brief was later authored *from this table*,
+> and following it would have produced CSS referencing undefined custom properties. An invalid
+> `var()` is silently dropped, so those animations would have done nothing, on every section, with
+> a green build. The table below is read out of `globals.css`. Rule 3 applies to docs describing
+> code as much as to claims about the product.
+
+### 7.1 Easing — two curves, no more
 
 | Token | Value | Use |
 |---|---|---|
-| `--ease-out` | `cubic-bezier(0.16, 1, 0.3, 1)` | Entrances (the workhorse) |
-| `--ease-in-out` | `cubic-bezier(0.65, 0, 0.35, 1)` | State changes |
-| `--ease-spring` | `linear(…)` spring approximation | Playful accents, rare |
-| `--dur-instant` | 100ms | Hover color |
-| `--dur-fast` | 180ms | Buttons, small state |
-| `--dur-base` | 280ms | Cards, reveals |
-| `--dur-slow` | 480ms | Section entrances |
-| `--dur-cinematic` | 900ms | Hero orchestration only |
+| `--ease-out-quint` | `cubic-bezier(0.16, 1, 0.3, 1)` | Every entrance. The workhorse. |
+| `--ease-in-out-quint` | `cubic-bezier(0.65, 0, 0.35, 1)` | State changes; the P2 transit only |
 
-**Global rule:** every motion token collapses to `0.01ms` under `prefers-reduced-motion: reduce`, and
-transform-based animations are replaced by opacity-only fades. Enforced in a single base-layer media
-query, not per-component.
+There is no spring curve and no `--ease-in`. Nothing in the motion deck uses either.
+
+### 7.2 Duration — one per pattern
+
+Each value is a redline from the M5 motion deck, not a chosen number.
+
+| Token | Value | Pattern / use |
+|---|---|---|
+| `--duration-lift` | 120ms | **Lift** — hover, `translateY(-2px)`, e1→e2. Also the site's single hover-response duration: chevron rotates and arrow nudges use it, so everything answers the pointer at one speed. |
+| `--duration-cross-fade` | 200ms | **Cross-fade** — opacity + 8px slide, in-place swaps |
+| `--duration-rise` | **320ms** | **Rise** — `translateY(16px)` + opacity; backs `.reveal-in` |
+| `--duration-sweep` | 480ms | P5's rule, `scaleX` from origin-left |
+| `--duration-draw` | 800ms | **Draw** — `stroke-dashoffset` |
+| `--duration-scan` | 900ms | §8 code sample; superseded by P6, kept until that rebuild |
+| `--duration-transit` | 1400ms | P2's token travelling the chain rail |
+
+> `--duration-rise` was **480ms** until 2026-09-01. The deck specifies 320ms on the slide titled
+> "the rhythm everything inherits", and it was adopted site-wide by owner decision — it backs
+> `.reveal-in`, so it reaches all ~48 routes. See `MASTER_PROGRESS`.
+
+### 7.3 Stagger — a band, and a cap
+
+| Token | Value | Use |
+|---|---|---|
+| `--stagger-tight` | 70ms | P2, P3, P4, P7 — the default |
+| `--stagger-wide` | 80ms | P1, P5 — fewer children, so the slower cadence still resolves |
+
+The deck's band is **60–80ms** and there is no third value; anything outside it is drift. The site
+ran 50/60/70/80/**260**ms before this pass.
+
+**The cap is code, not CSS.** `STAGGER_CAP = 6` and `stagger(index, step)` live in
+`src/components/site/motion.ts`, because `delay` is a number of milliseconds and a component cannot
+read a custom property. `index * step` grows without bound, so a tenth child would wait 630ms after
+the first and the group would read as a queue rather than one gesture; past the sixth child the
+delay holds. Use `stagger(i)` at call sites — a literal is how the band drifted in the first place.
+
+> `motion.ts` is a plain module with **no `'use client'`**, and that is deliberate. These exports
+> were first placed in `reveal.tsx`, which is a client component — that makes even a pure function a
+> client binding, and every section here is a server component, so the prerender failed with
+> "Attempted to call stagger() from the server". `tsc` does not catch it; only `next build` does.
+
+### 7.4 The six patterns, and where each lives
+
+"Six patterns. Nothing else" (deck slide 02) is a constraint. A seventh is a spec violation.
+
+| Pattern | Implementation |
+|---|---|
+| Rise | `.reveal` / `.reveal-in` + `<Reveal>` |
+| Stagger | `[data-rise-item]` + `stagger()`, **one observer on the container** |
+| Lift | `.lift` |
+| Cross-fade | `.cross-fade` / `.cross-fade-in`; the ClusterSwitcher uses the same values via framer (keyed remount) |
+| Draw | ✅ `ChainRail` (`chain-steps.tsx`), `pathLength="100"` — `09` §5.1 |
+| Parallax | ✅ `hero-video.tsx` — ±8px against the pointer, `(hover: hover) and (pointer: fine)` |
+
+**Global rule:** a base-layer media query collapses every animation and transition to `0.01ms`
+under `prefers-reduced-motion: reduce`, so a new animation is safe by default rather than by
+remembering. Patterns that need a specific end state — not merely "no motion" — override it in
+their own reduced-motion block: `.reveal` resolves shown, `.lift` keeps its shadow step and drops
+only the translate. Deck slide 10 is the principle: *"Reduced motion is the same design, held
+still"* — the final frame, rendered immediately, never the pre-animation state.
 
 ## 8. Component inventory (site-level)
 

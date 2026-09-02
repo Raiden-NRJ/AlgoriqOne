@@ -3,6 +3,7 @@ import { ArrowRight, ChevronRight } from 'lucide-react';
 import { capabilities } from '@/content/homepage';
 import { Container, Eyebrow, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
+import { stagger } from '@/components/site/motion';
 
 /**
  * §6 Built to fit — beat 7. One idea: it bends to your process without a
@@ -27,13 +28,27 @@ export function Capabilities() {
           <h2 className="text-display-2 max-w-[min(22ch,100%)]">{capabilities.headline}</h2>
         </Reveal>
 
-        {/* 2-up at md so four cards never leave a single orphan on a row. */}
-        <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-          {capabilities.cards.map((card, i) => (
-            <Reveal as="li" key={card.title} delay={i * 70}>
+        {/*
+          One <Reveal> on the grid, not one per card — deck slide 06's
+          "OBSERVER: one, on the grid". The cards were four separate Reveals,
+          so the grid carried four IntersectionObservers to do one job. They
+          now animate off the container's `.reveal-seen` marker with their own
+          animation-delay (globals.css, [data-rise-item]).
+
+          80ms, not 70: P5 specifies the wider step. Four cards can afford it.
+        */}
+        <Reveal>
+          {/* 2-up at md so four cards never leave a single orphan on a row. */}
+          <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            {capabilities.cards.map((card, i) => (
+              <li key={card.title} data-rise-item="" style={{ animationDelay: `${stagger(i, 80)}ms` }}>
               <Link
                 href={card.href}
-                className="group flex h-full flex-col gap-5 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-e1)] transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-[var(--color-border-strong)] hover:shadow-[var(--shadow-e2)]"
+                // `lift` is the deck's hover pattern: -2px, e1→e2, 120ms
+                // (globals.css). This used to hand-roll it at duration-200 —
+                // right distance, wrong speed. Only the border colour is
+                // per-card now.
+                className="group lift flex h-full flex-col gap-5 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-e1)] hover:border-[var(--color-border-strong)]"
               >
                 {/* The miniature */}
                 <div className="flex flex-wrap items-center gap-1.5 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-bg-subtle)] p-3">
@@ -42,7 +57,7 @@ export function Capabilities() {
                       <span
                         className={
                           index === card.steps.length - 1
-                            ? 'rounded-[var(--radius-sm)] bg-[var(--color-brand-600)] px-2 py-1 text-xs font-medium text-white'
+                            ? 'rounded-[var(--radius-sm)] bg-[var(--color-action)] px-2 py-1 text-xs font-medium text-[var(--color-fg-inverse)]'
                             : 'rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-1 text-xs font-medium text-[var(--color-fg-muted)]'
                         }
                       >
@@ -65,17 +80,33 @@ export function Capabilities() {
                   </p>
                 </div>
 
-                <span className="mt-auto inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-brand-700)]">
+                <span className="mt-auto inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-link)]">
                   Learn more
                   <ArrowRight
                     aria-hidden
-                    className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
+                    className="size-4 transition-transform duration-[var(--duration-lift)] group-hover:translate-x-0.5"
                   />
                 </span>
               </Link>
-            </Reveal>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+
+          {/*
+            P5's "one claim": the rule under the four proofs, scaling in from
+            the left over 480ms. It is the only thing on the card grid that is
+            not a card, which is the point — four proofs, one line under them.
+
+            aria-hidden: it is a rule, not a separator with meaning. h-px +
+            scaleX so the animation is a transform, never a width.
+          */}
+          <div
+            aria-hidden="true"
+            data-sweep=""
+            style={{ animationDelay: `${stagger(capabilities.cards.length, 80)}ms` }}
+            className="mt-12 h-px w-full bg-[var(--color-link)]"
+          />
+        </Reveal>
       </Container>
     </Section>
   );

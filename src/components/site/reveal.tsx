@@ -55,7 +55,18 @@ export function Reveal({
   className?: string;
   /** Anchor target. Pair with a `scroll-mt-*` so the sticky header clears it. */
   id?: string;
-  as?: 'div' | 'li' | 'section';
+  /*
+    'ul' is here for grid-level stagger (deck slide 06, "one observer on the
+    grid"): the observer has to go on the list itself, because a wrapper <div>
+    between <ul> and <li> breaks the list relationship and the items stop being
+    announced as a list of N.
+
+    'ol' joined it 2026-09-02 for the same reason and with one addition: an
+    ordered list also loses its *numbering* semantics to a wrapper, and the
+    sequences that use it here — the ChainStrip's Deal → … → Invoice — are
+    ordered precisely because the order is the content.
+  */
+  as?: 'div' | 'li' | 'ul' | 'ol' | 'section';
 }) {
   const ref = useRef<HTMLElement>(null);
   const [armed, setArmed] = useState(false);
@@ -94,7 +105,11 @@ export function Reveal({
       (entries) => {
         for (const entry of entries) if (entry.isIntersecting) reveal();
       },
-      { threshold: 0.2, rootMargin: '0px 0px -8% 0px' },
+      // 0.25, not 0.2: P5 is the only slide in the deck that states a
+      // threshold and it says "observer @ 25%". The rootMargin stays — it is
+      // not in the deck either way, and it is what stops a block arming while
+      // it is still only just clipping the fold.
+      { threshold: 0.25, rootMargin: '0px 0px -8% 0px' },
     );
     observer.observe(node);
 
@@ -119,7 +134,25 @@ export function Reveal({
       ref={ref as never}
       id={id}
       style={delay ? { transitionDelay: `${delay}ms` } : undefined}
-      className={cn(armed && 'reveal', armed && shown && 'reveal-in', className)}
+      /*
+        `reveal-seen` is a stable "this block is in view" marker, and it is set
+        whenever `shown` is — including the two cases where `armed` is false and
+        no rise ever runs: reduced motion, and a block that was already on
+        screen at mount.
+
+        It exists so a nested pattern can key its own animation off being in
+        view without needing its own observer. `.reveal-in` cannot be used for
+        that: it only appears when the block armed, so a section reached by a
+        direct /#chain navigation would never get it. That is the same
+        false-negative the three-path resolve above exists to prevent, and it
+        would have reintroduced it one level down.
+      */
+      className={cn(
+        armed && 'reveal',
+        armed && shown && 'reveal-in',
+        shown && 'reveal-seen',
+        className,
+      )}
     >
       {children}
     </Tag>

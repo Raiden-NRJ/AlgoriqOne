@@ -107,7 +107,7 @@ export function ContactForm() {
           While you wait, the{' '}
           <a
             href="/platform/architecture"
-            className="font-medium text-[var(--color-brand-700)] underline decoration-[var(--color-brand-300)] underline-offset-4"
+            className="font-medium text-[var(--color-link)] underline decoration-[var(--color-link)]/50 underline-offset-4"
           >
             architecture page
           </a>{' '}
@@ -205,7 +205,7 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={status === 'submitting'}
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-brand-600)] px-6 py-3 text-sm font-medium text-white shadow-[var(--shadow-e2)] transition-colors hover:bg-[var(--color-brand-500)] disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-action)] px-6 py-3 text-sm font-medium text-white shadow-[var(--shadow-e2)] transition-colors hover:bg-[var(--color-action-hover)] disabled:opacity-60"
         >
           {status === 'submitting' ? (
             <>
@@ -254,7 +254,7 @@ function Field({
 }) {
   const describedBy = error ? `${id}-error` : undefined;
   const classes =
-    'w-full rounded-[var(--radius-md)] border bg-[var(--color-bg)] px-3.5 py-2.5 text-sm transition-colors focus-visible:border-[var(--color-brand-600)]';
+    'w-full rounded-[var(--radius-md)] border bg-[var(--color-bg)] px-3.5 py-2.5 text-sm transition-colors focus-visible:border-[var(--color-action)]';
   const border = error ? 'border-[var(--color-danger)]' : 'border-[var(--color-border-strong)]';
 
   return (

@@ -86,7 +86,7 @@ export default function AboutPage() {
                 {SITE.name} is built by{' '}
                 <a
                   href={PARENT.siteUrl}
-                  className="font-medium text-[var(--color-brand-700)] underline underline-offset-4"
+                  className="font-medium text-[var(--color-link)] underline underline-offset-4"
                 >
                   {PARENT.name}
                 </a>

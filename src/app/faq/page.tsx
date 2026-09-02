@@ -52,11 +52,16 @@ export default function FaqPage() {
                         {item.question}
                         <Plus
                           aria-hidden
-                          className="size-4 shrink-0 text-[var(--color-fg-subtle)] transition-transform duration-200 group-open:rotate-45"
+                          className="size-4 shrink-0 text-[var(--color-fg-subtle)] transition-transform duration-[var(--duration-lift)] group-open:rotate-45"
                         />
                       </summary>
-                      <div className="px-5 pb-5 text-sm leading-relaxed text-[var(--color-fg-muted)]">
-                        {item.answer}
+                      {/* accordion-body: the deck's 0fr → 1fr height animation. */}
+                      <div className="accordion-body">
+                        <div>
+                          <div className="px-5 pb-5 text-sm leading-relaxed text-[var(--color-fg-muted)]">
+                            {item.answer}
+                          </div>
+                        </div>
                       </div>
                     </details>
                   </li>

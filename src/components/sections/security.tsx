@@ -4,6 +4,7 @@ import { security } from '@/content/homepage';
 import { COMPLIANCE_STATEMENT, CERTIFICATIONS, SECURITY_CONTROLS } from '@/content/proof';
 import { Container, Eyebrow, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
+import { stagger } from '@/components/site/motion';
 
 /**
  * §12 Security & trust — beat 8. One idea: you can get this through procurement.
@@ -43,15 +44,18 @@ export function Security() {
           </p>
         </Reveal>
 
-        <ul className="grid gap-4 sm:grid-cols-3">
-          {teasers.map((control, i) => (
-            <Reveal as="li" key={control.area} delay={i * 50}>
+        {/* One observer on the grid, not one per teaser (deck slide 06). */}
+        <Reveal>
+          <ul className="grid gap-4 sm:grid-cols-3">
+            {teasers.map((control, i) => (
+              <li key={control.area} data-rise-item="" style={{ animationDelay: `${stagger(i)}ms` }}>
               <div className="flex h-full items-center justify-center rounded-[var(--radius-xl)] border border-[var(--color-band-border)] bg-[var(--color-band-surface)] px-5 py-8">
                 <h3 className="text-h2 text-center text-[var(--color-band-fg)]">{control.area}</h3>
               </div>
-            </Reveal>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
 
         <Reveal className="flex flex-col items-center gap-4 text-center">
           {certified.length > 0 ? (

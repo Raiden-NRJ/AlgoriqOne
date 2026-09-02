@@ -103,10 +103,55 @@ These are inherited from the root `CLAUDE.md` and tightened for a public-facing 
    the token set in `src/app/globals.css`. A hex literal in a component is a bug.
 9. **One idea per section.** The homepage is a keynote, not a datasheet. Depth lives on dedicated
    pages, reachable in one click. See the narrative-resolution decision in `03-`.
-10. **Light mode only.** No dark theme, no theme toggle, no `prefers-color-scheme` branch. The dark
-    bands on §8 (permissions) and §13 (security) are a *tonal device* within the light design, using
-    the `--color-band-*` tokens — not a theme. Do not reintroduce a dark variant without changing
-    this rule first.
+10. **Dark ground only — "Azure".** *(Owner instruction 2026-09-02, applied the same day,
+    superseding the light-only rule recorded below.)* From the M6 Azure motion deck: "Dark ground.
+    Light on the line." Still **one** ground — no toggle, no `prefers-color-scheme` branch, no light
+    variant. Committing to a single ground is the part of the original rule that was load-bearing
+    and it is unchanged; only which ground changed.
+
+    - Surfaces read from the **dark end of the same ink ramp** (hue 265). Nothing was re-hued: the
+      ground was sampled from the deck (`#030a1b`–`#050d21`) and lands within a hair of
+      `--color-neutral-950`, so this is a re-point, not a new palette. Rule 12 is untouched.
+    - **Actions and links go through the semantic layer, never a raw ramp step.** `--color-action`
+      is the fill, `--color-link` the text, `--color-chip*` the soft panels, `--color-tint*` the
+      tinted sections, `--color-accent-*` the cyan roles. That split exists because on white,
+      `brand-600` was both the button fill and the link colour; on the ground it is still a fine
+      fill (light text on it is 7.7:1) but as *text* it is 2.3:1. Reaching past these tokens for
+      text is the one easy way to reintroduce a contrast failure here.
+    - `--color-fg-inverse` stays **light** — the name invites the opposite conclusion, but the
+      primary action is still a dark blue, so text on it is light on either ground. Setting it dark
+      measured 2.5:1 and the gate caught it.
+    - **The band device inverted rather than being deleted.** On a dark ground a dark band is
+      invisible, so `--color-band` is now a *raised* panel. Re-pointing that one token kept every
+      `tone="band"` call site and all its `band-fg` text working untouched.
+    - **The cyan fill-only rule is retired, and its premise is what changed.** cyan-500 was 2.29:1
+      on white and therefore fill-only; on the ground it is 8.5:1 and is a legitimate border and
+      icon colour (`--color-accent-line`). The trap flipped rather than vanishing: text on a cyan
+      fill must now be dark.
+    - Enforcement is unchanged in spirit and rewritten in fact: `npm run check:contrast` covers 48
+      pairs against the dark ground and is the arbiter, not the eye.
+
+    > **Superseded:** *"Light mode only. No dark theme… The dark bands on §8 and §13 are a tonal
+    > device within the light design."* That rule stood from 2026-07-31 to 2026-09-02. It is
+    > recorded here rather than deleted because a great many comments in this repo were written
+    > under it, and a reader hitting one needs to know when it stopped applying.
+    - Surfaces come from the ink ramp (hue 265) at the dark end. `--color-bg` is the ground,
+      `--color-bg-subtle` the alternating band, `--color-surface` the raised card.
+    - **Actions and links use semantic tokens, never a raw ramp step.** `--color-action` is the
+      fill, `--color-link` the text. On a dark ground `brand-600` is a fill colour and no longer a
+      text colour — that inversion is why the semantic layer exists, and reaching past it to a ramp
+      step is how contrast silently breaks.
+    - `--color-fg-inverse` is the only light surface left, and it exists for text *on* a filled
+      action.
+    - Every pair is still enforced by `npm run check:contrast`, which was rewritten for the dark
+      ground in the same pass. It is the arbiter, not the eye.
+    - The former dark *band* device is gone: on a dark ground a dark band is invisible. Sections
+      that need emphasis use `--color-bg-subtle` or the tint.
+
+    > **Superseded:** *"Light mode only. No dark theme… The dark bands on §8 and §13 are a tonal
+    > device within the light design."* That rule stood from 2026-07-31 to 2026-09-02. It is
+    > recorded here rather than deleted because most of the repo's comments were written under it,
+    > and a reader hitting one of those needs to know when it stopped applying.
 12. **The brand is Algoryq's, not ours to redraw.** The product is **Algoryq One**, a product of
     **Algoryq Technologies**, and the site says so — the footer carries a "Powered by Algoryq.tech"
     attribution and the copyright names the parent entity. Specifics:

@@ -6,6 +6,9 @@ import Link from 'next/link';
 import { Check } from 'lucide-react';
 import type { ComponentProps, ElementType, ReactNode } from 'react';
 import { OFFSITE_ROUTES } from '@/content/site';
+// motion.ts has no imports of its own, so this cannot cycle — and it is
+// server-safe by construction, which is the reason it is not in reveal.tsx.
+import { stagger } from '@/components/site/motion';
 
 export function cn(...parts: Array<string | false | null | undefined>): string {
   return parts.filter(Boolean).join(' ');
@@ -61,7 +64,7 @@ export function Section({
     // cyan-300 measures 1.61:1 on white, comparable to --color-border-strong
     // (1.51).
     // Not cyan-500: this is a border, and cyan-500 is fill-only.
-    tint: 'bg-[var(--color-cyan-50)] border-y border-[var(--color-cyan-300)]',
+    tint: 'bg-[var(--color-tint)] border-y border-[var(--color-tint-border)]',
     band: 'bg-[var(--color-band)] text-[var(--color-band-fg)]',
   } as const;
   return (
@@ -161,11 +164,14 @@ export function Button({
   className,
 }: ButtonProps) {
   const base =
-    'inline-flex items-center justify-center gap-2 rounded-full font-medium transition-[background-color,color,border-color,transform,box-shadow] duration-150 ease-out active:translate-y-0';
+    // duration-150 → --duration-press (100ms). M6 slide 08 redlines the button
+    // at "lift 1px · 100ms"; the 1px lift below was already right, only the
+    // speed drifted.
+    'inline-flex items-center justify-center gap-2 rounded-full font-medium transition-[background-color,color,border-color,transform,box-shadow] duration-[var(--duration-press)] ease-out active:translate-y-0';
   const sizes = size === 'lg' ? 'px-7 py-3.5 text-base' : 'px-5 py-2.5 text-sm';
   const variants = {
     primary:
-      'bg-[var(--color-brand-600)] text-white shadow-[var(--shadow-e2)] hover:bg-[var(--color-brand-500)] hover:-translate-y-px',
+      'bg-[var(--color-action)] text-[var(--color-fg-inverse)] shadow-[var(--shadow-e2)] hover:bg-[var(--color-action-hover)] hover:-translate-y-px',
     secondary:
       'border border-[var(--color-border-strong)] bg-[var(--color-surface)] text-[var(--color-fg)] hover:bg-[var(--color-bg-subtle)] hover:-translate-y-px',
     ghost: 'text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]',
@@ -212,9 +218,9 @@ export function TextLink({
         // min-h-6 meets the WCAG 2.2 target-size minimum (24px). A standalone
         // link is not covered by the "inline in a sentence" exception, and a
         // 20px-tall tap target is a real miss on a phone.
-        'inline-flex min-h-6 items-center gap-1.5 py-1 font-medium text-[var(--color-brand-700)]',
-        'underline decoration-[var(--color-brand-300)] decoration-1 underline-offset-4',
-        'transition-colors hover:decoration-[var(--color-brand-600)]',
+        'inline-flex min-h-6 items-center gap-1.5 py-1 font-medium text-[var(--color-link)]',
+        'underline decoration-[var(--color-link)]/50 decoration-1 underline-offset-4',
+        'transition-colors hover:decoration-[var(--color-link-strong)]',
         className,
       )}
     >
@@ -260,13 +266,29 @@ export function BulletList({
         className,
       )}
     >
-      {items.map((item) => (
-        <li key={item} className="flex min-w-0 items-start gap-2.5 text-sm leading-relaxed">
+      {/*
+        Stagger, added 2026-09-02. This is the widest single application of the
+        pattern on the site — BulletList renders on almost every route — and it
+        costs **zero** observers: every call site already sits inside a
+        <Reveal>, and `[data-rise-item]` keys off the `.reveal-seen` marker
+        that supplies. A list that is not inside one simply renders in its
+        finished state, which is the default here as everywhere.
+
+        `stagger()` caps at six, so the long "what we have not built" style
+        lists resolve in ~350ms rather than trailing off (docs/09 principle 3).
+      */}
+      {items.map((item, i) => (
+        <li
+          key={item}
+          data-rise-item=""
+          style={{ animationDelay: `${stagger(i)}ms` }}
+          className="flex min-w-0 items-start gap-2.5 text-sm leading-relaxed"
+        >
           <Check
             aria-hidden
             className={cn(
               'mt-0.5 size-4 shrink-0',
-              tone === 'band' ? 'text-[var(--color-cyan-300)]' : 'text-[var(--color-brand-600)]',
+              tone === 'band' ? 'text-[var(--color-accent-text)]' : 'text-[var(--color-link)]',
             )}
           />
           <span
@@ -303,7 +325,7 @@ export function Pill({
   const tones = {
     default: 'border-[var(--color-border)] bg-[var(--color-bg-subtle)] text-[var(--color-fg-muted)]',
     band: 'border-[var(--color-band-border)] bg-[var(--color-band-surface)] text-[var(--color-band-fg-muted)]',
-    brand: 'border-[var(--color-brand-200)] bg-[var(--color-brand-50)] text-[var(--color-brand-800)]',
+    brand: 'border-[var(--color-chip-border)] bg-[var(--color-chip)] text-[var(--color-chip-fg)]',
   } as const;
   return (
     <span

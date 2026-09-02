@@ -93,7 +93,7 @@ export function RoiTeaser() {
 
         <Link
           href="/roi"
-          className="mt-auto inline-flex min-h-6 w-fit items-center gap-1.5 py-1 text-sm font-medium text-[var(--color-brand-700)] underline decoration-[var(--color-brand-300)] underline-offset-4 hover:decoration-[var(--color-brand-600)]"
+          className="mt-auto inline-flex min-h-6 w-fit items-center gap-1.5 py-1 text-sm font-medium text-[var(--color-link)] underline decoration-[var(--color-link)]/50 underline-offset-4 hover:decoration-[var(--color-link-strong)]"
         >
           Open the full calculator
           <ArrowRight className="size-4" aria-hidden />
@@ -148,10 +148,10 @@ function Field({
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         className="h-6 w-full cursor-pointer appearance-none bg-transparent
-          [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[var(--color-brand-600)]
+          [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[var(--color-action)]
           [&::-moz-range-track]:h-1.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-[var(--color-border)]
           [&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-[var(--color-border)]
-          [&::-webkit-slider-thumb]:-mt-[5px] [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--color-brand-600)]"
+          [&::-webkit-slider-thumb]:-mt-[5px] [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--color-action)]"
       />
       {/* Text equivalent: sliders alone are a poor keyboard/AT experience for
           precise values (docs/13 §2). */}

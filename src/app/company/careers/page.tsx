@@ -59,7 +59,7 @@ export default function CareersPage() {
             <p>
               <a
                 href={`mailto:${CONTACT.careers}`}
-                className="font-medium text-[var(--color-brand-700)] underline decoration-[var(--color-brand-300)] underline-offset-4"
+                className="font-medium text-[var(--color-link)] underline decoration-[var(--color-link)]/50 underline-offset-4"
               >
                 {CONTACT.careers}
               </a>

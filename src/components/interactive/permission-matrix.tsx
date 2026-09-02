@@ -84,7 +84,7 @@ export function PermissionMatrix() {
               className={cn(
                 'rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors',
                 selected
-                  ? 'border-[var(--color-brand-400)] bg-[var(--color-brand-600)] text-white'
+                  ? 'border-[var(--color-brand-400)] bg-[var(--color-action)] text-[var(--color-fg-inverse)]'
                   : 'border-[var(--color-band-border)] bg-[var(--color-band-surface)] text-[var(--color-band-fg-muted)] hover:text-[var(--color-band-fg)]',
               )}
             >

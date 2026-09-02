@@ -208,6 +208,25 @@ for (const viewport of VIEWPORTS) {
         // wider than the viewport — that is what the scroller is for.
         if (el.parentElement && el.closest('[class*="overflow-x-auto"]')) continue;
 
+        /*
+         * Decorative, textless layers are allowed to overscan.
+         *
+         * This check is about *content* being silently cut off — it earned its
+         * place by catching a <pre> whose min-content width dragged a column
+         * past the viewport where an overflow:hidden ancestor clipped the text
+         * mid-word. A background video deliberately scaled 1.02 so an 8px
+         * parallax translate never exposes a bare edge is the opposite case:
+         * the overscan is the feature, and there is nothing to read.
+         *
+         * Kept deliberately narrow — the element must be aria-hidden AND carry
+         * no text. A <pre> full of code can never qualify, so the bug this
+         * check was written for is still caught.
+         */
+        const decorative =
+          (el.getAttribute('aria-hidden') === 'true' || el.closest('[aria-hidden="true"]')) &&
+          !(el.textContent ?? '').trim();
+        if (decorative) continue;
+
         if (rect.right > viewWidth + 1 || rect.left < -1) past.push(describe(el, rect));
       }
 

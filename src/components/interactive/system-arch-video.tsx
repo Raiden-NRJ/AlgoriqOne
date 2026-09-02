@@ -29,7 +29,7 @@ export function SystemArchVideo() {
         className="w-full h-auto block object-contain rounded-[var(--radius-xl)]"
       >
         <source src={VIDEO_SRC} type="video/mp4" />
-        <p className="p-4 text-xs text-[var(--color-fg-muted)]">
+        <p className="p-4 text-xs text-[var(--color-band-fg-muted)]">
           System integration architecture animation video.
         </p>
       </video>

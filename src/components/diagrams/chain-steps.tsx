@@ -45,13 +45,13 @@ function RecordStack({ x = 10, y = 44 }: { x?: number; y?: number }) {
       <path
         d="M0 6v18c0 3.3 4.9 6 11 6s11-2.7 11-6V6Z"
         fill="var(--color-brand-100)"
-        stroke="var(--color-brand-600)"
+        stroke="var(--color-link)"
         strokeWidth={2}
       />
       <path
         d="M0 15c0 3.3 4.9 6 11 6s11-2.7 11-6"
         fill="none"
-        stroke="var(--color-brand-600)"
+        stroke="var(--color-link)"
         strokeWidth={1.6}
       />
       <ellipse
@@ -60,7 +60,7 @@ function RecordStack({ x = 10, y = 44 }: { x?: number; y?: number }) {
         rx="11"
         ry="6"
         fill="var(--color-surface)"
-        stroke="var(--color-brand-600)"
+        stroke="var(--color-link)"
         strokeWidth={2}
       />
     </g>
@@ -85,7 +85,7 @@ function DealPlate() {
         height="62"
         rx="6"
         fill="var(--color-surface)"
-        stroke="var(--color-brand-600)"
+        stroke="var(--color-link)"
         strokeWidth={2}
       />
       <path
@@ -104,7 +104,7 @@ function DealPlate() {
         height="64"
         viewBox="0 0 24 24"
         fill="none"
-        stroke="var(--color-brand-600)"
+        stroke="var(--color-link)"
         strokeWidth={1.15}
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -145,10 +145,10 @@ function ProjectPlate() {
         height="66"
         rx="6"
         fill="var(--color-surface)"
-        stroke="var(--color-brand-600)"
+        stroke="var(--color-link)"
         strokeWidth={2}
       />
-      <path d="M46 44h104" fill="none" stroke="var(--color-brand-600)" strokeWidth={2} />
+      <path d="M46 44h104" fill="none" stroke="var(--color-link)" strokeWidth={2} />
       {[54, 86, 118].map((x, i) => (
         <g key={x}>
           <rect
@@ -180,7 +180,7 @@ function ProjectPlate() {
           cy="16"
           r="9"
           fill={owner.fill}
-          stroke="var(--color-brand-600)"
+          stroke="var(--color-link)"
           strokeWidth={2}
         />
       ))}
@@ -206,10 +206,10 @@ function PlanPlate() {
         height="80"
         rx="6"
         fill="var(--color-surface)"
-        stroke="var(--color-brand-600)"
+        stroke="var(--color-link)"
         strokeWidth={2}
       />
-      <path d="M44 30h106M56 30v66" fill="none" stroke="var(--color-brand-600)" strokeWidth={2} />
+      <path d="M44 30h106M56 30v66" fill="none" stroke="var(--color-link)" strokeWidth={2} />
       {bars.map((bar) => (
         <g key={bar.y}>
           <rect x="46" y={bar.y - 4} width="7" height="8" rx="2" fill="var(--color-brand-100)" />
@@ -233,10 +233,10 @@ function TimePlate() {
         height="80"
         rx="6"
         fill="var(--color-surface)"
-        stroke="var(--color-brand-600)"
+        stroke="var(--color-link)"
         strokeWidth={2}
       />
-      <path d="M44 32h106" fill="none" stroke="var(--color-brand-600)" strokeWidth={2} />
+      <path d="M44 32h106" fill="none" stroke="var(--color-link)" strokeWidth={2} />
       {Array.from({ length: 15 }, (_, i) => (
         <rect
           key={i}
@@ -278,7 +278,7 @@ function InvoicePlate() {
         height="88"
         rx="6"
         fill="var(--color-surface)"
-        stroke="var(--color-brand-600)"
+        stroke="var(--color-link)"
         strokeWidth={2}
       />
       <rect x="64" y="24" width="34" height="8" rx="4" fill="var(--color-brand-500)" />
@@ -296,7 +296,7 @@ function InvoicePlate() {
         cx="128"
         cy="84"
         r="15"
-        fill="var(--color-brand-600)"
+        fill="var(--color-link)"
         stroke="var(--color-surface)"
         strokeWidth={3}
       />
@@ -397,6 +397,123 @@ export function ChainCurrent() {
         stroke="url(#chain-current)"
         strokeWidth="3"
         strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+/* ─────────────────────────── The chain rail ─────────────────────────────── */
+
+/**
+ * P2's signature moment: the rail draws, then a token travels it and parks on
+ * the last stage. Deck slide 04 — DRAW 800ms · NODES 70ms stagger · TRANSIT
+ * 1400ms ease-inout · TOKENS --ease-out, --color-cyan-500.
+ *
+ * Server-rendered. No island, no observer of its own: the animations are gated
+ * on a `.reveal-seen` ancestor, which the enclosing <Reveal> supplies, so this
+ * inherits the three-path resolve rather than adding a fourth way to fail.
+ *
+ * ── Three techniques worth not re-deriving ────────────────────────────────
+ *
+ * 1. `pathLength="100"` normalises the path to 100 units, so
+ *    `stroke-dasharray: 100 / stroke-dashoffset: 100` draws it regardless of
+ *    its real geometry. There is nothing to measure and nothing to keep in
+ *    sync — edit `d` freely and the draw still works. This is also literally
+ *    what deck slide 02 specifies: "stroke-dashoffset 100→0". Slide 04's
+ *    "520→0" is that deck's own path length, not a value to copy.
+ *
+ * 2. The token moves by an SVG transform in **user units**, not CSS pixels. A
+ *    `translateX(920px)` here is 920 viewBox units, which is a fixed fraction
+ *    of the rail at every viewport width — so the token lands exactly on the
+ *    last node at 375px and at 2560px. A CSS-pixel translate would drift off
+ *    the rail at every width but one.
+ *
+ * 3. `preserveAspectRatio` is left at its default, i.e. uniform. The rail
+ *    scales as a whole and its height varies a little with width; that is the
+ *    trade for not distorting the circles. `preserveAspectRatio="none"` would
+ *    stretch the token and the node dots into ellipses.
+ *
+ * Unlabelled by design. The five cards above already name Deal → Project →
+ * Plan → Time → Invoice; repeating those names here would state the section's
+ * one idea twice in a row, which is what removed `home.jpg` from this very
+ * section on 2026-08-10. The rail carries the *motion*, the cards carry the
+ * *content*.
+ */
+
+/**
+ * Node x positions in viewBox units, spanning the full viewBox edge to edge.
+ *
+ * The wrapper in chain.tsx insets this element to exactly the first and last
+ * *card centres*, so 0 and 1000 land on those centres and the three between
+ * fall on the middle cards. Alignment is therefore structural — it holds at
+ * every width without measuring anything, which an evenly-spaced rail across
+ * the whole container did not: the connector slot sits *after* each card, so
+ * card centres are not at 10/30/50/70/90% and the rail visibly drifted from
+ * the row it was meant to describe.
+ *
+ * The circles overhang the viewBox at both ends, hence overflow-visible below.
+ */
+const RAIL_NODES = [0, 250, 500, 750, 1000] as const;
+/* Literal indices, not `length - 1`: the tuple is `as const`, so [0] and [4]
+   are known numbers, while a computed index is `number | undefined` under
+   noUncheckedIndexedAccess. */
+const RAIL_START = RAIL_NODES[0];
+const RAIL_END = RAIL_NODES[4];
+/** Travel: first node to last. Used by both the transit and its parked state. */
+const RAIL_TRAVEL = RAIL_END - RAIL_START;
+
+export function ChainRail({ delays }: { delays: number[] }) {
+  return (
+    <svg
+      viewBox="0 0 1000 40"
+      // overflow-visible: the end circles sit on the viewBox edges.
+      className="h-auto w-full overflow-visible"
+      role="presentation"
+      aria-hidden="true"
+    >
+      {/* The unlit track, so the rail has a shape before it draws. */}
+      <line
+        x1={RAIL_START}
+        y1="20"
+        x2={RAIL_END}
+        y2="20"
+        stroke="var(--color-border)"
+        strokeWidth="2"
+      />
+
+      {/* The drawn rail. pathLength normalises it — see note 1. */}
+      <path
+        data-chain-rail=""
+        d={`M ${RAIL_START} 20 H ${RAIL_END}`}
+        pathLength="100"
+        fill="none"
+        stroke="var(--color-brand-500)"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+
+      {RAIL_NODES.map((x, i) => (
+        <circle
+          key={x}
+          data-chain-node=""
+          cx={x}
+          cy="20"
+          r="6"
+          fill="var(--color-bg)"
+          stroke="var(--color-brand-500)"
+          strokeWidth="2"
+          style={{ animationDelay: `${delays[i] ?? 0}ms` }}
+        />
+      ))}
+
+      {/* The token. Starts on the first node, parks on the last. */}
+      <circle
+        data-chain-token=""
+        cx={RAIL_START}
+        cy="20"
+        r="7"
+        fill="var(--color-cyan-500)"
+        style={{ ['--rail-travel' as string]: `${RAIL_TRAVEL}px` }}
       />
     </svg>
   );

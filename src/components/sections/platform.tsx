@@ -3,8 +3,10 @@ import { heroVisual, platform } from '@/content/homepage';
 import { APPS } from '@/content/demo-tenant';
 import { Container, Eyebrow, SampleDataNote, Section, TextLink } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
+import { stagger } from '@/components/site/motion';
 import { ClusterSwitcher } from '@/components/interactive/cluster-switcher';
 import { PlatformVideo } from '@/components/interactive/platform-video';
+import { ArchitectureFan, ArchitectureRail } from '@/components/diagrams/architecture-rail';
 
 /**
  * §4 The platform — beat 5. One idea: the whole system on one screen.
@@ -70,13 +72,21 @@ export function Platform() {
           ClusterSwitcher sits between them, so they never read as one artefact
           restating the other (rule 9, and the `home.jpg` precedent).
 
-          Full container width, not the 30rem thumbnail it was given in §2.
+          Capped at 56rem and centred, not the container's 90rem. It ran at
+          full container width until 2026-09-02 and was simply too big: at
+          1440px the browser chrome and the "My actions" list were rendering
+          far above their native 1152px, so an illustrative screen was reading
+          as the page's main event and pushing §4's actual content — the
+          ClusterSwitcher and the architecture diagram — below the fold. 56rem
+          is under the asset's own 1152px, so it is never upscaled now.
+
           Its text equivalent and Demo-tenant disclosure travel with it — the
           "My actions" feed is sample data (rule 1), and a <video> is not a
           text alternative (rule 5).
         */}
         <Reveal>
-          <figure className="flex flex-col gap-3">
+          {/* min-w-0: a capped flex child holding a wide element (CLAUDE.md). */}
+          <figure className="mx-auto flex w-full min-w-0 max-w-4xl flex-col gap-3">
             <div className="overflow-hidden rounded-[var(--radius-2xl)] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-e2)]">
               <p className="sr-only">{heroVisual.alt}</p>
               <PlatformVideo />
@@ -111,10 +121,14 @@ export function Platform() {
 
             {/* Apps */}
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {APPS.map((app) => (
+              {APPS.map((app, i) => (
                 <div
                   key={app.name}
-                  className="flex flex-col gap-1 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-bg-subtle)] px-4 py-3"
+                  data-rise-item=""
+                  style={{ animationDelay: `${stagger(i)}ms` }}
+                  // lift: P4's hover redline, −2px / 120ms. These are cards in
+                  // a grid and behaved like static boxes.
+                  className="lift flex flex-col gap-1 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-bg-subtle)] px-4 py-3 hover:border-[var(--color-border-strong)]"
                 >
                   <span className="flex items-center gap-2">
                     <span
@@ -131,15 +145,36 @@ export function Platform() {
               ))}
             </div>
 
+            {/*
+              The connectors. Added 2026-09-02 — until then this diagram drew
+              three stacked boxes and no relationship at all, which is the one
+              thing the section's own copy asks it to show: "all of them sit on
+              one gateway and one shared spine."
+
+              Both rails are decoration in the accessibility sense and nothing
+              else: the group's `srDescription` above already states the
+              structure in words, so a screen reader loses nothing to their
+              `aria-hidden`. They inherit this block's <Reveal> for their draw.
+            */}
+            <ArchitectureFan />
+
             {/* Gateway */}
-            <div className="flex flex-col items-center gap-2 rounded-[var(--radius-lg)] border border-[var(--color-brand-200)] bg-[var(--color-brand-50)] px-4 py-4 text-center">
-              <span className="text-sm font-semibold text-[var(--color-brand-900)]">
+            <div className="flex flex-col items-center gap-2 rounded-[var(--radius-lg)] border border-[var(--color-chip-border)] bg-[var(--color-chip)] px-4 py-4 text-center">
+              <span className="text-sm font-semibold text-[var(--color-chip-fg)]">
                 {platform.gateway.title}
               </span>
-              <span className="max-w-[min(60ch,100%)] text-xs leading-relaxed text-[var(--color-brand-800)]">
+              <span className="max-w-[min(60ch,100%)] text-xs leading-relaxed text-[var(--color-chip-fg)]">
                 {platform.gateway.detail}
               </span>
             </div>
+
+            {/*
+              Gateway → spine. `columns={1}` is a single straight drop, because
+              both boxes are full width and their centres are the same point —
+              the connector's cubic degenerates to a vertical line on its own,
+              with no special case in the component.
+            */}
+            <ArchitectureRail columns={1} />
 
             {/* Shared spine */}
             <div className="flex flex-col gap-2 rounded-[var(--radius-lg)] border border-dashed border-[var(--color-border-strong)] px-4 py-4">
@@ -147,9 +182,20 @@ export function Platform() {
                 {platform.spineLabel}
               </span>
               <span className="flex flex-wrap gap-1.5">
-                {SPINE.map((service) => (
+                {/*
+                  Eight chips against a cap of six, so this is the first place
+                  on the site where STAGGER_CAP actually changes the output:
+                  `search` (index 5) is the last to get its own delay, and
+                  `tenant`, `workflow` and `reporting` arrive with it rather
+                  than trailing to 490ms. That is the rule working — past six
+                  children a stagger stops reading as one gesture and starts
+                  reading as a queue.
+                */}
+                {SPINE.map((service, i) => (
                   <span
                     key={service}
+                    data-rise-item=""
+                    style={{ animationDelay: `${stagger(i)}ms` }}
                     className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-2.5 py-1 font-mono text-xs text-[var(--color-fg-muted)]"
                   >
                     {service}

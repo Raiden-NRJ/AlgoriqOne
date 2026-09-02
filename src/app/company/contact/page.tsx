@@ -64,7 +64,7 @@ export default function ContactPage() {
                       <li key={link.href}>
                         <a
                           href={link.href}
-                          className="text-sm font-medium text-[var(--color-brand-700)] underline decoration-[var(--color-brand-300)] underline-offset-4"
+                          className="text-sm font-medium text-[var(--color-link)] underline decoration-[var(--color-link)]/50 underline-offset-4"
                         >
                           {link.label}
                         </a>

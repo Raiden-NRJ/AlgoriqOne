@@ -47,7 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-dvh antialiased">
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-[var(--radius-md)] focus:bg-[var(--color-brand-600)] focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-[var(--radius-md)] focus:bg-[var(--color-action)] focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"
         >
           Skip to content
         </a>

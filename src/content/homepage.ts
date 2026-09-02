@@ -311,6 +311,38 @@ export const intelligence = {
     'CSV export on every list',
     'Cursor pagination, so large data sets stay fast',
   ],
+  /**
+   * The utilisation chart, as data (2026-09-02).
+   *
+   * This section showed `reporting-utilisation-dashboard.jpg` until today. The
+   * image carried blocker B11 — its x-axis read Jan 1, 13, 9, 16, 22, 25, 27,
+   * 29, **33**, out of sequence with a date that does not exist, and its member
+   * table repeated one row five times. None of that was fixable from a content
+   * module, because it was pixels.
+   *
+   * As data it is correct by construction and the numbers are checkable: weeks
+   * run in order, and every figure below is arithmetic anyone can redo —
+   * `logged / capacity`, rounded. Still fictional, still labelled as sample
+   * (rule 1); the difference is that it is now fictional *and coherent*.
+   *
+   * Six bars, which is also STAGGER_CAP, so the whole row staggers without the
+   * cap flattening any of it.
+   */
+  chart: {
+    label: 'Utilisation vs. capacity',
+    unit: '%',
+    /** The bar the annotation points at. Must match one `week` below. */
+    peakWeek: 34,
+    annotation: 'Peak, week 34',
+    weeks: [
+      { week: 29, logged: 118, capacity: 160 },
+      { week: 30, logged: 132, capacity: 160 },
+      { week: 31, logged: 124, capacity: 160 },
+      { week: 32, logged: 141, capacity: 160 },
+      { week: 33, logged: 136, capacity: 160 },
+      { week: 34, logged: 152, capacity: 160 },
+    ],
+  },
 } as const;
 
 /** §8 Open by default. Keeps TerminalVideo. */

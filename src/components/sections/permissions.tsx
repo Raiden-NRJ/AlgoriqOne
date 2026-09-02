@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { permissions } from '@/content/homepage';
 import { Container, Eyebrow, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
+import { stagger, STAGGER_WIDE } from '@/components/site/motion';
 import { PermissionMatrix } from '@/components/interactive/permission-matrix';
 
 /**
@@ -21,9 +22,16 @@ export function Permissions() {
             {permissions.sub}
           </p>
 
+          {/* Inherits Rise + Stagger: Permissions has no choreography slide in
+              either deck, so it gets the vocabulary and nothing bespoke. */}
           <ul className="flex flex-col gap-3">
-            {permissions.points.map((point) => (
-              <li key={point} className="flex items-start gap-3 text-sm leading-relaxed">
+            {permissions.points.map((point, i) => (
+              <li
+                key={point}
+                data-rise-item=""
+                style={{ animationDelay: `${stagger(i)}ms` }}
+                className="flex items-start gap-3 text-sm leading-relaxed"
+              >
                 <Check
                   aria-hidden
                   className="mt-0.5 size-4 shrink-0 text-[var(--color-brand-400)]"
@@ -48,7 +56,7 @@ export function Permissions() {
 
         {/* min-w-0: the matrix table would otherwise contribute its full
             min-content width to the grid column (see developers.tsx). */}
-        <Reveal delay={80} className="min-w-0">
+        <Reveal delay={STAGGER_WIDE} className="min-w-0">
           <PermissionMatrix />
         </Reveal>
       </Container>

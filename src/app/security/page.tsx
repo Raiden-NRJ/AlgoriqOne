@@ -189,7 +189,7 @@ export default function SecurityHubPage() {
               Send it to{' '}
               <a
                 href={`mailto:${CONTACT.security}`}
-                className="font-medium text-[var(--color-brand-700)] underline decoration-[var(--color-brand-300)] underline-offset-4"
+                className="font-medium text-[var(--color-link)] underline decoration-[var(--color-link)]/50 underline-offset-4"
               >
                 {CONTACT.security}
               </a>
@@ -204,7 +204,7 @@ export default function SecurityHubPage() {
             />
             <Link
               href="/security/permissions"
-              className="inline-flex min-h-6 w-fit items-center gap-1.5 py-1 text-sm font-medium text-[var(--color-brand-700)] underline decoration-[var(--color-brand-300)] underline-offset-4"
+              className="inline-flex min-h-6 w-fit items-center gap-1.5 py-1 text-sm font-medium text-[var(--color-link)] underline decoration-[var(--color-link)]/50 underline-offset-4"
             >
               Start with how authorization works
               <ArrowRight className="size-4" aria-hidden />

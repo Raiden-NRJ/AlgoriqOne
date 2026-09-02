@@ -49,7 +49,7 @@
  * 9–19s + 23–30s) is all human footage and carries none of it.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 
 /*
@@ -83,11 +83,94 @@ const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
 /** Tailwind's lg. Same gate the boxed hero video used — see the note above. */
 const WIDE = '(min-width: 64rem)';
 
+/**
+ * Parallax — the deck's sixth pattern, and the last one to ship (slide 07,
+ * "Parallax is specified, not shipped").
+ *
+ * Redlines: max **±8px**, `(hover: hover)` and `(pointer: fine)`, **never on
+ * touch**. The gate is pointer capability, not width — a touchscreen laptop is
+ * wide and must still be excluded, which a breakpoint query would not catch.
+ */
+const FINE_POINTER = '(hover: hover) and (pointer: fine)';
+const PARALLAX_MAX = 8;
+
 /** Shared by both branches: the full-bleed layer itself. */
+/**
+ * scale(1.02) is load-bearing, not decoration: the layer translates up to ±8px,
+ * and without the overscan that translate would drag a bare edge into view at
+ * the opposite side. 2% of a ~950px hero is ~19px of headroom each way.
+ *
+ * The translate is applied through custom properties so the pointer handler
+ * only ever writes two numbers — no style recalculation of the transform
+ * string, and it composites on the GPU.
+ */
 const LAYER = 'absolute inset-0 h-full w-full object-cover';
+
+/**
+ * The parallax wrapper. The transform lives here rather than on the media so
+ * one element carries it for both branches, and so the ref has a stable type.
+ */
+const PARALLAX_LAYER =
+  'absolute inset-0 [transform:translate3d(var(--px,0),var(--py,0),0)_scale(1.02)] ' +
+  '[transition:transform_300ms_var(--ease-out-quint)] [will-change:transform]';
 
 export function HeroVideo() {
   const [posterOnly, setPosterOnly] = useState(false);
+  const layerRef = useRef<HTMLDivElement>(null);
+
+  /*
+    Parallax. Separate effect from the poster gate below because its condition
+    is different — that one is about width and motion preference, this one is
+    about the pointer. A device can qualify for one and not the other.
+
+    Reduced motion opts out entirely: this is decorative depth, and it is
+    exactly the kind of thing the preference exists to switch off.
+  */
+  useEffect(() => {
+    const fine = window.matchMedia(FINE_POINTER);
+    const reduced = window.matchMedia(REDUCED_MOTION);
+    const node = layerRef.current;
+    if (!node) return;
+
+    let frame = 0;
+
+    const onMove = (event: PointerEvent) => {
+      // rAF-throttled: pointermove fires far faster than the compositor needs,
+      // and writing a style per event is how this pattern ends up janky.
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const x = (event.clientX / window.innerWidth - 0.5) * 2;
+        const y = (event.clientY / window.innerHeight - 0.5) * 2;
+        // Negative: the layer moves *against* the pointer, which is what reads
+        // as depth. Clamped to the ±8px the deck specifies.
+        node.style.setProperty('--px', `${(-x * PARALLAX_MAX).toFixed(2)}px`);
+        node.style.setProperty('--py', `${(-y * PARALLAX_MAX).toFixed(2)}px`);
+      });
+    };
+
+    const sync = () => {
+      const on = fine.matches && !reduced.matches;
+      if (on) {
+        window.addEventListener('pointermove', onMove, { passive: true });
+      } else {
+        window.removeEventListener('pointermove', onMove);
+        node.style.removeProperty('--px');
+        node.style.removeProperty('--py');
+      }
+    };
+
+    sync();
+    fine.addEventListener('change', sync);
+    reduced.addEventListener('change', sync);
+
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      fine.removeEventListener('change', sync);
+      reduced.removeEventListener('change', sync);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [posterOnly]);
 
   useEffect(() => {
     const reduced = window.matchMedia(REDUCED_MOTION);
@@ -115,35 +198,39 @@ export function HeroVideo() {
       sized by its parent, which is exactly what fill is for.
     */
     return (
-      <Image
-        src={POSTER}
-        alt=""
-        aria-hidden="true"
-        fill
-        sizes="100vw"
-        priority
-        className="object-cover"
-      />
+      <div ref={layerRef} aria-hidden="true" className={PARALLAX_LAYER}>
+        <Image
+          src={POSTER}
+          alt=""
+          aria-hidden="true"
+          fill
+          sizes="100vw"
+          priority
+          className="object-cover"
+        />
+      </div>
     );
   }
 
   return (
-    <video
-      // Decorative: the meaning is carried by the sr-only paragraph in
-      // hero.tsx, and a <video> is not a text alternative (rule 5).
-      aria-hidden="true"
-      muted
-      playsInline
-      loop
-      autoPlay
-      preload="none"
-      poster={POSTER}
-      width={W}
-      height={H}
-      className={LAYER}
-    >
-      <source src={WEBM} type="video/webm" />
-      <source src={MP4} type="video/mp4" />
-    </video>
+    <div ref={layerRef} aria-hidden="true" className={PARALLAX_LAYER}>
+      <video
+        // Decorative: the meaning is carried by the sr-only paragraph in
+        // hero.tsx, and a <video> is not a text alternative (rule 5).
+        aria-hidden="true"
+        muted
+        playsInline
+        loop
+        autoPlay
+        preload="none"
+        poster={POSTER}
+        width={W}
+        height={H}
+        className={LAYER}
+      >
+        <source src={WEBM} type="video/webm" />
+        <source src={MP4} type="video/mp4" />
+      </video>
+    </div>
   );
 }

@@ -2,6 +2,7 @@ import { testimonialsIntro } from '@/content/homepage';
 import { TESTIMONIALS, hasTestimonials } from '@/content/proof';
 import { Container, Section, SectionHeading } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
+import { stagger } from '@/components/site/motion';
 
 /**
  * §15 Testimonials — GATED (docs/04 §15).
@@ -29,7 +30,7 @@ export function Testimonials() {
 
         <ul className="grid gap-5 lg:grid-cols-3">
           {approved.map((item, i) => (
-            <Reveal as="li" key={item.name} delay={i * 60}>
+            <Reveal as="li" key={item.name} delay={stagger(i)}>
               <figure className="flex h-full flex-col gap-5 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-e1)]">
                 <blockquote className="text-sm leading-relaxed text-[var(--color-fg)]">
                   “{item.quote}”

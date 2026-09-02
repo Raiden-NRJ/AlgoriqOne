@@ -43,11 +43,18 @@ export function Faq() {
                     {item.question}
                     <Plus
                       aria-hidden
-                      className="size-4 shrink-0 text-[var(--color-fg-subtle)] transition-transform duration-200 group-open:rotate-45"
+                      className="size-4 shrink-0 text-[var(--color-fg-subtle)] transition-transform duration-[var(--duration-lift)] group-open:rotate-45"
                     />
                   </summary>
-                  <div className="px-5 pb-5 text-sm leading-relaxed text-[var(--color-fg-muted)]">
-                    {item.answer}
+                  {/* accordion-body: grid-template-rows 0fr → 1fr, the deck's
+                      height animation (globals.css). The inner div carries the
+                      padding so the row can collapse to a true zero. */}
+                  <div className="accordion-body">
+                    <div>
+                      <div className="px-5 pb-5 text-sm leading-relaxed text-[var(--color-fg-muted)]">
+                        {item.answer}
+                      </div>
+                    </div>
                   </div>
                 </details>
               </li>
@@ -58,7 +65,7 @@ export function Faq() {
         <Reveal className="text-center">
           <Link
             href="/faq"
-            className="inline-flex min-h-6 items-center gap-1.5 py-1 text-sm font-medium text-[var(--color-brand-700)] underline decoration-[var(--color-brand-300)] underline-offset-4 hover:decoration-[var(--color-brand-600)]"
+            className="inline-flex min-h-6 items-center gap-1.5 py-1 text-sm font-medium text-[var(--color-link)] underline decoration-[var(--color-brand-300)] underline-offset-4 hover:decoration-[var(--color-brand-600)]"
           >
             {faqIntro.cta}
             <ArrowRight className="size-4" aria-hidden />

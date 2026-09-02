@@ -104,6 +104,7 @@ const T = {
   fg: token('fg'),
   fgMuted: token('fg-muted'),
   fgSubtle: token('fg-subtle'),
+  fgInverse: token('fg-inverse'),
 
   band: token('band'),
   bandSurface: token('band-surface'),
@@ -126,6 +127,20 @@ const T = {
   brand400: token('brand-400'),
   brand600: token('brand-600'),
   brand700: token('brand-700'),
+  // Semantic layer, added with the azure ground (2026-09-02). These are what
+  // components reference now; the raw ramp steps above are kept only because a
+  // few fills still use them legitimately.
+  action: token('action'),
+  actionHover: token('action-hover'),
+  link: token('link'),
+  linkStrong: token('link-strong'),
+  chip: token('chip'),
+  chipFg: token('chip-fg'),
+  chipBorder: token('chip-border'),
+  tint: token('tint'),
+  tintBorder: token('tint-border'),
+  accentText: token('accent-text'),
+  accentLine: token('accent-line'),
   brand800: token('brand-800'),
 
   // App identity dots (architecture.tsx). Non-text, but they carry app
@@ -160,18 +175,18 @@ const PAIRS = [
 
   // Cyan-tinted surfaces (Section tone="tint"). Every text weight the site
   // puts on cyan-50 is pinned here.
-  ['fg on cyan-50', T.fg, T.cyan50, 7],
-  ['fg-muted on cyan-50', T.fgMuted, T.cyan50, 4.5],
-  ['fg-subtle on cyan-50', T.fgSubtle, T.cyan50, 4.5],
-  ['brand-600 on cyan-50', T.brand600, T.cyan50, 4.5],
-  ['brand-700 on cyan-50', T.brand700, T.cyan50, 4.5],
-  ['fg on cyan-100', T.fg, T.cyan100, 7],
-  ['fg-muted on cyan-100', T.fgMuted, T.cyan100, 4.5],
+  ['fg on tint', T.fg, T.tint, 7],
+  ['fg-muted on tint', T.fgMuted, T.tint, 4.5],
+  ['fg-subtle on tint', T.fgSubtle, T.tint, 4.5],
+  ['link on tint', T.link, T.tint, 4.5],
+  ['accent-text on tint', T.accentText, T.tint, 4.5],
+  ['fg on chip', T.fg, T.chip, 7],
+  ['chip-fg on chip', T.chipFg, T.chip, 4.5],
 
   // Cyan as text / UI on white — the two steps that are allowed to carry it.
-  ['cyan-700 TEXT on bg', T.cyan700, T.bg, 4.5],
-  ['cyan-700 TEXT on cyan-50', T.cyan700, T.cyan50, 4.5],
-  ['cyan-600 border/icon on bg', T.cyan600, T.bg, 3],
+  ['accent-text on bg', T.accentText, T.bg, 4.5],
+  ['accent-text on surface', T.accentText, T.surface, 4.5],
+  ['accent-line on bg (border/icon)', T.accentLine, T.bg, 3],
 
   // Cyan on the dark band
   ['cyan-300 TEXT on band', T.cyan300, T.band, 4.5],
@@ -179,11 +194,20 @@ const PAIRS = [
   ['cyan-400 on band', T.cyan400, T.band, 3],
   ['cyan-400 on band-surface', T.cyan400, T.bandSurface, 3],
 
-  ['brand-600 on bg', T.brand600, T.bg, 4.5],
-  ['brand-700 on bg', T.brand700, T.bg, 4.5],
-  ['brand-700 on bg-subtle', T.brand700, T.bgSubtle, 4.5],
-  ['brand-800 on brand-50', T.brand800, T.brand50, 4.5],
-  ['white on brand-600', T.white, T.brand600, 4.5],
+  ['link on bg', T.link, T.bg, 4.5],
+  ['link on surface', T.link, T.surface, 4.5],
+  ['link on bg-subtle', T.link, T.bgSubtle, 4.5],
+  ['chip-fg on chip', T.chipFg, T.chip, 4.5],
+  ['fg-inverse on action (button fill)', T.fgInverse, T.action, 4.5],
+  /*
+    No `text on cyan-500` pair, deliberately. On the white ground cyan-500 was
+    a fill that ink sat on, so the pair existed. On the azure ground nothing
+    renders text on it at all — checked: the §7 peak bar and the §2 rail token
+    are the only cyan-500 surfaces and both are bare shapes. Asserting a pair
+    the site does not render is how the old mirrored table came to pass against
+    deleted colours; if text ever lands on a cyan fill, add the pair then and
+    it will have to be `--color-fg-inverse`-dark, not light.
+  */
   ['success on bg', T.success, T.bg, 4.5],
   ['danger on bg', T.danger, T.bg, 4.5],
 
@@ -200,7 +224,7 @@ const PAIRS = [
 
   // Non-text boundaries
   ['border-strong on bg', T.borderStrong, T.bg, 1.3],
-  ['brand-600 ring on bg', T.brand600, T.bg, 3],
+  ['focus ring (link) on bg', T.link, T.bg, 3],
   ['brand-400 on band-surface', T.brand400, T.bandSurface, 3],
   ['band-border on band', T.bandBorder, T.band, 1.2],
 
@@ -212,10 +236,10 @@ const PAIRS = [
   // measured 1.09:1 against cyan-50 — fainter than the neutral border it
   // replaces, so the section boundary would have disappeared. Held to the
   // same 1.3 the neutral border-strong is held to.
-  ['cyan-300 border on cyan-50', T.cyan300, T.cyan50, 1.3],
+  ['tint-border on tint (section seam)', T.tintBorder, T.tint, 1.3],
   ['cyan-300 border on bg', T.cyan300, T.bg, 1.3],
-  ['cyan-100 tinted card on bg', T.cyan100, T.bg, 1.1],
-  ['cyan-600 stroke on cyan-50', T.cyan600, T.cyan50, 3],
+  ['tint section on bg', T.tint, T.bg, 1.05],
+  ['accent-line stroke on tint', T.accentLine, T.tint, 3],
 
   // App identity dots on a white card. Customer is cyan-600 rather than
   // cyan-500 precisely because a bare dot is a mark, not a fill.
@@ -241,9 +265,21 @@ const PAIRS = [
  * restriction may no longer be needed — that is a deliberate decision, so the
  * checker fails and makes you take it.
  */
-const FILL_ONLY = [
-  ['cyan-500', T.cyan500, 4.5, 3],
-];
+/*
+ * Empty since 2026-09-02, and that is the correct answer rather than a gap.
+ *
+ * The fill-only restriction existed because cyan-500 measured 2.29:1 on WHITE,
+ * so on that ground it could not be text, a border, or a meaning-carrying
+ * icon. On the azure ground it measures 8.5:1 against the surface — the
+ * restriction is not relaxed, its premise is gone. Cyan-500 is a legitimate
+ * border and icon colour here, which is what `--color-accent-line` is for.
+ *
+ * The trap inverted rather than disappearing: text on a cyan fill must now be
+ * DARK, because `--color-fg` is light and measures 2.1:1 on it. That is
+ * asserted as a normal pair above (`fg-inverse on cyan-500`), so the check
+ * still exists — it just belongs in PAIRS now, not here.
+ */
+const FILL_ONLY = [];
 
 let failed = 0;
 console.log('  ratio   min   pair');

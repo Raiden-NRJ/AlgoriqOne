@@ -29,14 +29,30 @@ This document is as much about restraint as about animation.
 
 Six patterns. Everything on the site is one of these; a seventh requires a decision recorded here.
 
-| Pattern | Spec | Where |
-|---|---|---|
-| **Rise** | `translateY(16px)` + `opacity 0→1`, `--dur-slow`, `--ease-out` | Default section/element entrance |
-| **Stagger** | Rise with 60–80ms per-child delay, capped at 6 children (then all together) | Card grids, lists, bullets |
-| **Draw** | SVG `stroke-dashoffset` 100%→0, 800ms, `--ease-out` | Architecture diagrams, workflow chains, the problem diagram |
-| **Cross-fade** | `opacity` + 8px directional slide, `--dur-base` | Tab/cluster switches |
-| **Lift** | `translateY(-2px)` + elevation e1→e2, `--dur-fast` | Card hover |
-| **Parallax** | Max ±8px translate, pointer- or scroll-driven, desktop + fine-pointer only | Hero composition, device showcase |
+> **Reconciled against the M5 motion deck, 2026-09-01.** This table was already the right system —
+> same six names, the 60–80ms band, cap 6, `translateY(16px)`, 800ms draw, 8px slide, −2px lift,
+> ±8px parallax. The deck agrees with all of it. Only two things were wrong and both are fixed
+> below: the **token names never existed** (`--dur-slow`, `--dur-base`, `--dur-fast`, `--ease-out`
+> — see `02` §7), and the table implied everything was built. Draw shipped 2026-09-01 (§5.1);
+> **Parallax is still the one unbuilt pattern**.
+> Exact redlines and provenance: `ANIMATION_SPEC_FROM_VIDEO.md`.
+
+| Pattern | Spec | Token | Where | Built |
+|---|---|---|---|---|
+| **Rise** | `translateY(16px)` + `opacity 0→1` | `--duration-rise` **320ms** · `--ease-out-quint` | Default section/element entrance | ✅ `.reveal` / `.reveal-in` |
+| **Stagger** | Rise with 60–80ms per-child delay, **capped at 6** children (then the delay holds) | `--stagger-tight` 70ms · `--stagger-wide` 80ms | Card grids, lists, bullets | ✅ `[data-rise-item]` + `stagger()` — **one observer per grid** |
+| **Draw** | SVG `stroke-dashoffset` 100%→0, via `pathLength="100"` | `--duration-draw` 800ms · `--ease-out-quint` | The chain (P2, signature moment) | ✅ `ChainRail` — see §5.1 |
+| **Cross-fade** | `opacity` + 8px directional slide, out-left / in-right | `--duration-cross-fade` 200ms | Tab/cluster switches | ✅ `.cross-fade` |
+| **Lift** | `translateY(-2px)` + elevation e1→e2 | `--duration-lift` 120ms | Card hover | ✅ `.lift` |
+| **Parallax** | Max ±8px translate, **fine pointer only** | `--duration-*` n/a; rAF-driven | Hero backdrop | ✅ `hero-video.tsx` |
+
+Two patterns in the deck have no entry above because they are one-offs, not vocabulary — recorded
+here so they are not mistaken for a seventh pattern:
+
+- **Transit** (P2): the token travelling the chain rail after it draws. `--duration-transit`
+  **1400ms**, `--ease-in-out-quint`. The deck's only ease-in-out and its only value above 900ms.
+- **Sweep** (P5): the rule under the four capability cards, `scaleX` from origin-left.
+  `--duration-sweep` 480ms. ✅ built — `[data-sweep]`, 1px tall so it is a transform, never a width.
 
 **Explicitly banned:** rotation on scroll, scale > 1.05, blur transitions, letter-by-letter text
 reveals, marquees that can't be paused, autoplaying carousels, elements that animate every time they
@@ -45,6 +61,16 @@ re-enter the viewport (once only, always), parallax on touch devices.
 ---
 
 ## 3. Scroll choreography
+
+**One observer per group, never one per child.** Deck slide 06: "OBSERVER: one, on the grid".
+A staggered group gets a single `<Reveal>` on its container; the children carry
+`data-rise-item` and their own `animation-delay` from `stagger(i)`, and animate off the
+`.reveal-seen` marker the container sets. The site did the opposite until 2026-09-01 — one
+`Reveal` per child — which put four observers on the capability grid alone (homepage total
+39 → 32 after the conversion).
+
+> Use `<Reveal as="ul">` when the container is a list. A wrapper `<div>` between `<ul>` and
+> `<li>` breaks the list relationship, and the items stop being announced as a list of N.
 
 - **Trigger:** `IntersectionObserver`, `threshold` tuned so the element is ~25% visible;
   `rootMargin: '0px 0px -10% 0px'` so animation completes before the element is centred.
@@ -63,7 +89,7 @@ re-enter the viewport (once only, always), parallax on touch devices.
 | Element | Interaction |
 |---|---|
 | Primary button | Background lightens 4% + lift 1px, 100ms. Active: 0px lift, 60ms. **Focus-visible ring is 2px offset 2px — always, in every theme.** |
-| Text link | Underline draws left→right, `--dur-fast`, using `background-size` on a gradient (no layout shift) |
+| Text link | Underline draws left→right, `--duration-lift` (120ms), using `background-size` on a gradient (no layout shift) |
 | Card | Lift + border strengthens to `--border-strong`. Whole card is one link, not a nested-link trap. |
 | Nav mega-menu | Fade + 6px rise, 160ms. 120ms open-intent delay, 200ms close delay to survive diagonal pointer travel. |
 | Tabs | Active indicator slides between tabs (shared-element style), 240ms |
@@ -83,10 +109,49 @@ A site is remembered for two or three moments, not for uniform polish. Ours, and
 2. **The permission reveal** (`04` §8) — toggling a role and watching the mock UI's nav items and
    buttons disappear in real time. This is the most persuasive interaction on the site because it
    makes an abstract architectural claim physically visible. Highest engineering budget after §6.
-3. **The workflow chain** (`05`, cluster pages) — a token travelling from project request → WBS → task
-   → timesheet → invoice, drawing the connection the entire positioning rests on.
+3. **The workflow chain** — a token travelling the chain and parking on the last stage, drawing the
+   connection the entire positioning rests on. **Built 2026-09-01** on the homepage §2 (not the
+   cluster pages as originally planned); the M5 deck names it P2 and calls it *the* signature moment.
 
 Everything else is quiet on purpose, so these three land.
+
+### 5.1 The chain transit — as built
+
+**Component:** `ChainRail` in `components/diagrams/chain-steps.tsx`, rendered by §2 `chain.tsx`.
+**Spec:** deck slide 04 — `DRAW 800ms · NODES 70ms stagger · TRANSIT 1400ms ease-inout ·
+TOKENS --ease-out, --color-cyan-500`. Five nodes, matching the five stages in `content/homepage.ts`.
+
+| t | What |
+|---|---|
+| 0–800 ms | Rail draws, `stroke-dashoffset 100→0`, `--ease-out-quint` |
+| 0–280 ms | Five nodes fade in, 70 ms apart (`stagger()`, so the cap applies) |
+| 500–1900 ms | Cyan token travels the rail, `--ease-in-out-quint`, and parks on the last node |
+
+**Trigger:** none of its own. The animations are gated on a `.reveal-seen` ancestor, which the
+enclosing `<Reveal>` supplies — so the rail inherits the three-path resolve instead of adding a
+fourth way to fail.
+
+**Reduced motion:** rail painted, nodes shown, token parked on the last stage. Deck slide 10 says
+"path painted, token parked on Invoice" and that is literally the base state here.
+
+Three implementation notes that are easy to get wrong and expensive to rediscover:
+
+- **`pathLength="100"` normalises the path**, so the draw needs no measurement and cannot drift when
+  `d` is edited. It is also exactly what slide 02 specifies (`stroke-dashoffset 100→0`); slide 04's
+  `520` is *that deck's* path length, not a number to copy into ours.
+- **The token moves by an SVG transform in user units, never CSS pixels.** A fixed `translateX(420px)`
+  lands on the rail at exactly one viewport width and drifts off it everywhere else. Measured: 0 px
+  from the last node at 1280, 1440, 1728 and 2560.
+- **The rail is inset to the first and last *card centres*** (`ms-[calc(10%-1.375rem)]` /
+  `me-[calc(10%+1.375rem)]`), because the connector slot sits *after* each card, so card centres are
+  not at 10/30/50/70/90%. Evenly spacing across the container drifted visibly from the row it
+  describes. Measured after the fix: ±0.2 px at every width.
+
+**Unlabelled, deliberately.** The cards above already name Deal → Project → Plan → Time → Invoice;
+repeating them on the rail would state the section's one idea twice in a row, which is what removed
+`home.jpg` from this same section on 2026-08-10. The rail carries the motion, the cards carry the
+content — and the rail is `aria-hidden`/`role="presentation"` with nothing focusable, so it adds no
+information that is not already text.
 
 ---
 

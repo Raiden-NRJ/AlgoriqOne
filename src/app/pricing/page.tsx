@@ -3,6 +3,7 @@ import { Check, Plus } from 'lucide-react';
 import { CtaBand, PageHero } from '@/components/page/page-template';
 import { BulletList, Button, Container, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
+import { stagger } from '@/components/site/motion';
 import { Illustration } from '@/components/site/illustration';
 import { RoiTeaser } from '@/components/interactive/roi-teaser';
 import { getPlans, formatPrice } from '@/lib/billing';
@@ -35,8 +36,8 @@ export default async function PricingPage() {
           {plans.length > 0 ? (
             <Reveal>
               <ul className="grid gap-5 lg:grid-cols-3">
-                {plans.map((plan) => (
-                  <li key={plan.id}>
+                {plans.map((plan, i) => (
+                  <li key={plan.id} data-rise-item="" style={{ animationDelay: `${stagger(i)}ms` }}>
                     <div
                       className={`flex h-full flex-col gap-5 rounded-[var(--radius-xl)] border p-6 ${
                         plan.isPopular
@@ -45,7 +46,7 @@ export default async function PricingPage() {
                       }`}
                     >
                       {plan.isPopular ? (
-                        <span className="w-fit rounded-full bg-[var(--color-brand-600)] px-2.5 py-0.5 text-xs font-semibold text-white">
+                        <span className="w-fit rounded-full bg-[var(--color-action)] px-2.5 py-0.5 text-xs font-semibold text-white">
                           Most popular
                         </span>
                       ) : null}
@@ -69,7 +70,7 @@ export default async function PricingPage() {
                             <li key={feature} className="flex items-start gap-2 text-sm">
                               <Check
                                 aria-hidden
-                                className="mt-0.5 size-4 shrink-0 text-[var(--color-brand-600)]"
+                                className="mt-0.5 size-4 shrink-0 text-[var(--color-link)]"
                               />
                               <span className="text-[var(--color-fg-muted)]">{feature}</span>
                             </li>
@@ -121,7 +122,7 @@ export default async function PricingPage() {
                   key={item}
                   className="flex items-start gap-2.5 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm leading-relaxed"
                 >
-                  <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-[var(--color-brand-600)]" />
+                  <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-[var(--color-link)]" />
                   <span className="text-[var(--color-fg-muted)]">{item}</span>
                 </li>
               ))}
@@ -206,11 +207,16 @@ export default async function PricingPage() {
                       {item.question}
                       <Plus
                         aria-hidden
-                        className="size-4 shrink-0 text-[var(--color-fg-subtle)] transition-transform duration-200 group-open:rotate-45"
+                        className="size-4 shrink-0 text-[var(--color-fg-subtle)] transition-transform duration-[var(--duration-lift)] group-open:rotate-45"
                       />
                     </summary>
-                    <div className="px-5 pb-5 text-sm leading-relaxed text-[var(--color-fg-muted)]">
-                      {item.answer}
+                    {/* accordion-body: the deck's 0fr → 1fr height animation. */}
+                    <div className="accordion-body">
+                      <div>
+                        <div className="px-5 pb-5 text-sm leading-relaxed text-[var(--color-fg-muted)]">
+                          {item.answer}
+                        </div>
+                      </div>
                     </div>
                   </details>
                 </li>

@@ -3,6 +3,19 @@
 import { useEffect, useState } from 'react';
 
 const VIDEO_SRC = '/media/TypeScript_code_typing_animation_1080p_202608090440_gwr_video_mvp.mp4';
+
+/*
+  No window chrome is added here, and that is P6's "CHROME rise 320ms" already
+  satisfied rather than skipped: the video has a framed terminal painted into
+  it, complete with TypeScript SDK / cURL / Webhook tabs. A title bar was built
+  on 2026-09-01 and reverted the same hour — the screenshot showed two nested
+  windows, one inside the other. site/illustration.tsx carries a `chrome={false}`
+  prop for exactly this case.
+
+  Also not added: the deck's `invoice.created  ok 142ms` status line. That
+  latency is invented and nothing measures it, so it stays in the spec document
+  and off the page (rule 1 has no decorative exemption).
+*/
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
 
 interface TerminalVideoProps {

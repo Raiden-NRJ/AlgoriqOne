@@ -17,6 +17,7 @@ import {
   cn,
 } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
+import { stagger } from '@/components/site/motion';
 import { Illustration } from '@/components/site/illustration';
 import { HeroPhoto } from '@/components/site/hero-photo';
 
@@ -96,14 +97,31 @@ function ChainStrip({ active, note }: NonNullable<PageContent['chain']>) {
           Deal → delivery → cash
         </Link>
       </p>
-      <ol className="flex flex-wrap items-center gap-x-1.5 gap-y-2">
+      {/*
+        Stagger, 2026-09-02. `as="ol"` rather than a wrapper: an ordered list
+        loses its numbering semantics to an intervening <div>, and here the
+        order *is* the content — Deal → Project → Plan → Time → Invoice is the
+        positioning, not a layout choice.
+
+        This is the one group on a deep page that is above the fold, so the
+        <Reveal> resolves on mount through its "already on screen" path and
+        never arms its own rise. The children still animate, because they key
+        off `.reveal-seen` rather than `.reveal-in` — the same behaviour the
+        jobs grid a few lines below has had since it was converted.
+      */}
+      <Reveal as="ol" className="flex flex-wrap items-center gap-x-1.5 gap-y-2">
         {CHAIN_STAGES.map((stage, index) => (
-          <li key={stage} className="flex items-center gap-1.5">
+          <li
+            key={stage}
+            data-rise-item=""
+            style={{ animationDelay: `${stagger(index)}ms` }}
+            className="flex items-center gap-1.5"
+          >
             <span
               className={cn(
                 'rounded-full px-2.5 py-1 text-xs font-medium',
                 activeSet.has(stage)
-                  ? 'bg-[var(--color-brand-600)] text-white'
+                  ? 'bg-[var(--color-action)] text-[var(--color-fg-inverse)]'
                   : 'bg-[var(--color-bg-subtle)] text-[var(--color-fg-subtle)]',
               )}
             >
@@ -114,7 +132,7 @@ function ChainStrip({ active, note }: NonNullable<PageContent['chain']>) {
             ) : null}
           </li>
         ))}
-      </ol>
+      </Reveal>
       <p className="text-sm leading-relaxed text-[var(--color-fg-muted)]">{note}</p>
     </div>
   );
@@ -210,20 +228,23 @@ export function PageHero({
           ) : null}
 
           {jobs?.length ? (
-            <ul className="grid gap-3 sm:grid-cols-3">
-              {jobs.map((job) => (
+            /* One observer on the grid; the items carry their own delay. */
+            <Reveal as="ul" className="grid gap-3 sm:grid-cols-3">
+              {jobs.map((job, i) => (
                 <li
                   key={job}
+                  data-rise-item=""
+                  style={{ animationDelay: `${stagger(i)}ms` }}
                   className="flex items-start gap-2.5 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm leading-relaxed"
                 >
                   <Check
                     aria-hidden
-                    className="mt-0.5 size-4 shrink-0 text-[var(--color-brand-600)]"
+                    className="mt-0.5 size-4 shrink-0 text-[var(--color-link)]"
                   />
                   <span className="text-[var(--color-fg-muted)]">{job}</span>
                 </li>
               ))}
-            </ul>
+            </Reveal>
           ) : null}
         </div>
       </Container>
@@ -339,6 +360,22 @@ function Block({ block, index }: { block: PageBlock; index: number }) {
   );
 }
 
+/**
+ * The pipeline. Animated 2026-09-02 — dots stagger in and the segment between
+ * each pair grows `scaleY` from the top, so the sequence assembles downwards
+ * instead of arriving as a finished ladder.
+ *
+ * This is the same composition the ClusterSwitcher renders on the homepage and
+ * `/demo`, and it deliberately shares that component's CSS
+ * (`[data-pipe-dot]` / `[data-pipe-line]` in globals.css) rather than
+ * reimplementing it: this one is a server component and could not use framer
+ * even if it wanted to. It costs no observer — the enclosing `Block` is
+ * already wrapped in a `<Reveal>`, and the animation keys off the
+ * `.reveal-seen` marker that supplies.
+ *
+ * It reaches every `PageBlock` with a `chain`, which today is 12 blocks across
+ * the product, platform, security and solutions routes.
+ */
 function Chain({ steps }: { steps: string[] }) {
   return (
     <div className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-e1)]">
@@ -349,15 +386,22 @@ function Chain({ steps }: { steps: string[] }) {
             <span className="flex flex-col items-center self-stretch">
               <span
                 aria-hidden
+                data-pipe-dot=""
+                style={{ animationDelay: `${stagger(i)}ms` }}
                 className={cn(
                   'mt-1.5 size-2.5 shrink-0 rounded-full',
                   i === steps.length - 1
-                    ? 'bg-[var(--color-brand-600)]'
-                    : 'bg-[var(--color-brand-300)]',
+                    ? 'bg-[var(--color-accent-line)]'
+                    : 'bg-[var(--color-link)]/40',
                 )}
               />
               {i < steps.length - 1 ? (
-                <span aria-hidden className="w-px flex-1 bg-[var(--color-border-strong)]" />
+                <span
+                  aria-hidden
+                  data-pipe-line=""
+                  style={{ animationDelay: `${stagger(i)}ms` }}
+                  className="w-px flex-1 bg-[var(--color-border-strong)]"
+                />
               ) : null}
             </span>
             <span className="pb-4 text-sm font-medium">{step}</span>
@@ -373,9 +417,15 @@ function Panel({ label, items, mono }: { label: string; items: string[]; mono?: 
     <div className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-bg-subtle)] p-6">
       <p className="text-label mb-4 text-[var(--color-fg-subtle)]">{label}</p>
       <ul className="flex flex-wrap gap-1.5">
-        {items.map((item) => (
+        {/* Stagger, off the Block's existing <Reveal> — a wrapping row of real
+            permission keys is exactly the composition the pattern is for, and
+            it is the same treatment §4's shared-spine chips already get. No
+            new observer: the marker comes from the ancestor. */}
+        {items.map((item, i) => (
           <li
             key={item}
+            data-rise-item=""
+            style={{ animationDelay: `${stagger(i)}ms` }}
             className={cn(
               'rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-2.5 py-1 text-xs',
               mono
@@ -402,18 +452,28 @@ export function RelatedLinks({
     <Section tone="tint">
       <Container width="wide" className="flex flex-col gap-12">
         <h2 className="text-h2">Related</h2>
-        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {links.map((link) => (
-            <li key={link.href}>
+        <Reveal as="ul" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {links.map((link, i) => (
+            <li key={link.href} data-rise-item="" style={{ animationDelay: `${stagger(i)}ms` }}>
               <Link
                 href={link.href}
-                className="group flex h-full flex-col gap-1.5 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-[var(--color-border-strong)] hover:shadow-[var(--shadow-e2)]"
+                // See capabilities.tsx: `lift` is the shared hover pattern.
+                className="group lift flex h-full flex-col gap-1.5 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 hover:border-[var(--color-border-strong)]"
               >
                 <span className="flex items-center justify-between gap-3">
                   <span className="font-medium">{link.label}</span>
                   <ArrowRight
                     aria-hidden
-                    className="size-4 shrink-0 text-[var(--color-fg-subtle)] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-[var(--color-brand-600)]"
+                    /*
+                      --color-link, not --color-brand-600. This was the last
+                      raw ramp step reaching past the semantic layer for a
+                      *foreground* colour on a live surface, and on the azure
+                      ground it is the exact failure globals.css warns about:
+                      brand-600 is a fill colour there, and as an icon on a
+                      card it measures ~2.3:1 — a hover state that makes the
+                      arrow harder to see than before it was hovered.
+                    */
+                    className="size-4 shrink-0 text-[var(--color-fg-subtle)] transition-transform duration-[var(--duration-lift)] group-hover:translate-x-0.5 group-hover:text-[var(--color-link)]"
                   />
                 </span>
                 {link.description ? (
@@ -424,7 +484,7 @@ export function RelatedLinks({
               </Link>
             </li>
           ))}
-        </ul>
+        </Reveal>
       </Container>
     </Section>
   );

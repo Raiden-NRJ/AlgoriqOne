@@ -2,8 +2,9 @@ import { ArrowRight, ArrowDown } from 'lucide-react';
 import { chain } from '@/content/homepage';
 import { Container, Eyebrow, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
+import { stagger } from '@/components/site/motion';
 import Image from 'next/image';
-import { CHAIN_PHOTOS, ChainCurrent } from '@/components/diagrams/chain-steps';
+import { CHAIN_PHOTOS, ChainCurrent, ChainRail } from '@/components/diagrams/chain-steps';
 
 /**
  * §3 The chain — the centrepiece of the site (docs/01 §8, beat 1).
@@ -56,7 +57,7 @@ export function Chain() {
                       <span className="text-label text-[var(--color-fg-subtle)]">
                         Step {index + 1}
                       </span>
-                      <span className="rounded-full bg-[var(--color-brand-50)] px-2 py-0.5 text-xs font-medium text-[var(--color-brand-800)]">
+                      <span className="rounded-full bg-[var(--color-chip)] px-2 py-0.5 text-xs font-medium text-[var(--color-chip-fg)]">
                         {link.module}
                       </span>
                     </div>
@@ -127,7 +128,7 @@ export function Chain() {
                     }
                   >
                     {index < chain.links.length - 1 ? (
-                      <span className="grid size-7 place-items-center rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-brand-600)] shadow-[var(--shadow-e1)]">
+                      <span className="grid size-7 place-items-center rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-link)] shadow-[var(--shadow-e1)]">
                         {/* Already inside an aria-hidden wrapper; marked
                             individually too so the intent survives a refactor
                             that moves them out of it. */}
@@ -142,6 +143,45 @@ export function Chain() {
               );
             })}
           </ol>
+        </Reveal>
+
+        {/*
+          P2's signature moment (deck slide 04): the rail draws over 800ms, its
+          five nodes stagger in at 70ms, then the cyan token travels the rail
+          over 1400ms and parks on the last stage.
+
+          It sits *below* the card row rather than behind it. Behind was tried
+          on paper and does not work: ChainCurrent already occupies that band
+          and is deliberately transparent across the middle — a token running
+          along it would vanish for two thirds of its journey, which is the one
+          part of this that has to be seen.
+
+          Unlabelled: the cards above already name the five stages, and
+          repeating them is what got `home.jpg` removed from this section
+          (see the note below). xl only, because a horizontal rail under a
+          horizontal row is the composition; below xl the row is a column and
+          the cards' own arrows carry the sequence.
+
+          Its own Reveal, so `.reveal-seen` lands on this block when the rail
+          itself is in view rather than when the heading is.
+        */}
+        <Reveal className="hidden xl:block">
+          {/*
+            Inset to the first and last card centres, so the rail's nodes sit
+            under the cards rather than across the whole container.
+
+            Each <li> is flex-1 and holds a card plus a 2.75rem connector slot
+            (px-2 + size-7 + px-2), reserved on the last one too. So one column
+            is 20% of the container, the card is 20% − 2.75rem, and its centre
+            is 10% − 1.375rem from the column's start. The connector sits
+            *after* the card, which is why the two margins differ: the last
+            card's centre is left of the 90% mark by the same 1.375rem.
+
+            All in CSS, so it stays exact at every width with nothing measured.
+          */}
+          <div className="ms-[calc(10%-1.375rem)] me-[calc(10%+1.375rem)]">
+            <ChainRail delays={chain.links.map((_, i) => stagger(i))} />
+          </div>
         </Reveal>
 
         {/*

@@ -71,14 +71,14 @@ export default async function BlogPage() {
                   meantime, the{' '}
                   <a
                     href="/platform/architecture"
-                    className="font-medium text-[var(--color-brand-700)] underline decoration-[var(--color-brand-300)] underline-offset-4"
+                    className="font-medium text-[var(--color-link)] underline decoration-[var(--color-link)]/50 underline-offset-4"
                   >
                     architecture page
                   </a>{' '}
                   and{' '}
                   <a
                     href="/security/permissions"
-                    className="font-medium text-[var(--color-brand-700)] underline decoration-[var(--color-brand-300)] underline-offset-4"
+                    className="font-medium text-[var(--color-link)] underline decoration-[var(--color-link)]/50 underline-offset-4"
                   >
                     how authorization works
                   </a>{' '}

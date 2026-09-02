@@ -23,6 +23,11 @@ export function Logo({
   const word =
     size === 'lg' ? 'text-[1.375rem]' : size === 'sm' ? 'text-[1rem]' : 'text-[1.0625rem]';
 
+  /*
+    The tile stays a *fill*, so it keeps the brand's own 500/600 values — rule
+    12 says those are Algoryq's and unmodified, and a fill is exactly where they
+    still work on the dark ground. Only text moved to the semantic layer.
+  */
   const tileBg = tone === 'band' ? 'var(--color-brand-500)' : 'var(--color-brand-600)';
 
   return (
@@ -46,7 +51,7 @@ export function Logo({
           Algoryq{' '}
           <span
             className={
-              tone === 'band' ? 'text-[var(--color-brand-300)]' : 'text-[var(--color-brand-600)]'
+              tone === 'band' ? 'text-[var(--color-link)]' : 'text-[var(--color-link)]'
             }
           >
             One
@@ -70,12 +75,12 @@ export function PoweredBy({ tone = 'default' }: { tone?: 'default' | 'band' }) {
         className={cn(
           'font-medium underline decoration-transparent underline-offset-4 transition-colors',
           onBand
-            ? 'text-[var(--color-band-fg)] hover:decoration-[var(--color-brand-300)]'
-            : 'text-[var(--color-fg)] hover:decoration-[var(--color-brand-600)]',
+            ? 'text-[var(--color-band-fg)] hover:decoration-[var(--color-link)]'
+            : 'text-[var(--color-fg)] hover:decoration-[var(--color-link)]',
         )}
       >
         {PARENT.wordmark.lead}
-        <span className={onBand ? 'text-[var(--color-brand-300)]' : 'text-[var(--color-brand-600)]'}>
+        <span className="text-[var(--color-link)]">
           {PARENT.wordmark.accent}
         </span>
       </a>

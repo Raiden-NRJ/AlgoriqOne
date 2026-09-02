@@ -1,34 +1,29 @@
-import Image from 'next/image';
 import { Check } from 'lucide-react';
 import { intelligence } from '@/content/homepage';
-import { Container, SampleDataNote, Section, SectionHeading } from '@/components/site/primitives';
+import { cn, Container, SampleDataNote, Section, SectionHeading } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
+import { stagger, STAGGER_TIGHT } from '@/components/site/motion';
 
 /**
  * §7 Analytics & reporting — beat 6.
  *
- * The visual is a static screenshot as of 2026-08-10, replacing the
- * `GraphVideo` loop that ran here from 2026-08-09. Only this section changed —
- * the hero keeps its own video, which is a different asset entirely
- * (`hero-loop.webm/mp4` + poster, not the workflow loop this section used).
+ * The visual has been three things: a `GraphVideo` loop (2026-08-09), a static
+ * screenshot (2026-08-10), and — since 2026-09-02 — a DOM chart. Each step
+ * traded a picture of the product for something the repo can actually hold.
  *
- * `next/image` rather than a bare <img>: the source is a 2752×1536 JPEG, and
- * next.config.mjs already asks for AVIF/WebP, so this gets format negotiation
- * and a responsive srcset for free. Passing the intrinsic width/height reserves
- * the box before the bytes land, so the swap costs no CLS — the video it
- * replaced reserved its box the same way, via aspect ratio.
+ * The screenshot went because of blocker B11, not because of the motion work:
+ * its x-axis read Jan 1, 13, 9, 16, 22, 25, 27, 29, **33** — out of sequence,
+ * with a date that does not exist — and its member table repeated one row five
+ * times. That is unfixable from a content module when it is pixels. As data
+ * the same chart is correct by construction and every figure is checkable
+ * arithmetic. It is still sample data and still labelled as such (rule 1).
  *
- * Removing the video also takes a client island off the homepage; this section
- * is now fully server-rendered.
+ * It also made P7's redlines applicable for the first time: bars can scale,
+ * one KPI can be haloed, the annotation can cross-fade. `reporting-utilisation
+ * -dashboard.jpg` stays in `public/images/`, unreferenced.
+ *
+ * Fully server-rendered — no island, no next/image, no raster.
  */
-
-/** Intrinsic size of the source file. Keeps the reserved box exact. */
-const SHOT = {
-  src: '/images/reporting-utilisation-dashboard.jpg',
-  width: 2752,
-  height: 1536,
-  alt: 'The Algoryq One reporting surface: a “Reporting & Utilisation Analytics” page with a saved-view selector and CSV export, a “Utilisation vs. Capacity” bar chart comparing logged hours against capacity across the current month, a weekly-schedule badge, and a filtered table of members showing role, project, logged hours, capacity hours and utilisation percentage.',
-} as const;
 
 export function Intelligence() {
   return (
@@ -37,44 +32,49 @@ export function Intelligence() {
         {/* min-w-0: a wide child of a grid column (CLAUDE.md). */}
         <Reveal className="min-w-0">
           <figure className="flex flex-col gap-3">
-            {/*
-              Same frame the video had — rounded-xl, hairline border, e2 shadow,
-              overflow-hidden so the corners actually clip. `bg-black` is gone
-              with it: that was backing a letterboxed video, and this source is
-              opaque edge to edge.
-            */}
-            <div className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-border)] shadow-[var(--shadow-e2)]">
-              <Image
-                src={SHOT.src}
-                alt={SHOT.alt}
-                width={SHOT.width}
-                height={SHOT.height}
-                /* 7 of 12 columns inside a 90rem container above lg, full width below. */
-                sizes="(min-width: 1024px) 55vw, 100vw"
-                className="block h-auto w-full"
-              />
+            <div className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-e2)] sm:p-6">
+              <UtilisationChart />
             </div>
             <figcaption>
               {/*
-                Not the default Demo-tenant line. This mockup shows names and
-                projects that are not in content/demo-tenant.ts, so claiming it
-                came from that dataset would be false (rule 1).
+                Still sample data, still labelled — but coherent now. The
+                screenshot this replaces carried blocker B11: an x-axis reading
+                Jan 1, 13, 9, 16, 22, 25, 27, 29, 33, and a table repeating one
+                member five times. Neither was fixable from a content module,
+                because it was pixels. See content/homepage.ts `chart`.
               */}
-              <SampleDataNote>Illustration of the reporting surface. Sample data.</SampleDataNote>
+              <SampleDataNote>
+                Sample utilisation for one team. Percentages are logged ÷ capacity.
+              </SampleDataNote>
             </figcaption>
           </figure>
         </Reveal>
 
-        <Reveal delay={70} className="flex flex-col gap-6">
+        <Reveal delay={STAGGER_TIGHT} className="flex flex-col gap-6">
           <SectionHeading
             eyebrow={intelligence.eyebrow}
             title={intelligence.headline}
             description={intelligence.sub}
           />
+          {/*
+            P7's "70ms apart" (deck slide 09). The slide applies it to bars in a
+            chart; this section's chart is a raster screenshot, so the closest
+            honest target is the points list — five items, one observer on the
+            <ul>, delays from stagger(). The screenshot itself rises with the
+            enclosing Reveal, which is P7's "static base".
+
+            The halo, the bars and the annotation all landed once the chart
+            became DOM — see UtilisationChart below.
+          */}
           <ul className="flex flex-col gap-2.5">
-            {intelligence.points.map((point) => (
-              <li key={point} className="flex items-start gap-2.5 text-sm">
-                <Check className="mt-0.5 size-4 shrink-0 text-[var(--color-brand-600)]" aria-hidden />
+            {intelligence.points.map((point, i) => (
+              <li
+                key={point}
+                data-rise-item=""
+                style={{ animationDelay: `${stagger(i)}ms` }}
+                className="flex items-start gap-2.5 text-sm"
+              >
+                <Check className="mt-0.5 size-4 shrink-0 text-[var(--color-link)]" aria-hidden />
                 <span className="text-[var(--color-fg-muted)]">{point}</span>
               </li>
             ))}
@@ -82,5 +82,81 @@ export function Intelligence() {
         </Reveal>
       </Container>
     </Section>
+  );
+}
+
+/**
+ * P7's composition, built as DOM (2026-09-02).
+ *
+ * Deck slide 09 redlines BARS `scaleY 320ms · 70ms apart`, HALO `320ms, one KPI
+ * only` and ANNOTATION `cross-fade 200ms`. None of them could be applied while
+ * this section was a raster: there were no bars to scale and no KPI to halo —
+ * "the composition is missing, not the technique", as the deck itself puts it.
+ *
+ * Height comes from an inline custom property on the track; the animation only
+ * ever scales what is already sized, so the axis never moves and no layout
+ * property is animated.
+ *
+ * The peak bar is derived from the data (`chart.peakWeek`), not marked up by
+ * hand, which is what makes "one KPI only" a property of the content rather
+ * than a styling convention someone can break later.
+ */
+function UtilisationChart() {
+  const { chart } = intelligence;
+  const max = Math.max(...chart.weeks.map((w) => w.capacity));
+
+  return (
+    <div className="flex flex-col gap-4">
+      <p className="text-label text-[var(--color-fg-subtle)]">{chart.label}</p>
+
+      <div className="flex items-end gap-2 sm:gap-3">
+        {chart.weeks.map((w, i) => {
+          const pct = Math.round((w.logged / w.capacity) * 100);
+          const peak = w.week === chart.peakWeek;
+
+          return (
+            <div key={w.week} className="flex min-w-0 flex-1 flex-col items-center gap-2">
+              {/* Track: fixed height, so the axis is stable before anything animates. */}
+              <div className="relative flex h-40 w-full items-end justify-center">
+                {peak ? (
+                  <span
+                    aria-hidden
+                    data-kpi-halo=""
+                    style={{ animationDelay: `${stagger(i)}ms` }}
+                    className="pointer-events-none absolute inset-x-[-30%] bottom-0 h-[60%]"
+                  />
+                ) : null}
+                <span
+                  data-bar=""
+                  style={{ height: `${(w.logged / max) * 100}%`, animationDelay: `${stagger(i)}ms` }}
+                  className={cn(
+                    'relative w-full rounded-t-[var(--radius-sm)]',
+                    peak ? 'bg-[var(--color-cyan-500)]' : 'bg-[var(--color-link)]/35',
+                  )}
+                />
+              </div>
+              <span className="text-xs text-[var(--color-fg-subtle)]">w{w.week}</span>
+              <span
+                className={cn(
+                  'text-xs font-medium',
+                  peak ? 'text-[var(--color-accent-text)]' : 'text-[var(--color-fg-muted)]',
+                )}
+              >
+                {pct}
+                {chart.unit}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      <p
+        data-annotation=""
+        style={{ animationDelay: `${stagger(chart.weeks.length)}ms` }}
+        className="w-fit rounded-full border border-[var(--color-tint-border)] bg-[var(--color-tint)] px-3 py-1 text-xs font-medium text-[var(--color-accent-text)]"
+      >
+        {chart.annotation}
+      </p>
+    </div>
   );
 }

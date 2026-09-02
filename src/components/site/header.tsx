@@ -100,7 +100,7 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-200',
+        'sticky top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-[var(--duration-cross-fade)]',
         scrolled
           ? 'border-b border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-bg)_85%,transparent)] backdrop-blur-md'
           : 'border-b border-transparent',
@@ -172,7 +172,7 @@ export function SiteHeader() {
                       <ChevronDown
                         aria-hidden="true"
                         className={cn(
-                          'size-3.5 transition-transform duration-200',
+                          'size-3.5 transition-transform duration-[var(--duration-lift)]',
                           isOpen && 'rotate-180',
                         )}
                       />
