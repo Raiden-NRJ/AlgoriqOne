@@ -65,7 +65,11 @@ export function Faq() {
         <Reveal className="text-center">
           <Link
             href="/faq"
-            className="inline-flex min-h-6 items-center gap-1.5 py-1 text-sm font-medium text-[var(--color-link)] underline decoration-[var(--color-brand-300)] underline-offset-4 hover:decoration-[var(--color-brand-600)]"
+            /* hover:decoration was --color-brand-600, which on the azure ground
+               is a dark-blue underline on a dark surface — the hover state made
+               the affordance *less* visible than at rest. All four of the
+               site's "read more" links now carry this one semantic recipe. */
+            className="inline-flex min-h-6 items-center gap-1.5 py-1 text-sm font-medium text-[var(--color-link)] underline decoration-[var(--color-link)]/50 underline-offset-4 transition-colors hover:decoration-[var(--color-link-strong)]"
           >
             {faqIntro.cta}
             <ArrowRight className="size-4" aria-hidden />

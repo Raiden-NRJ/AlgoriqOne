@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { PageHero } from '@/components/page/page-template';
 import { Container, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
+import { stagger } from '@/components/site/motion';
 import { formatDate, getArticles } from '@/lib/content-api';
 
 export const metadata: Metadata = {
@@ -31,9 +32,18 @@ export default async function BlogPage() {
       <Section>
         <Container width="wide">
           {articles.length > 0 ? (
-            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {articles.map((article) => (
-                <Reveal as="li" key={article.id}>
+            /*
+              One observer on the grid, not one per card (deck slide 06). This
+              was still `<Reveal as="li">` per article — the pattern the rest of
+              the site was converted off on 2026-09-01, missed here because the
+              list renders from live service data and is empty while the
+              content service is unreachable, so it never showed up in a count
+              of rendered observers. It would have arrived with the first
+              published article.
+            */
+            <Reveal as="ul" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {articles.map((article, i) => (
+                <li key={article.id} data-rise-item="" style={{ animationDelay: `${stagger(i)}ms` }}>
                   <article className="flex h-full flex-col gap-3 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-e1)]">
                     {article.category ? (
                       <span className="text-label text-[var(--color-fg-subtle)]">
@@ -55,9 +65,9 @@ export default async function BlogPage() {
                       </time>
                     ) : null}
                   </article>
-                </Reveal>
+                </li>
               ))}
-            </ul>
+            </Reveal>
           ) : (
             <Reveal>
               <div className="flex max-w-[min(62ch,100%)] flex-col gap-4 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-bg-subtle)] p-8">

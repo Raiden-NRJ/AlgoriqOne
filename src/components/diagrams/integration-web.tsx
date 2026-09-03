@@ -20,6 +20,26 @@
  * Below xl the wire mesh is dropped entirely and the portal window stands on
  * its own: at that width the nodes would be 20px of unreadable line art, and a
  * smaller true thing beats a shrunken busy one.
+ *
+ * ── UNRENDERED, and it is NOT ready for the azure ground ──────────────────
+ * Nothing imports this component. It is kept deliberately, as blocker B10's
+ * option (b): the DOM composition the hero video replaced on 2026-08-09, ready
+ * to be reinstated if the video's misspelled baked-in text is never re-cut.
+ *
+ * It was written for the white ground and was **skipped by the 2026-09-02
+ * semantic-token migration on purpose**, because a component that renders
+ * nowhere cannot be verified by looking at it — a blind token swap here would
+ * have produced confidence rather than correctness. It is now the only file in
+ * `src/` still reaching past the semantic layer for a foreground colour: four
+ * call sites on `brand-600/700/800` as text, plus `brand-50/100/200` chip
+ * fills that assume a light surface underneath.
+ *
+ * On the azure ground those invert: brand-700 text measures ~2:1 on the dark
+ * surface, and the pale chip fills become light slabs. So reinstating this is
+ * a **dark-ground design pass**, not a find-and-replace — expect to rebuild
+ * the chip recipe on `--color-chip` / `--color-chip-fg` and move the icon and
+ * wire strokes onto `--color-link` / `--color-accent-line`, then add its pairs
+ * to `check:contrast` before it ships.
  */
 import { Clock, Flag, Handshake, Lock, ReceiptText, SquareCheckBig } from 'lucide-react';
 import type { ComponentType, ReactNode } from 'react';

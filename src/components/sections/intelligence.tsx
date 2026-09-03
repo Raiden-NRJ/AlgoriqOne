@@ -1,7 +1,8 @@
 import { Check } from 'lucide-react';
 import { intelligence } from '@/content/homepage';
-import { cn, Container, SampleDataNote, Section, SectionHeading } from '@/components/site/primitives';
+import { Container, SampleDataNote, Section, SectionHeading } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
+import { UtilisationChart } from '@/components/interactive/utilisation-chart';
 import { stagger, STAGGER_TIGHT } from '@/components/site/motion';
 
 /**
@@ -22,7 +23,12 @@ import { stagger, STAGGER_TIGHT } from '@/components/site/motion';
  * one KPI can be haloed, the annotation can cross-fade. `reporting-utilisation
  * -dashboard.jpg` stays in `public/images/`, unreferenced.
  *
- * Fully server-rendered — no island, no next/image, no raster.
+ * No next/image and no raster. One island, as of 2026-09-03: the chart's own
+ * reveal moved to `interactive/utilisation-chart.tsx` so the bars could stop
+ * keying off `.reveal-seen` — `<Reveal>`'s 2s failsafe fires whether or not the
+ * block is on screen, and on a section this far down the page that meant the
+ * bars had finished growing before anyone scrolled to them. The counting
+ * percentages needed JS regardless. Everything else here stays server-rendered.
  */
 
 export function Intelligence() {
@@ -33,7 +39,7 @@ export function Intelligence() {
         <Reveal className="min-w-0">
           <figure className="flex flex-col gap-3">
             <div className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-e2)] sm:p-6">
-              <UtilisationChart />
+              <UtilisationChart chart={intelligence.chart} />
             </div>
             <figcaption>
               {/*
@@ -57,14 +63,15 @@ export function Intelligence() {
             description={intelligence.sub}
           />
           {/*
-            P7's "70ms apart" (deck slide 09). The slide applies it to bars in a
-            chart; this section's chart is a raster screenshot, so the closest
-            honest target is the points list — five items, one observer on the
-            <ul>, delays from stagger(). The screenshot itself rises with the
-            enclosing Reveal, which is P7's "static base".
+            P7's "70ms apart" (deck slide 09) applied to the points list — five
+            items, one observer on the <ul>, delays from stagger(). Left on the
+            CSS pipeline on purpose: this is the plain Stagger pattern, it needs
+            no measurement and no counter, so it has no reason to become JS. The
+            heading above it rises with the enclosing Reveal, which is P7's
+            "static base".
 
-            The halo, the bars and the annotation all landed once the chart
-            became DOM — see UtilisationChart below.
+            The same redline drives the bars, but from the island — see
+            interactive/utilisation-chart.tsx for why that one had to move.
           */}
           <ul className="flex flex-col gap-2.5">
             {intelligence.points.map((point, i) => (
@@ -82,81 +89,5 @@ export function Intelligence() {
         </Reveal>
       </Container>
     </Section>
-  );
-}
-
-/**
- * P7's composition, built as DOM (2026-09-02).
- *
- * Deck slide 09 redlines BARS `scaleY 320ms · 70ms apart`, HALO `320ms, one KPI
- * only` and ANNOTATION `cross-fade 200ms`. None of them could be applied while
- * this section was a raster: there were no bars to scale and no KPI to halo —
- * "the composition is missing, not the technique", as the deck itself puts it.
- *
- * Height comes from an inline custom property on the track; the animation only
- * ever scales what is already sized, so the axis never moves and no layout
- * property is animated.
- *
- * The peak bar is derived from the data (`chart.peakWeek`), not marked up by
- * hand, which is what makes "one KPI only" a property of the content rather
- * than a styling convention someone can break later.
- */
-function UtilisationChart() {
-  const { chart } = intelligence;
-  const max = Math.max(...chart.weeks.map((w) => w.capacity));
-
-  return (
-    <div className="flex flex-col gap-4">
-      <p className="text-label text-[var(--color-fg-subtle)]">{chart.label}</p>
-
-      <div className="flex items-end gap-2 sm:gap-3">
-        {chart.weeks.map((w, i) => {
-          const pct = Math.round((w.logged / w.capacity) * 100);
-          const peak = w.week === chart.peakWeek;
-
-          return (
-            <div key={w.week} className="flex min-w-0 flex-1 flex-col items-center gap-2">
-              {/* Track: fixed height, so the axis is stable before anything animates. */}
-              <div className="relative flex h-40 w-full items-end justify-center">
-                {peak ? (
-                  <span
-                    aria-hidden
-                    data-kpi-halo=""
-                    style={{ animationDelay: `${stagger(i)}ms` }}
-                    className="pointer-events-none absolute inset-x-[-30%] bottom-0 h-[60%]"
-                  />
-                ) : null}
-                <span
-                  data-bar=""
-                  style={{ height: `${(w.logged / max) * 100}%`, animationDelay: `${stagger(i)}ms` }}
-                  className={cn(
-                    'relative w-full rounded-t-[var(--radius-sm)]',
-                    peak ? 'bg-[var(--color-cyan-500)]' : 'bg-[var(--color-link)]/35',
-                  )}
-                />
-              </div>
-              <span className="text-xs text-[var(--color-fg-subtle)]">w{w.week}</span>
-              <span
-                className={cn(
-                  'text-xs font-medium',
-                  peak ? 'text-[var(--color-accent-text)]' : 'text-[var(--color-fg-muted)]',
-                )}
-              >
-                {pct}
-                {chart.unit}
-              </span>
-            </div>
-          );
-        })}
-      </div>
-
-      <p
-        data-annotation=""
-        style={{ animationDelay: `${stagger(chart.weeks.length)}ms` }}
-        className="w-fit rounded-full border border-[var(--color-tint-border)] bg-[var(--color-tint)] px-3 py-1 text-xs font-medium text-[var(--color-accent-text)]"
-      >
-        {chart.annotation}
-      </p>
-    </div>
   );
 }

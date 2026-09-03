@@ -1,8 +1,11 @@
 # Animation Implementation Matrix
 
-**Status:** **All 7 choreographed beats built, 2026-09-02**, and the patterns now run site-wide
-through `page-template.tsx` (~40 routes). Outstanding: parallax (deck: "specified, not shipped"),
-and the azure dark-ground direction, which conflicts with rule 10 and needs a decision.
+**Status:** **All 7 choreographed beats built, 2026-09-02.** Parallax shipped the same day, so
+**6 of 6 patterns are built** and nothing in the deck's vocabulary is outstanding. The azure dark
+ground is applied and rule 10 rewritten. **2026-09-02, second pass:** the two remaining
+*composition* gaps named by `MOTION_GRAPHICS_BRIEF.md` §1.1–1.2 are closed — the architecture
+diagram has connectors, and the pipeline animates — and the vocabulary was carried onto the deep
+routes that had inherited only Rise + Stagger (§6b below).
 **Source of truth:** `ANIMATION_SPEC_FROM_VIDEO.md` (Phase 1), which is transcribed from
 the M5 motion deck. Where this matrix and that spec disagree, the spec wins.
 
@@ -20,7 +23,7 @@ Beat order is the deck's (slide 11), which matches `src/app/page.tsx`.
 | 1 | Hero | `hero.tsx` | — | **LOCKED · reference only** | none |
 | 2 | Chain | `chain.tsx` | **Draw + Transit + Stagger** | 800 ms draw · 70 ms nodes · 1400 ms transit | ✅ **done** |
 | 3 | Problem | `problem.tsx` | **Timed cues + Stagger** | 500 ms apart · `timeupdate` driver · 70 ms list | ✅ **done** — driver built; cues drive the adjacent list, not overlays |
-| 4 | Platform | `platform.tsx` | **Stagger + Lift** | 320 ms/card · 70 ms × 6 at cap · lift −2 px/120 ms · one observer | ✅ **done** |
+| 4 | Platform | `platform.tsx` | **Stagger + Lift + Draw** | 320 ms/card · 70 ms × 6 at cap · lift −2 px/120 ms · one observer | ✅ **done** — connectors added 2026-09-02, see §6b |
 | 5 | Permissions | `permissions.tsx` | Rise + Stagger | inherits (60–80 ms) | ✅ **done** |
 | 6 | Capabilities | `capabilities.tsx` | **Stagger + Sweep + Lift** | 320 ms · 80 ms · rule 480 ms scaleX origin-left · observer @ 25% | ✅ **done** |
 | 7 | Intelligence | `intelligence.tsx` | **Bars + Halo + Annotation** | scaleY 320 ms · 70 ms apart · halo 320 ms one KPI · annotation 200 ms | ✅ **done** — chart built as DOM, B11 retired |
@@ -238,6 +241,220 @@ Stagger, Draw, Cross-fade, Lift and Sweep are all built and measured — but the
 choreography assumes the deck's own layouts. So the remaining work is not animation work; it is a
 decision about whether the sections adopt the deck's compositions. That decision covers P3, P6 and
 P7 together.
+
+## 6b. The composition gaps, closed — 2026-09-02
+
+`MOTION_GRAPHICS_BRIEF.md` Part 1. §6's systemic finding was that the remaining work was *not*
+animation work but a decision about whether the sections adopt the deck's compositions. Three of
+those decisions were taken here, and one turned out to have been taken already.
+
+### 6b.1 The architecture diagram now draws its own thesis (brief §1.1)
+
+**New:** `components/diagrams/architecture-rail.tsx`. **Wired in:** `sections/platform.tsx`.
+
+§4's "How it fits together" rendered three stacked boxes — four app cards, a gateway, a shared
+spine — with **no line or arrow between them at all**, while the copy above it claimed *"all of
+them sit on one gateway and one shared spine."* The diagram enumerated the parts and drew none of
+the relationship. It now draws four connectors from the app-card centres into the gateway, and one
+from the gateway into the spine.
+
+Technique is ChainRail's, reused rather than re-derived: `pathLength="100"` with
+`stroke-dasharray/dashoffset 100 → 0`, so nothing is measured and editing a `d` cannot break the
+draw; gated on a `.reveal-seen` ancestor so it inherits `<Reveal>`'s three-path resolve instead of
+adding a fourth way to fail; `role="presentation"`, `aria-hidden`, nothing focusable, no text.
+
+**One deliberate difference from ChainRail: it is one path per line, not one path total.** Each
+carries its own `stagger(i)` delay, so the fan arrives in the 70 ms band. A single multi-subpath
+path was tried on paper first and rejected — the dash progresses through subpaths in `d` order, and
+with the collector line being ~84% of the total length the whole gesture reads as one wire being
+pulled sideways rather than as four things converging. Draw and Stagger composed; no seventh
+pattern.
+
+**Alignment is structural, and it is exact.** For an N-column grid of width `W` and gap `g`, the
+first column's centre is `W/2N − (N−1)g/2N`; inset the rail by that on both sides and its viewBox
+`0 → 1000` spans exactly first-centre to last-centre, so the inner drops land on exact fractions
+and `x=500` is the container centre where the gateway sits. Nothing is measured at runtime. One
+rail is rendered per breakpoint (1 / 2 / 4 columns) because a converging fan under a single stacked
+column is not a fan.
+
+> **The bug this cost, worth not repeating.** The first version put the inset margins on the `<svg>`
+> itself, which also carried `w-full`. A block-level flex item with `width: auto` is stretched to
+> the container *minus its margins* — which is the geometry above — but `w-full` pins it to the full
+> container width and the margins then push it outward. Measured at 1280 px: drops spaced
+> **372.7 px** against card centres **282.5 px** apart, with only the first one landing correctly,
+> because only its inset had been applied before the width resolved. The fix is a wrapper `<div>`
+> carrying the margins. **The first drop being exactly right is what made this look correct at a
+> glance** — it is the kind of thing the screenshot pass exists for.
+
+`preserveAspectRatio="none"` with `vector-effect="non-scaling-stroke"`: the rail is 40 px tall and
+up to ~1200 px wide, so uniform scaling would grow its height with the viewport. There are no
+circles here, only lines, so non-uniform scaling costs only stroke weight, and the vector-effect
+puts that back. Same trade `ChainCurrent` already takes.
+
+**Measured**, 8 widths — 375 / 640 / 768 / 1024 / 1280 / 1440 / 1728 / 2560:
+
+| | |
+|---|---|
+| Drop x vs. app-card centre | **Δ = 0.00 px at every width and every column count** |
+| Stroke weight | **1.50 px at every width** (non-scaling-stroke holds) |
+| Gap to the boxes above/below | **0.00 px** — the `-my-5` cancels the flex `gap-5` exactly |
+| Animation | `draw-in 0.8s ease-out-quint`, delays **0 / 70 / 140 / 210 ms**, 5 paths at `lg` |
+| At rest | `stroke-dashoffset: 0` — painted, which is the default state |
+| Reduced motion | `animation: none`, dashoffset still 0 → **drawn, held still** |
+
+> **Superseded in part, same day.** A later 2026-09-03 pass (owner instruction) kept this component
+> and its geometry but changed its *driver*: at `sm` and up the draw is now scroll-scrubbed by
+> `interactive/architecture-draw.tsx` rather than run as a one-shot CSS entrance. The measurements
+> above were taken against the CSS driver and still describe the geometry, the stroke and the
+> reduced-motion path — none of which that change touches — but **the homepage no longer shows
+> `draw-in 0.8s`**; scrubbed, the paths sit at `stroke-dashoffset: 100` until the scroll advances
+> them. Verified after the change: the offsets do run 100 → 0 across the section and end at 0, with
+> no console errors, and reduced motion still resolves to 0 (drawn) immediately.
+>
+> One consequence is worth stating plainly, because it inverts a contract this file has defended
+> twice: with the island active the resting state below the trigger is **undrawn**, not drawn. The
+> CSS default is still drawn and the no-JS path is still complete — the island only winds it back —
+> but that now depends on the island behaving, where before it depended on nothing.
+
+### 6b.2 The pipeline rebuilds instead of redrawing (brief §1.2)
+
+The "End to end" stage list — a dot per stage with a hairline segment between — was fully static in
+**two** places: `interactive/cluster-switcher.tsx` (homepage §4 and `/demo`) and `page-template.tsx`'s
+`Chain` (12 blocks across the product / platform / security / solutions routes). On the switcher it
+mattered most: it sits beside a tablist whose indicator *does* animate, so a cluster change read as
+"the label changed" rather than "the pipeline rebuilt".
+
+Dots stagger in on `fade-in`; the segments grow `scaleY` from `transform-origin: top` — never a
+height, which is a layout property that janks (docs/09 principle 5). The Sweep in `capabilities.tsx`
+is the same trade for the same reason: "a transform, never a width".
+
+> **Deviation from the brief, stated.** The brief specifies framer variants keyed off `cluster.id`.
+> This is CSS. The reason only shows up once both call sites are in view: `Chain` is a **server
+> component and cannot use framer at all**, so a framer implementation meant two implementations of
+> one pattern with the durations written out twice. docs/09 §7 is "CSS-first — most of this site's
+> motion needs no JS". The brief's actual requirement, *keyed to cluster switching*, is satisfied
+> for free: the panel already remounts on `key={cluster.id}`, and a CSS animation restarts whenever
+> its element is inserted. Same trigger, one implementation, no numbers duplicated into JS.
+
+**Measured:** dots `fade-in 0.32s` at **0 / 70 / 140 / 210 / 280 / 350 ms** — the cap biting on
+Revenue's six-stage chain; segments `grow-y 0.32s` with `transform-origin` y = **0px**. **60 ms
+after clicking a different cluster tab**, the first segment is at `scaleY 0.766` and the first dot
+at `opacity 0.766` — i.e. mid-animation, which is the direct evidence that the keyed remount
+restarts them. Under reduced motion the same click reads `scaleY 1.000` / `opacity 1` immediately.
+
+> **Superseded on the ClusterSwitcher, same day.** A later 2026-09-03 pass replaced the switcher's
+> inline pipeline with the `interactive/chain-stepper.tsx` island (`data-step-*` rather than
+> `data-pipe-*`). The cluster-switch measurement above therefore describes the CSS implementation
+> that was there when it was taken, not what the homepage and `/demo` render now — re-checked
+> after the change: 6 steps, all resolved at `opacity: 1`, no console errors.
+>
+> **`page-template.tsx`'s `Chain` is untouched and still runs this**, which is the larger half of
+> the work: 12 blocks across the product / platform / security / solutions routes. Re-verified
+> against the current tree — `/product/revenue` shows 6 dots at `fade-in` 0/70/140/210/280/350 ms,
+> `animation: none` under reduced motion, and **0 elements left at opacity 0** in either mode.
+
+### 6b.3 The deep routes (brief §1.3)
+
+Applied only where a page's **existing, real** composition supported it — no overlay copy, no
+invented KPI, nothing manufactured to give motion something to point at.
+
+| Where | What | Observers added |
+|---|---|---|
+| `primitives.tsx` `BulletList` | Stagger. The widest single application on the site — it renders on nearly every route | **0** — every call site is already inside a `<Reveal>` |
+| `page-template.tsx` `Chain` | The pipeline above, on 12 blocks | 0 |
+| `page-template.tsx` `Panel` | Stagger on the permission-key chips | 0 |
+| `page-template.tsx` `ChainStrip` | Stagger on Deal → … → Invoice; `<Reveal as="ol">` | 1 per deep page |
+| `/security` | Stagger + Lift on the six control cards | 0 |
+| `/company/about` | Stagger on the platform-facts row and the four principles | 0 |
+| `/faq` | Stagger on the question list | 0 |
+| `/company/contact` | Stagger on the contact routes | 0 |
+| `/resources/blog`, `/resources/changelog` | **One observer on the list, not one per card** | −N per list |
+
+`Reveal` gained `'ol'` alongside `'ul'`, for the same reason and one more: an ordered list also
+loses its numbering semantics to a wrapper `<div>`, and in the ChainStrip the order *is* the
+content.
+
+> **The blog/changelog find.** Both were still `<Reveal as="li">` per item — the one-observer-per-child
+> pattern the rest of the site was converted off on 2026-09-01, and the exact thing deck slide 06
+> forbids. They were missed because both lists render from a live content service that is
+> unreachable, so they render empty and contributed **zero** observers to any count. The bug would
+> have arrived with the first published article. Fixed on both.
+
+**Declined, with reasons, rather than manufactured:**
+
+- **`permission-matrix.tsx`** — the brief asks for "a diagram or matrix with real relationships and
+  zero connector motion". It is a `<table>`; it has no connectors. Adding some would mean inventing
+  a diagram. It already animates its badge and its consequence list.
+- **P3's video overlays** — unchanged and for the unchanged reason (§5): the four gaps are already
+  named as text beside the video.
+- **`/legal/[doc]`, `/roi`, `/demo`, `/developers/*`** — already covered by the `BulletList` change
+  or by the template; nothing further that is real.
+
+### 6b.4 Parallax (brief §1.4) — the question was already answered
+
+**No decision needed, and no layered hero was built.** The brief records parallax as "specified,
+not shipped" and asks for a choice between rebuilding a layered hero and formally retiring it. That
+premise is **stale**: parallax shipped on **2026-09-02**, in the same session that produced the M6
+analysis the brief was written from — `interactive/hero-video.tsx`, applied to the hero video's own
+backdrop layer, moving *against* the pointer, capped at the specified ±8 px, gated on
+`(hover: hover) and (pointer: fine)`, off entirely under reduced motion. Measured then at
+`−7.56px / +6.22px` and exactly inverted at the opposite corner.
+
+So the full-bleed hero did not need to be un-retired to carry it: the video layer *is* the layer.
+**6 of 6 patterns built.** No work, and nothing to record as "will not implement".
+
+## 6c. Token discipline in this pass
+
+- `--duration-row: 220ms` added. It was the **last hard-coded duration in `globals.css`** (P6's
+  code rows), so rule 8 now holds there without exception.
+- Three keyframes renamed from their first call site to the pattern they implement, because each
+  now has a second user: `chain-draw` → **`draw-in`** (ChainRail + ArchitectureRail),
+  `chain-node` → **`fade-in`** (chain nodes + pipeline dots + code rows), `bar-grow` → **`grow-y`**
+  (P7 bars + pipeline segments). Naming a pattern after whichever beat built it first is how the
+  second beat ends up copying the three lines instead of reusing them.
+- `motion.ts` gained a **framer mirror** — `EASE_OUT_QUINT`, `DURATION_RISE_S`,
+  `DURATION_CROSS_FADE_S`, `DURATION_LIFT_S`, `DURATION_INDICATOR_S`, `staggerS()`. framer takes
+  numbers and cannot read a custom property, so the islands each carried their own copy of `0.2`
+  and `[0.16, 1, 0.3, 1]`. `globals.css` stays authoritative; these exist because framer cannot
+  reach it.
+
+## 6d. Semantic-token tail (brief Part 2, Stage 2)
+
+Stages 2–4 had already landed before this pass: the azure ground is applied, and `check:contrast`
+was rewritten for it and passes 48/48. What was left was a genuine tail, and one of it was a live
+bug:
+
+- **`page-template.tsx` `RelatedLinks`** — `group-hover:text-[var(--color-brand-600)]` on the arrow.
+  On the azure ground brand-600 is a *fill* colour measuring ~2.3:1 as an icon on a card, so the
+  hover state made the affordance **less** visible than at rest. → `--color-link`.
+- **`sections/faq.tsx`** — `hover:decoration-[var(--color-brand-600)]`: a dark-blue underline on a
+  dark surface, the same failure. → `--color-link-strong`.
+- **`sections/permissions.tsx`, `sections/security.tsx`** — link text and underline on raw ramp
+  steps. All four of the site's "read more" links now carry one semantic recipe.
+
+**Left alone, deliberately, and each for a reason:**
+
+- **`sections/hero.tsx`** keeps `--color-brand-300` at two call sites. It is not a link colour
+  reaching past the semantic layer — it is a **measured-against-video** choice (4.93:1 against the
+  95th-percentile frame, with brand-400 rejected at 2.95:1) and it carries that measurement in a
+  comment. `--color-link` currently *equals* brand-300, so the swap would be value-identical today
+  and would silently break the day `--color-link` is re-pointed. The literal is the correct thing
+  here.
+- **`sections/permissions.tsx`** keeps `brand-400` on one Check icon: an icon fill on the band, and
+  `check:contrast` already asserts `brand-400 on band-surface` at 5.38:1. (It is a hand-rolled
+  `BulletList tone="band"`; converging the two would change the tick from blue to cyan, which is a
+  design change, not a migration.)
+- **`diagrams/integration-web.tsx`** is now the **only** file in `src/` still using raw ramp steps
+  for a foreground colour — four call sites on brand-600/700/800 as text plus pale chip fills that
+  assume a light surface. It is **unrendered**: kept as blocker B10's option (b). It was skipped on
+  purpose, because a component that renders nowhere cannot be verified by looking at it and a blind
+  token swap would have produced confidence rather than correctness. A warning block was added to
+  its header instead: reinstating it is a dark-ground design pass, not a find-and-replace.
+
+Also corrected: `check-contrast.mjs`'s `FILL_ONLY` note claimed an `fg-inverse on cyan-500` pair was
+"asserted as a normal pair above". **No such row has ever existed.** The comment now says why there
+isn't one — nothing on the site renders text on a cyan fill — and notes that `--color-fg-inverse` is
+light on this ground, so it is not the escape hatch its name suggests.
 
 ## 7. Blockers
 

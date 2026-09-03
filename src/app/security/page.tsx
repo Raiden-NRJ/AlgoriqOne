@@ -8,6 +8,7 @@ import {
 } from '@/components/page/page-template';
 import { BulletList, Container, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
+import { stagger } from '@/components/site/motion';
 import { Illustration } from '@/components/site/illustration';
 import { CERTIFICATIONS, COMPLIANCE_STATEMENT, SECURITY_CONTROLS } from '@/content/proof';
 import { CONTACT } from '@/content/site';
@@ -95,11 +96,16 @@ export default function SecurityHubPage() {
               sizes="(min-width: 1024px) 62vw, 100vw"
               className="max-w-[46rem]"
             />
+            {/* Six control cards in a grid — the same composition §4's app
+                cards have, so the same Stagger + Lift. No observer added: the
+                enclosing <Reveal> supplies the marker. */}
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {SECURITY_CONTROLS.map((control) => (
+              {SECURITY_CONTROLS.map((control, i) => (
                 <li
                   key={control.area}
-                  className="flex flex-col gap-2 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-e1)]"
+                  data-rise-item=""
+                  style={{ animationDelay: `${stagger(i)}ms` }}
+                  className="lift flex flex-col gap-2 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-e1)] hover:border-[var(--color-border-strong)]"
                 >
                   <h3 className="text-sm font-semibold">{control.area}</h3>
                   <p className="text-sm leading-relaxed text-[var(--color-fg-muted)]">

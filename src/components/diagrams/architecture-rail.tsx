@@ -7,18 +7,38 @@
  * no arrow, nothing between them at all. It enumerated the parts and drew none
  * of the relationship it exists to show. These are the lines that draw it.
  *
- * Server-rendered. No island, no observer of its own: the draw is gated on a
- * `.reveal-seen` ancestor, which the enclosing <Reveal> in platform.tsx
- * supplies, so this inherits that component's three-path resolve rather than
- * adding a fourth way to fail. Nothing focusable, no text — the boxes already
- * carry the content, the lines carry only the relationship
- * (`role="presentation"`, `aria-hidden`).
+ * Still server-rendered, and still with no observer of its own. Nothing
+ * focusable, no text — the boxes already carry the content, the lines carry
+ * only the relationship (`role="presentation"`, `aria-hidden`).
+ *
+ * ── Two things drive these paths, and which one depends on the width ──────
+ *
+ * As of 2026-09-03 (owner instruction) the draw is scroll-scrubbed at `sm` and
+ * up by `interactive/architecture-draw.tsx`, which pins the diagram and binds
+ * the whole apps → gateway → spine sequence to the scrollbar. Below `sm` — and
+ * under reduced motion at every width — nothing changes: the draw stays the
+ * one-shot CSS entrance gated on a `.reveal-seen` ancestor, which the enclosing
+ * <Reveal> in platform.tsx supplies.
+ *
+ * That split is why this file gained `kind` and `data-arch-cols` and nothing
+ * else. **The markup is the same under both drivers**, the CSS default is still
+ * the finished state, and the island only ever *winds it back* — so a build
+ * with no JavaScript, a failed hydration, or a reverted island all render a
+ * complete diagram, exactly as before.
  *
  * Everything about the Draw itself follows ChainRail in `chain-steps.tsx`:
  * `pathLength="100"` with `stroke-dasharray/dashoffset 100 → 0`, so nothing is
  * measured, nothing needs `getTotalLength()`, and editing a `d` cannot break
  * the animation. The CSS — including the default-is-drawn contract and the
  * reduced-motion branch — is the `[data-arch-rail]` block in globals.css.
+ *
+ * `pathLength="100"` is also what makes the scrubbed version resize-proof for
+ * free. It declares the path's length to be 100 user units whatever its real
+ * geometry, so `stroke-dasharray: 100` covers the path exactly at every
+ * viewport width and the island's tween endpoints (100 → 0) are constants. A
+ * `getTotalLength()` implementation would have to re-measure six paths on every
+ * resize and rewrite both properties to keep up; this one has nothing to
+ * recompute, because there is no measured number anywhere in it.
  *
  * ── Alignment is structural, and that is the whole trick ──────────────────
  *
@@ -112,13 +132,22 @@ function geometry(columns: number): { drops: number[]; inset: string } {
  *                 fan under a single stacked column is not a fan — it is one
  *                 line, and that is what `columns={1}` draws.
  * @param className  Breakpoint visibility, supplied by the caller.
+ * @param kind  Which of the diagram's two rails this is: the apps → gateway
+ *              `fan`, or the gateway → spine `drop`. Emitted as the value of
+ *              `data-arch-rail`, which is what lets ArchitectureDraw sequence
+ *              the two — the fan draws, the gateway pulses, *then* the drop
+ *              draws. The CSS in globals.css selects on the attribute's
+ *              presence (`[data-arch-rail]`), so it is unaffected by the value
+ *              and the no-JS/reduced-motion path is exactly as it was.
  */
 export function ArchitectureRail({
   columns,
   className,
+  kind = 'fan',
 }: {
   columns: 1 | 2 | 4;
   className?: string;
+  kind?: 'fan' | 'drop';
 }) {
   const { drops, inset } = geometry(columns);
 
@@ -138,7 +167,19 @@ export function ArchitectureRail({
       the boxes above and below it rather than floating in 80px of air. It
       tracks that gap; change one and change the other.
     */
-    <div className={cn('-my-5', className)} style={{ marginInline: inset }}>
+    /*
+      `data-arch-cols` is how ArchitectureDraw picks the *rendered* rail. Three
+      fans exist in the DOM at once and two of them are `display: none`, so a
+      bare `[data-arch-rail="fan"]` selector would return paths that are not on
+      screen and tween them for nothing. The island's `gsap.matchMedia` branch
+      already knows the width, so it names the column count it wants rather than
+      measuring which sibling is visible.
+    */
+    <div
+      data-arch-cols={columns}
+      className={cn('-my-5', className)}
+      style={{ marginInline: inset }}
+    >
       <svg
         viewBox={`0 0 ${SPAN} ${DEPTH}`}
         preserveAspectRatio="none"
@@ -149,7 +190,7 @@ export function ArchitectureRail({
         {drops.map((x, i) => (
           <path
             key={x}
-            data-arch-rail=""
+            data-arch-rail={kind}
             d={connector(x)}
             pathLength="100"
             fill="none"

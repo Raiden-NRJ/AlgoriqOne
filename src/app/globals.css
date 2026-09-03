@@ -1,7 +1,7 @@
 /*
  * Algoryq One website — design tokens.
- * Tailwind v4, CSS-first. ONE GROUND, DARK — "Azure" (owner decision 2026-09-02,
- * superseding light-only 2026-07-31). No toggle, no prefers-color-scheme branch.
+ * Tailwind v4, CSS-first. TWO GROUNDS, ONE PALETTE (owner decision 2026-09-03,
+ * superseding dark-only 2026-09-02 and light-only 2026-07-31).
  *
  * Brand hue 259 (Algoryq blue), adopted from Algoryq Technologies
  * (algoryq.com --color-brand-500: oklch(58% .17 258), --color-brand-600:
@@ -9,8 +9,45 @@
  * the ramp is interpolated around them, so a swatch lifted from either site
  * matches. The neutrals move to the parent's ink hue 265.
  *
- * The parent brand is dark-first and so are we now. The hue family and the
- * ramps are unchanged; the surfaces read from the dark end. See rule 10.
+ * ── HOW THE TWO GROUNDS WORK. Read this before touching a colour. ─────────
+ *
+ * There are three tiers in this file and they are not interchangeable:
+ *
+ *   1. THE RAMPS — `--color-brand-*`, `--color-neutral-*`, `--color-cyan-*`.
+ *      Absolute scales. They do NOT switch with the theme; brand-600 is the
+ *      same blue on both grounds. A ramp step is the wrong thing to name in a
+ *      component precisely because it cannot switch (see tier 3).
+ *
+ *   2. THE PALETTES — `--dk-*` (azure/dark) and `--lt-*` (light). One entry
+ *      per semantic role per ground, declared once, side by side so the two
+ *      can be read against each other. This is the only place a ground's
+ *      actual values are written.
+ *
+ *   3. THE SEMANTIC LAYER — `--color-bg`, `--color-fg-muted`, `--color-link`,
+ *      … Every one is an alias that points at tier 2, and the ACTIVE ground
+ *      decides which. **Components reference tier 3 and nothing else.** A
+ *      component that names a ramp step is hard-wired to one ground and is a
+ *      bug: it will look right in whichever mode it was written in and wrong
+ *      in the other, which is the exact class of defect this pass removed.
+ *
+ * Switching is driven by `data-theme` on <html>:
+ *
+ *   · `data-theme="dark"`  → azure ground, forced
+ *   · `data-theme="light"` → light ground, forced
+ *   · no attribute         → follow `prefers-color-scheme` (dark is the
+ *                            fallback when the OS says nothing)
+ *
+ * `ThemeScript` in `src/components/site/theme-script.tsx` sets the attribute
+ * from localStorage before first paint, so there is no flash; the no-attribute
+ * branch below is what a JS-disabled visitor gets, and it is why the light
+ * palette is activated twice — once by attribute, once by media query. The two
+ * activation blocks are alias lists and MUST stay identical;
+ * `scripts/check-contrast.mjs` asserts that they declare the same token set
+ * and fails the build if one drifts.
+ *
+ * Neither ground is "the dark theme" bolted onto the other. Both are measured:
+ * `npm run check:contrast` runs every pair against BOTH grounds and is the
+ * arbiter, not the eye. See rule 10.
  */
 @import "tailwindcss";
 
@@ -49,84 +86,10 @@
   --color-neutral-950: oklch(0.16 0.026 265);
   --color-neutral-1000: oklch(0.125 0.022 265);
 
-  /* ── Semantic surfaces — AZURE, dark ground ─────────────────────────────
-     Rewritten 2026-09-02 (owner instruction; CLAUDE.md rule 10 rewritten in the
-     same pass). The M6 deck: "Dark ground. Light on the line."
-
-     The ground is sampled from the deck itself, not invented — its slides read
-     #030a1b–#050d21 with #dfecfa text, which is within a hair of the ink ramp's
-     existing dark end. So this is a re-point of the ink ramp, not a new palette:
-     the same hue-265 neutrals the site already had, read from the other end.
-
-     Still ONE ground. No toggle, no prefers-color-scheme branch, no light
-     variant — the single-theme commitment is the part of the old rule that was
-     load-bearing and it is unchanged. */
-  --color-bg: var(--color-neutral-950);
-  --color-bg-subtle: oklch(0.205 0.03 265);
-  /* Raised above the ground, not equal to it. On the light design bg and
-     surface could both be white because the border did the work; on dark a card
-     that matches the ground disappears between its own hairlines. */
-  --color-surface: oklch(0.19 0.028 265);
-  --color-border: oklch(0.3 0.028 265);
-  --color-border-strong: oklch(0.38 0.03 265);
-  --color-fg: oklch(0.97 0.005 265);
-  --color-fg-muted: oklch(0.78 0.014 265);
-  --color-fg-subtle: oklch(0.65 0.016 265);
-  /* Text on a filled action — and it stays LIGHT, which is worth spelling out
-     because the name invites the opposite conclusion. The primary action is
-     still brand-600, a *dark* blue; a dark ground does not make it lighter. So
-     the text on it is light on both grounds, exactly as before. Setting this
-     dark measured 2.5:1 and the contrast gate caught it immediately. */
-  --color-fg-inverse: oklch(0.97 0.005 265);
-
-  /* The azure ground, ready to swap in once the call sites have migrated.
-     Sampled from the M6 deck (#030a1b–#050d21 ground, #dfecfa text), which sits
-     within a hair of this ramp's existing dark end — so it is a re-point of the
-     ink ramp, not a new palette.
-
-       bg             → var(--color-neutral-950)
-       bg-subtle      → oklch(0.205 0.03  265)
-       surface        → oklch(0.19  0.028 265)  raised, not equal to bg: on dark
-                          a card matching the ground disappears between its own
-                          hairlines
-       border         → oklch(0.3   0.028 265)
-       border-strong  → oklch(0.38  0.03  265)
-       fg             → oklch(0.97  0.005 265)
-       fg-muted       → oklch(0.78  0.014 265)
-       fg-subtle      → oklch(0.65  0.016 265)
-       fg-inverse     → var(--color-neutral-950)  text on a filled action
-
-     Written with arrows, not colons, on purpose. check-contrast.mjs parses this
-     file with a regex that does not skip comments, so a commented-out custom
-     property written in normal declaration form is read as a real one and
-     crashes the gate — which is exactly what happened when this block was
-     first written. Keep the arrows.
-  */
-
-  /* ── Semantic actions ───────────────────────────────────────────────────
-     THE reason this layer exists. On white, brand-600 was both the button fill
-     and the link colour. On a dark ground it is still a perfectly good fill —
-     white on it measures 7.7:1 — but as *text* it is 2.3:1 and unreadable.
-     One token cannot be both, so the roles are split and components reference
-     the role, never the ramp step.
-
-     Reaching past these to `--color-brand-600` for text is the single easiest
-     way to reintroduce a contrast failure here. Don't. */
-  --color-action: var(--color-brand-600); /* fill; --color-fg-inverse rides on it */
-  --color-action-hover: var(--color-brand-500);
-  --color-link: var(--color-brand-300); /* link and label text on the ground */
-  --color-link-strong: oklch(0.88 0.07 259); /* hover / emphasis */
-  /* Chips and soft brand panels. brand-50 was a near-white wash; its dark
-     counterpart has to be built, not inverted, or it turns into a light slab. */
-  --color-chip: oklch(0.26 0.06 260);
-  --color-chip-fg: oklch(0.86 0.08 259);
-  --color-chip-border: oklch(0.36 0.07 260);
-  /* Tint sections. cyan-50 was the lightest surface on the site; on the ground
-     the same role is a deep aurora panel. */
-  --color-tint: oklch(0.205 0.035 200);
-  --color-tint-border: oklch(0.32 0.05 200);
-  --color-accent-text: var(--color-cyan-300);
-  --color-accent-line: var(--color-cyan-400);
+  /* The semantic layer used to be written inline here, as literal values for
+     whichever ground was current. It is now two palettes plus an alias list,
+     both below the cyan ramp — see "PALETTES" and "THE SEMANTIC LAYER". The
+     ramps stay above because they are absolute and do not switch. */
 
   /* ── Aurora cyan (hue 200) — the third brand colour ──────────────────────
      Ink · Blue · Cyan. Promoted from the single `--color-accent` value to a
@@ -135,26 +98,32 @@
 
      ┌── CYAN CONTRAST RULES. Non-negotiable. Read before using any step. ──┐
 
-     ⚠ REWRITTEN 2026-09-02. These rules were written for the white ground and
-     they inverted with it. cyan-500 was 2.29:1 on white and therefore
-     fill-only; on the azure ground it is 8.5:1 against the surface, so it is a
-     legitimate border and icon colour — that is what --color-accent-line is.
-     The trap did not vanish, it flipped: text on a cyan FILL must now be dark,
-     because --color-fg is light and measures 2.1:1 on it.
+     ⚠ REWRITTEN 2026-09-03, and the rewrite is the reason the semantic layer
+     below exists. These rules were written for the white ground; the azure
+     pass inverted them; the site now ships BOTH grounds, so there is no single
+     answer for "which cyan step" any more. Every one of these facts is still
+     true — they just belong to different grounds:
 
-       · cyan-500 on white → LARGE DECORATIVE FILLS ONLY, ink text on top
-                             (ink on cyan-500 is 7.8:1 ✓). Never a border,
-                             never a meaning-carrying icon, never text.
-       · cyan as TEXT on white          → cyan-700 (5.1:1)
-       · cyan as BORDER or ICON on white → cyan-600 (3.3:1)
-       · cyan on the DARK BAND           → cyan-300 (12.1:1) or cyan-400
+       ON WHITE                              ON THE AZURE GROUND
+       cyan-500 is 2.29:1 → fill only,       cyan-500 is 8.5:1 on the surface →
+         ink text on top (7.8:1 ✓);            a legitimate border and icon
+         never a border, never an icon,        colour. But text on a cyan FILL
+         never text                            must be DARK: --color-fg is
+       cyan as TEXT   → cyan-700 (5.1:1)       light and measures 2.1:1 on it,
+       cyan as BORDER → cyan-600 (3.3:1)       and --color-fg-inverse is light
+       cyan on a DARK BAND → cyan-300/400      too, so it is not the escape
+                                                hatch its name suggests.
 
-     Every one of these is asserted in scripts/check-contrast.mjs, including
-     cyan-500-on-white, which is pinned as fill-only so the failure can never
-     silently become a text colour.
+     Which is why a component must NEVER name a cyan step. It names the role —
+     `--color-accent-text` for text, `--color-accent-line` for a border or
+     icon, `--color-accent-fill` for a decorative fill — and the active ground
+     picks the step. That indirection is not ceremony: it is the only thing
+     that makes one component correct on two grounds.
+
+     check-contrast.mjs asserts each role against BOTH grounds.
      └──────────────────────────────────────────────────────────────────────┘
 
-     Cyan is not a second theme — it is the third brand colour on one ground. */
+     Cyan is not a second theme — it is the third brand colour on both. */
   --color-cyan-50: oklch(0.975 0.018 200);
   --color-cyan-100: oklch(0.945 0.038 200);
   --color-cyan-300: oklch(0.835 0.088 200);
@@ -163,21 +132,294 @@
   --color-cyan-600: oklch(0.62 0.125 200);
   --color-cyan-700: oklch(0.52 0.105 200);
 
-  /* Dark band — used deliberately for the "serious" sections (permissions,
-     security). Not a theme: a tonal device. See docs/04 §8. Its ink is the
-     parent brand's --color-ink-950 family, so the band reads as algoryq.com. */
-  /* On a dark ground a dark band is invisible, so the band device inverts: it is
-     now a *raised* panel rather than a well. Re-pointing the token keeps every
-      call site and all the band-fg text working untouched — the
-     alternative was editing every one of them to tone="subtle". */
-  --color-band: oklch(0.235 0.035 265);
-  --color-band-surface: oklch(0.285 0.038 265);
-  --color-band-border: oklch(0.4 0.035 265);
-  --color-band-fg: oklch(0.97 0.005 265);
-  --color-band-fg-muted: oklch(0.78 0.014 265);
+  /* ══ PALETTES ═══════════════════════════════════════════════════════════
+     Tier 2. `--dk-*` is the azure ground, `--lt-*` the light one. Every
+     semantic role appears exactly once in each list, in the same order, so the
+     two can be read against each other line by line — which is how you catch
+     a role that was thought about on one ground and not the other.
+
+     NOTHING outside this file may reference a `--dk-*` or `--lt-*` name. They
+     are the palettes; the semantic layer below is the interface.
+
+     ── The three families that do NOT invert, and why ────────────────────
+
+     1. THE BAND (`--dk-band-*` / `--lt-band-*`) is a DARK slab on both
+        grounds, and its foregrounds are LIGHT on both. It is the site's
+        "serious section" device (docs/04 §8) and it is also what the hero copy
+        sits on over video. Flipping it with the theme would have put dark text
+        on dark footage in light mode — the single worst break this pass could
+        have shipped. So the band does not flip; it only changes DEPTH. On
+        white it is a deep well (neutral-950) that reads as a hard tonal shift;
+        on the azure ground a well is invisible, so it becomes a raised panel
+        (0.235 L). Same role, same light ink, opposite relationship to the
+        ground it sits on.
+
+     2. `*-fg-inverse` is LIGHT on both grounds, which the name actively argues
+        against. It is the text on a FILLED ACTION, and the primary action is
+        brand-600 — a dark blue on both grounds, because the brand ramp does
+        not switch. Making it dark on the light ground measured 2.5:1 and the
+        gate caught it.
+
+     3. `--color-media` is the mat behind video and code panels. Footage and a
+        terminal are dark artefacts on any ground; a white mat around a video
+        is the halo bug that the hero rebuild removed (see hero.tsx). It has no
+        `--lt-`/`--dk-` pair at all — it is declared once, under FIXED below.
+
+     ── ROLES THAT LOOK LIKE ONE TOKEN AND ARE TWO ────────────────────────
+
+     `--color-link` vs `--color-band-link`, and `--color-success` vs
+     `--color-success-band`. Because the band does not flip, a band section on
+     the LIGHT ground is a dark slab inside a white page, so the page's own
+     link colour (brand-600, 7.7:1 on white) lands on it at 2.3:1. There is no
+     single blue that works as text on both white and near-black. The band
+     therefore has its own accent tokens, and a band-toned component that
+     reaches for `--color-link` is a bug on the light ground specifically. */
+
+  /* ── PALETTE · azure (dark) ──────────────────────────────────────────────
+     Sampled from the M6 deck, not invented: its slides read #030a1b–#050d21
+     with #dfecfa text, within a hair of the ink ramp's existing dark end. So
+     this is the hue-265 neutrals read from the other end, not a new palette. */
+  --dk-bg: var(--color-neutral-950);
+  --dk-bg-subtle: oklch(0.205 0.03 265);
+  /* Raised above the ground, not equal to it. On the light ground bg and
+     surface can both be white because the border does the work; on dark a card
+     that matches the ground disappears between its own hairlines. */
+  --dk-surface: oklch(0.19 0.028 265);
+  --dk-border: oklch(0.3 0.028 265);
+  --dk-border-strong: oklch(0.38 0.03 265);
+  --dk-fg: oklch(0.97 0.005 265);
+  --dk-fg-muted: oklch(0.78 0.014 265);
+  --dk-fg-subtle: oklch(0.65 0.016 265);
+  --dk-fg-inverse: oklch(0.97 0.005 265); /* light — see note 2 above */
+  --dk-placeholder: oklch(0.63 0.018 265);
+  /* Actions. brand-600 is still a good FILL here (light text on it is 7.7:1)
+     but as TEXT it is 2.3:1, so the link role reads from the light end. */
+  --dk-action: var(--color-brand-600);
+  /* NOT brand-500. The hover fill carries light text, and brand-500 measured
+     3.99:1 under it — a primary button whose label drops below AA the moment
+     you point at it. This is a genuine pre-existing defect on the azure ground
+     that the two-ground rewrite surfaced, not a compromise introduced by it:
+     the pair was never asserted, because only the resting fill was. It is
+     asserted now (`fg-inverse on action-hover`). 0.53 L is the lightest step
+     that still clears 4.5:1 and is a clearly visible lift from brand-600. */
+  --dk-action-hover: oklch(0.53 0.185 259);
+  --dk-link: var(--color-brand-300);
+  --dk-link-strong: oklch(0.88 0.07 259);
+  --dk-focus: var(--color-brand-300);
+  /* Chips. brand-50 is a near-white wash; its dark counterpart has to be
+     built, not inverted, or the chip turns into a light slab. */
+  --dk-chip: oklch(0.26 0.06 260);
+  --dk-chip-fg: oklch(0.86 0.08 259);
+  --dk-chip-border: oklch(0.36 0.07 260);
+  /* Tint sections. cyan-50 is the lightest surface the site has; the same role
+     on this ground is a deep aurora panel. */
+  --dk-tint: oklch(0.205 0.035 200);
+  --dk-tint-border: oklch(0.32 0.05 200);
+  --dk-accent-text: var(--color-cyan-300);
+  --dk-accent-line: var(--color-cyan-400);
+  --dk-accent-fill: var(--color-cyan-500);
+  --dk-accent-fill-fg: oklch(0.2 0.03 200); /* DARK: fg is 2.1:1 on a cyan fill */
+  /* Diagram vocabulary — see "DIAGRAM ROLES" below. */
+  --dk-diagram-fill: oklch(0.27 0.055 260);
+  --dk-diagram-fill-strong: oklch(0.34 0.075 260);
+  --dk-diagram-ink: oklch(0.87 0.075 259);
+  --dk-diagram-line: oklch(0.46 0.105 260);
+  --dk-diagram-accent: var(--color-brand-400);
+  /* Band — a RAISED panel here, because a well is invisible on this ground. */
+  --dk-band: oklch(0.235 0.035 265);
+  --dk-band-surface: oklch(0.285 0.038 265);
+  --dk-band-border: oklch(0.4 0.035 265);
+  --dk-band-fg: oklch(0.97 0.005 265);
+  --dk-band-fg-muted: oklch(0.78 0.014 265);
+  --dk-band-link: var(--color-brand-300);
+  --dk-band-accent: var(--color-brand-400);
+  --dk-band-accent-text: var(--color-cyan-300);
+  --dk-success: oklch(0.75 0.16 152);
+  --dk-warning: oklch(0.8 0.14 75);
+  --dk-danger: oklch(0.7 0.19 27);
+  /* App identity dots, read from the LIGHT end for this ground — the light
+     ground's values (portal at 0.275 L) measure 1.2:1 on the dark surface,
+     i.e. an invisible dot. The two-dimensional separation that makes four
+     legible is preserved, mirrored:
+       portal   0.86 L  pale blue  ┐ separated from each other by lightness
+       admin    0.70 L  brand blue ┘
+       platform 0.72 L  grey       — separated by chroma (0.015)
+       customer 0.78 L  cyan       — separated by hue (200 vs 260) */
+  --dk-app-portal: oklch(0.86 0.08 259);
+  --dk-app-admin: oklch(0.702 0.145 259);
+  --dk-app-platform: oklch(0.72 0.015 265);
+  --dk-app-customer: oklch(0.78 0.11 200);
+  --dk-selection: oklch(0.34 0.09 260);
+  --dk-selection-fg: oklch(0.97 0.005 265);
+  /* Decoration. The grid rule is a LIGHT hairline here and a dark one on the
+     light ground; reusing one rgba across both is the "translucent white that
+     vanishes on white" failure. The aurora wash carries more alpha here
+     because a low-chroma glow on a dark ground has further to travel before
+     it reads at all. */
+  --dk-grid-line: oklch(0.97 0.005 265 / 0.05);
+  --dk-aurora-1: oklch(0.58 0.17 258 / 0.22);
+  --dk-aurora-2: oklch(0.72 0.14 200 / 0.14);
+  /* Elevation. A soft ink shadow is invisible on a dark ground, so this end of
+     the ramp is near-black at roughly triple the alpha. Both ends are still
+     "ring + soft shadow, never stacked". */
+  --dk-shadow-e1: 0 1px 2px oklch(0.02 0.01 265 / 0.5), 0 1px 3px oklch(0.02 0.01 265 / 0.4);
+  --dk-shadow-e2: 0 2px 4px oklch(0.02 0.01 265 / 0.45), 0 8px 20px oklch(0.02 0.01 265 / 0.4);
+  --dk-shadow-e3: 0 4px 8px oklch(0.02 0.01 265 / 0.45), 0 16px 40px oklch(0.02 0.01 265 / 0.45);
+  --dk-shadow-e4: 0 8px 16px oklch(0.02 0.01 265 / 0.5), 0 32px 64px oklch(0.02 0.01 265 / 0.5);
+
+  /* ── PALETTE · light ─────────────────────────────────────────────────────
+     The ground the site shipped from 2026-07-31 to 2026-09-02, restored from
+     git rather than re-guessed, so the light mode is the *designed* one and
+     not an inversion of the dark one. Roles that did not exist then (the
+     action/link split, chips, tints, the diagram vocabulary) are new here and
+     were picked against white and measured, not derived from their dark
+     counterparts. */
+  --lt-bg: var(--color-neutral-0);
+  --lt-bg-subtle: var(--color-neutral-50);
+  --lt-surface: var(--color-neutral-0);
+  --lt-border: var(--color-neutral-200);
+  --lt-border-strong: var(--color-neutral-300);
+  --lt-fg: var(--color-neutral-900);
+  --lt-fg-muted: var(--color-neutral-600);
+  --lt-fg-subtle: var(--color-neutral-500);
+  --lt-fg-inverse: var(--color-neutral-50); /* light — see note 2 above */
+  --lt-placeholder: var(--color-neutral-500);
+  /* On white, brand-600 is both the fill and the link — 7.71:1 as text. This
+     is the ground where one token *could* have done both jobs, which is
+     exactly why the split has to be honoured here too: the moment a component
+     says `--color-action` for text it is broken on the other ground. */
+  --lt-action: var(--color-brand-600);
+  --lt-action-hover: var(--color-brand-700);
+  --lt-link: var(--color-brand-600);
+  --lt-link-strong: var(--color-brand-800);
+  --lt-focus: var(--color-brand-600);
+  --lt-chip: var(--color-brand-50);
+  --lt-chip-fg: var(--color-brand-800);
+  --lt-chip-border: var(--color-brand-200);
+  --lt-tint: var(--color-cyan-50);
+  --lt-tint-border: var(--color-cyan-300);
+  --lt-accent-text: var(--color-cyan-700);
+  --lt-accent-line: var(--color-cyan-600);
+  --lt-accent-fill: var(--color-cyan-500);
+  --lt-accent-fill-fg: var(--color-neutral-900); /* ink on cyan-500 is 7.8:1 */
+  --lt-diagram-fill: var(--color-brand-100);
+  --lt-diagram-fill-strong: var(--color-brand-200);
+  --lt-diagram-ink: var(--color-brand-700);
+  --lt-diagram-line: var(--color-brand-300);
+  --lt-diagram-accent: var(--color-brand-500);
+  /* Band — a deep WELL here: the hard tonal shift docs/04 §8 specifies. */
+  --lt-band: var(--color-neutral-950);
+  --lt-band-surface: oklch(0.205 0.03 265);
+  --lt-band-border: oklch(0.3 0.028 265);
+  --lt-band-fg: oklch(0.97 0.005 265);
+  --lt-band-fg-muted: oklch(0.78 0.014 265);
+  /* Identical to the dark ground's, and that is correct rather than lazy: the
+     band is dark on both, so its accents are read against the same slab. */
+  --lt-band-link: var(--color-brand-300);
+  --lt-band-accent: var(--color-brand-400);
+  --lt-band-accent-text: var(--color-cyan-300);
+  --lt-success: oklch(0.53 0.15 152);
+  --lt-warning: oklch(0.52 0.13 70);
+  --lt-danger: oklch(0.58 0.22 27);
+  /* The original two-dimensional separation, read from the dark end:
+       portal   0.275 L  deep blue   ┐ separated from each other by lightness
+       admin    0.450 L  brand blue  ┘
+       platform 0.545 L  grey        — separated by chroma (0.019)
+       customer 0.620 L  cyan        — separated by hue (200 vs 260)
+     Customer is cyan-600 and not cyan-500 because cyan-500 is 2.29:1 on white
+     and a bare dot is a mark, not a fill. */
+  --lt-app-portal: oklch(0.275 0.1 260);
+  --lt-app-admin: oklch(0.45 0.18 260);
+  --lt-app-platform: oklch(0.545 0.019 265);
+  --lt-app-customer: oklch(0.62 0.125 200);
+  --lt-selection: var(--color-brand-100);
+  --lt-selection-fg: var(--color-brand-900);
+  --lt-grid-line: oklch(0.21 0.03 265 / 0.055);
+  --lt-aurora-1: oklch(0.58 0.17 258 / 0.1);
+  --lt-aurora-2: oklch(0.72 0.14 200 / 0.08);
+  --lt-shadow-e1: 0 1px 2px oklch(0.21 0.03 265 / 0.04), 0 1px 3px oklch(0.21 0.03 265 / 0.06);
+  --lt-shadow-e2: 0 2px 4px oklch(0.21 0.03 265 / 0.04), 0 8px 20px oklch(0.21 0.03 265 / 0.08);
+  --lt-shadow-e3: 0 4px 8px oklch(0.21 0.03 265 / 0.05), 0 16px 40px oklch(0.21 0.03 265 / 0.1);
+  --lt-shadow-e4: 0 8px 16px oklch(0.21 0.03 265 / 0.06), 0 32px 64px oklch(0.21 0.03 265 / 0.12);
+
+  /* ══ FIXED — identical on both grounds ══════════════════════════════════
+     Not an oversight and not a shortcut: each of these is a colour whose
+     meaning is anchored to something other than the page ground.
+
+     --color-media is the mat behind footage and code. See note 3 above; it
+     replaces four `bg-black` literals, so it is also rule 8 being paid off.
+     --color-scrim is derived from the band, so it follows the band's depth
+     and stays dark on both grounds. It is a `color-mix` rather than a token
+     because the alpha is measured: see .hero-scrim below. */
+  --color-media: oklch(0.14 0.014 265);
+  --color-media-border: oklch(0.3 0.028 265);
+  --color-media-fg: oklch(0.97 0.005 265);
+  --color-media-fg-muted: oklch(0.78 0.014 265);
+
+  /* ══ THE SEMANTIC LAYER ═════════════════════════════════════════════════
+     Tier 3, and the ONLY tier a component may name.
+
+     Every entry is `var(--dk-<role>)` — the azure ground is the default,
+     because it is what the site shipped and what an OS with no preference
+     gets. The light activation blocks below re-point the same names at
+     `--lt-*`. Nothing else in the codebase changes when the theme does.
+
+     DIAGRAM ROLES, since they are new and the names are not self-evident:
+       --color-diagram-fill         a filled shape in a diagram (a card, a
+                                    row, a node body). Pale on white, deep on
+                                    azure. NEVER carries text on its own.
+       --color-diagram-fill-strong  the same, one step up, to separate a
+                                    highlighted shape from its neighbours.
+       --color-diagram-ink          text, icons and strokes ON a diagram fill,
+                                    and strokes that must read on the page
+                                    ground. This is the token the old
+                                    brand-600/700/800 call sites wanted.
+       --color-diagram-line         a soft rule or a low-emphasis stroke. Held
+                                    to 1.3:1, not 3:1 — it is texture, and it
+                                    is never the sole carrier of meaning.
+       --color-diagram-accent       the one emphasised mark in a diagram: the
+                                    filled bar, the travelling token, the
+                                    active step. Held to 3:1 on the ground. */
+  --color-bg: var(--dk-bg);
+  --color-bg-subtle: var(--dk-bg-subtle);
+  --color-surface: var(--dk-surface);
+  --color-border: var(--dk-border);
+  --color-border-strong: var(--dk-border-strong);
+  --color-fg: var(--dk-fg);
+  --color-fg-muted: var(--dk-fg-muted);
+  --color-fg-subtle: var(--dk-fg-subtle);
+  --color-fg-inverse: var(--dk-fg-inverse);
+  --color-placeholder: var(--dk-placeholder);
+  --color-action: var(--dk-action);
+  --color-action-hover: var(--dk-action-hover);
+  --color-link: var(--dk-link);
+  --color-link-strong: var(--dk-link-strong);
+  --color-focus: var(--dk-focus);
+  --color-chip: var(--dk-chip);
+  --color-chip-fg: var(--dk-chip-fg);
+  --color-chip-border: var(--dk-chip-border);
+  --color-tint: var(--dk-tint);
+  --color-tint-border: var(--dk-tint-border);
+  --color-accent-text: var(--dk-accent-text);
+  --color-accent-line: var(--dk-accent-line);
+  --color-accent-fill: var(--dk-accent-fill);
+  --color-accent-fill-fg: var(--dk-accent-fill-fg);
+  --color-diagram-fill: var(--dk-diagram-fill);
+  --color-diagram-fill-strong: var(--dk-diagram-fill-strong);
+  --color-diagram-ink: var(--dk-diagram-ink);
+  --color-diagram-line: var(--dk-diagram-line);
+  --color-diagram-accent: var(--dk-diagram-accent);
+  --color-band: var(--dk-band);
+  --color-band-surface: var(--dk-band-surface);
+  --color-band-border: var(--dk-band-border);
+  --color-band-fg: var(--dk-band-fg);
+  --color-band-fg-muted: var(--dk-band-fg-muted);
+  --color-band-link: var(--dk-band-link);
+  --color-band-accent: var(--dk-band-accent);
+  --color-band-accent-text: var(--dk-band-accent-text);
 
   /* ── Semantic — QUARANTINED (2026-08-08) ────────────────────────────────
-     These four are the ONLY colours outside Ink / Blue / Sand, and they are
+     These four are the ONLY colours outside Ink / Blue / Cyan, and they are
      kept because form validation genuinely needs them. They are FUNCTIONAL
      ONLY.
 
@@ -191,49 +433,38 @@
      bad" colouring in a comparison, or any use where the colour is carrying a
      tone rather than a state. A red rule beside a marketing bullet and a red
      dashed box around a competitor diagram were both removed in this pass —
-     do not reintroduce them. Reach for sand or the neutral ramp instead.
+     do not reintroduce them. Reach for the neutral ramp instead.
 
      ONE EXEMPTION: --color-success marking a *settled* step in the chain
      diagram (chain-steps.tsx) and the hero wires (integration-web.tsx) is
      product semantics — the record really is settled — not decoration. Leave it.
 
-     Two greens: no single lightness clears 4.5:1 against both white and the
-     dark band, so text on the band uses --color-success-band. */
-  --color-success: oklch(0.75 0.16 152);
+     Two greens, and the reason survived the theme split intact: no single
+     lightness clears 4.5:1 against both a page ground and the dark band, so
+     text on the band uses --color-success-band. That token does not switch,
+     because the band does not switch. */
+  --color-success: var(--dk-success);
   --color-success-band: oklch(0.75 0.16 152);
-  --color-warning: oklch(0.72 0.16 70);
-  --color-danger: oklch(0.7 0.19 27);
+  --color-warning: var(--dk-warning);
+  --color-danger: var(--dk-danger);
 
-  /* App identity dots in the architecture diagram (architecture.tsx).
-     Four apps on blue steps + cyan + ink — no fifth hue. Violet (hue 285) is
-     gone.
+  /* App identity dots in the platform diagram (sections/platform.tsx).
+     Four apps on blue steps + cyan + ink — no fifth hue.
 
-     These are 8px dot FILLS, so they are held to the 3:1 non-text minimum.
-     That is why Customer is cyan-600 and not cyan-500: cyan-500 would be
-     2.29:1 and is fill-only-with-ink-on-top, which a bare dot is not.
+     These are 8px dot FILLS, so they are held to the 3:1 non-text minimum on
+     whichever surface they sit on. Each dot is paired with its app name in
+     text, so colour is never the sole carrier of information (WCAG 1.4.1) —
+     which is what makes it safe for the four values to differ per ground. */
+  --color-app-portal: var(--dk-app-portal);
+  --color-app-admin: var(--dk-app-admin);
+  --color-app-platform: var(--dk-app-platform);
+  --color-app-customer: var(--dk-app-customer);
 
-     Separation is two-dimensional, which is what makes four legible:
-       portal   0.275 L  deep blue   ┐ separated from each other by lightness
-       admin    0.450 L  brand blue  ┘
-       platform 0.545 L  grey        — separated by chroma (0.019)
-       customer 0.620 L  cyan        — separated by hue (200 vs 260)
-
-     Every dot is paired with its app name in text, so colour is never the sole
-     carrier of information regardless (WCAG 1.4.1). */
-  /* Re-derived from the LIGHT end for the azure ground (2026-09-02). The old
-     values were read from the dark end — portal at 0.275 L measured 1.2:1 on
-     the dark surface, i.e. an invisible dot. The two-dimensional separation
-     that makes four legible is preserved, just mirrored:
-       portal   0.86 L  pale blue  ┐ separated from each other by lightness
-       admin    0.70 L  brand blue ┘
-       platform 0.72 L  grey       — separated by chroma (0.015)
-       customer 0.78 L  cyan       — separated by hue (200 vs 260)
-     Each still pairs with its app name in text, so colour is never the sole
-     carrier (WCAG 1.4.1). */
-  --color-app-portal: oklch(0.86 0.08 259);
-  --color-app-admin: oklch(0.702 0.145 259);
-  --color-app-platform: oklch(0.72 0.015 265);
-  --color-app-customer: oklch(0.78 0.11 200);
+  --color-selection: var(--dk-selection);
+  --color-selection-fg: var(--dk-selection-fg);
+  --color-grid-line: var(--dk-grid-line);
+  --color-aurora-1: var(--dk-aurora-1);
+  --color-aurora-2: var(--dk-aurora-2);
 
   /* ── Type ───────────────────────────────────────────────────────────── */
   --font-sans: var(--font-inter), ui-sans-serif, -apple-system, BlinkMacSystemFont,
@@ -254,11 +485,16 @@
   --radius-xl: 1.25rem;
   --radius-2xl: 1.75rem;
 
-  /* ── Elevation (light ring + soft shadow, never stacked) ────────────── */
-  --shadow-e1: 0 1px 2px oklch(0.21 0.03 265 / 0.04), 0 1px 3px oklch(0.21 0.03 265 / 0.06);
-  --shadow-e2: 0 2px 4px oklch(0.21 0.03 265 / 0.04), 0 8px 20px oklch(0.21 0.03 265 / 0.08);
-  --shadow-e3: 0 4px 8px oklch(0.21 0.03 265 / 0.05), 0 16px 40px oklch(0.21 0.03 265 / 0.1);
-  --shadow-e4: 0 8px 16px oklch(0.21 0.03 265 / 0.06), 0 32px 64px oklch(0.21 0.03 265 / 0.12);
+  /* ── Elevation (light ring + soft shadow, never stacked) ──────────────
+     Themed like everything else, and it has to be: the four values below were
+     tuned as a faint ink wash for a white ground, where they read as depth. On
+     the azure ground a 4%-alpha ink shadow under a 0.19 L card is arithmetically
+     present and visually nothing — the card floats on nothing at all. The dark
+     end is near-black at roughly triple the alpha; see the two palettes. */
+  --shadow-e1: var(--dk-shadow-e1);
+  --shadow-e2: var(--dk-shadow-e2);
+  --shadow-e3: var(--dk-shadow-e3);
+  --shadow-e4: var(--dk-shadow-e4);
 
   /* ── Motion ─────────────────────────────────────────────────────────── */
   --ease-out-quint: cubic-bezier(0.16, 1, 0.3, 1);
@@ -294,6 +530,14 @@
      far outside the 60–80ms stagger band. It was the last hard-coded duration
      left in this file; tokenised 2026-09-02 so rule 8 holds without exception. */
   --duration-row: 220ms;
+  /* §3's card slide-in. Owner instruction (2026-09-03) asked for a snappy
+     500–600ms on that row specifically, which is outside the deck's band — the
+     deck has no redline for this gesture because the gesture it specified for
+     §3 (a pinned, scrubbed spread) was removed in the same instruction for
+     scroll jank. Scoped to `.chain-slide` and used nowhere else, so
+     --duration-rise keeps its claim to being "the rhythm everything
+     inherits". */
+  --duration-slide: 560ms;
 
   /* ── Interaction states · M6 Azure slide 08 ─────────────────────────────
      "Nothing left to the browser." 100–240ms. These are micro-interactions,
@@ -333,12 +577,211 @@
   width: calc(100% + (100vw - min(90rem, 100vw)) / 2 + 3rem);
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   GROUND ACTIVATION
+   ══════════════════════════════════════════════════════════════════════════
+
+   These rules are UNLAYERED, deliberately. `@theme` emits its custom
+   properties into `@layer theme` on `:root`; an unlayered rule beats any
+   layered one in the cascade regardless of specificity or source order, so
+   this cannot be defeated by Tailwind reordering its own output. The
+   `:root[data-theme=…]` form also carries higher specificity than the `:root`
+   the theme layer targets, which makes it win twice over. Don't "tidy" these
+   into `@layer base` — that reintroduces an ordering dependency on Tailwind's
+   internals for the site's entire colour system.
+
+   THREE STATES, and the third is the one people forget:
+
+     [data-theme='dark']   forced dark   — set by the toggle
+     [data-theme='light']  forced light  — set by the toggle
+     (no attribute)        follow the OS — `prefers-color-scheme`
+
+   The third state is reachable in two ways: JavaScript disabled (the attribute
+   is never written), and a visitor who has never touched the toggle in a
+   browser where localStorage is unavailable. Both are real, so the media
+   query below is not belt-and-braces — it is the no-JS contract in rule 6.
+
+   `:not([data-theme='dark'])` rather than `:not([data-theme])` in the media
+   block, so that a forced-light attribute still wins on an OS-light machine
+   without needing a third copy of the list.
+
+   ── THE LIGHT LIST APPEARS TWICE AND MUST STAY IDENTICAL ─────────────────
+   There is no CSS construct that applies one declaration block under both an
+   attribute selector and a media query, so the alias list is written out
+   twice. That is a drift hazard, so it is machine-checked:
+   `scripts/check-contrast.mjs` parses both blocks, asserts they declare the
+   same token set with the same values, and fails the build otherwise. If you
+   add a role to one, the gate will tell you about the other.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Forced dark. Identical to the @theme defaults; declared so that the toggle
+   can override an OS-light machine, which the defaults alone cannot do. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+/* Forced light. */
+:root[data-theme='light'] {
+  color-scheme: light;
+  --color-bg: var(--lt-bg);
+  --color-bg-subtle: var(--lt-bg-subtle);
+  --color-surface: var(--lt-surface);
+  --color-border: var(--lt-border);
+  --color-border-strong: var(--lt-border-strong);
+  --color-fg: var(--lt-fg);
+  --color-fg-muted: var(--lt-fg-muted);
+  --color-fg-subtle: var(--lt-fg-subtle);
+  --color-fg-inverse: var(--lt-fg-inverse);
+  --color-placeholder: var(--lt-placeholder);
+  --color-action: var(--lt-action);
+  --color-action-hover: var(--lt-action-hover);
+  --color-link: var(--lt-link);
+  --color-link-strong: var(--lt-link-strong);
+  --color-focus: var(--lt-focus);
+  --color-chip: var(--lt-chip);
+  --color-chip-fg: var(--lt-chip-fg);
+  --color-chip-border: var(--lt-chip-border);
+  --color-tint: var(--lt-tint);
+  --color-tint-border: var(--lt-tint-border);
+  --color-accent-text: var(--lt-accent-text);
+  --color-accent-line: var(--lt-accent-line);
+  --color-accent-fill: var(--lt-accent-fill);
+  --color-accent-fill-fg: var(--lt-accent-fill-fg);
+  --color-diagram-fill: var(--lt-diagram-fill);
+  --color-diagram-fill-strong: var(--lt-diagram-fill-strong);
+  --color-diagram-ink: var(--lt-diagram-ink);
+  --color-diagram-line: var(--lt-diagram-line);
+  --color-diagram-accent: var(--lt-diagram-accent);
+  --color-band: var(--lt-band);
+  --color-band-surface: var(--lt-band-surface);
+  --color-band-border: var(--lt-band-border);
+  --color-band-fg: var(--lt-band-fg);
+  --color-band-fg-muted: var(--lt-band-fg-muted);
+  --color-band-link: var(--lt-band-link);
+  --color-band-accent: var(--lt-band-accent);
+  --color-band-accent-text: var(--lt-band-accent-text);
+  --color-success: var(--lt-success);
+  --color-warning: var(--lt-warning);
+  --color-danger: var(--lt-danger);
+  --color-app-portal: var(--lt-app-portal);
+  --color-app-admin: var(--lt-app-admin);
+  --color-app-platform: var(--lt-app-platform);
+  --color-app-customer: var(--lt-app-customer);
+  --color-selection: var(--lt-selection);
+  --color-selection-fg: var(--lt-selection-fg);
+  --color-grid-line: var(--lt-grid-line);
+  --color-aurora-1: var(--lt-aurora-1);
+  --color-aurora-2: var(--lt-aurora-2);
+  --shadow-e1: var(--lt-shadow-e1);
+  --shadow-e2: var(--lt-shadow-e2);
+  --shadow-e3: var(--lt-shadow-e3);
+  --shadow-e4: var(--lt-shadow-e4);
+}
+
+/* No attribute + an OS that asks for light. The no-JS path.
+   Byte-for-byte the same list as above — see the note on drift. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    color-scheme: light;
+    --color-bg: var(--lt-bg);
+    --color-bg-subtle: var(--lt-bg-subtle);
+    --color-surface: var(--lt-surface);
+    --color-border: var(--lt-border);
+    --color-border-strong: var(--lt-border-strong);
+    --color-fg: var(--lt-fg);
+    --color-fg-muted: var(--lt-fg-muted);
+    --color-fg-subtle: var(--lt-fg-subtle);
+    --color-fg-inverse: var(--lt-fg-inverse);
+    --color-placeholder: var(--lt-placeholder);
+    --color-action: var(--lt-action);
+    --color-action-hover: var(--lt-action-hover);
+    --color-link: var(--lt-link);
+    --color-link-strong: var(--lt-link-strong);
+    --color-focus: var(--lt-focus);
+    --color-chip: var(--lt-chip);
+    --color-chip-fg: var(--lt-chip-fg);
+    --color-chip-border: var(--lt-chip-border);
+    --color-tint: var(--lt-tint);
+    --color-tint-border: var(--lt-tint-border);
+    --color-accent-text: var(--lt-accent-text);
+    --color-accent-line: var(--lt-accent-line);
+    --color-accent-fill: var(--lt-accent-fill);
+    --color-accent-fill-fg: var(--lt-accent-fill-fg);
+    --color-diagram-fill: var(--lt-diagram-fill);
+    --color-diagram-fill-strong: var(--lt-diagram-fill-strong);
+    --color-diagram-ink: var(--lt-diagram-ink);
+    --color-diagram-line: var(--lt-diagram-line);
+    --color-diagram-accent: var(--lt-diagram-accent);
+    --color-band: var(--lt-band);
+    --color-band-surface: var(--lt-band-surface);
+    --color-band-border: var(--lt-band-border);
+    --color-band-fg: var(--lt-band-fg);
+    --color-band-fg-muted: var(--lt-band-fg-muted);
+    --color-band-link: var(--lt-band-link);
+    --color-band-accent: var(--lt-band-accent);
+    --color-band-accent-text: var(--lt-band-accent-text);
+    --color-success: var(--lt-success);
+    --color-warning: var(--lt-warning);
+    --color-danger: var(--lt-danger);
+    --color-app-portal: var(--lt-app-portal);
+    --color-app-admin: var(--lt-app-admin);
+    --color-app-platform: var(--lt-app-platform);
+    --color-app-customer: var(--lt-app-customer);
+    --color-selection: var(--lt-selection);
+    --color-selection-fg: var(--lt-selection-fg);
+    --color-grid-line: var(--lt-grid-line);
+    --color-aurora-1: var(--lt-aurora-1);
+    --color-aurora-2: var(--lt-aurora-2);
+    --shadow-e1: var(--lt-shadow-e1);
+    --shadow-e2: var(--lt-shadow-e2);
+    --shadow-e3: var(--lt-shadow-e3);
+    --shadow-e4: var(--lt-shadow-e4);
+  }
+}
+
+/* The switch itself.
+   ─────────────────
+   A 180ms colour cross-fade, applied ONLY while the toggle has flagged it —
+   `[data-theme-switching]` goes on <html> for the length of the transition and
+   comes straight off again (theme-toggle.tsx).
+
+   It is a flag rather than a permanent `transition: background-color` on `*`
+   for two reasons, and the first one is a real bug rather than a preference:
+
+     1. A permanent global colour transition fights the animation system. The
+        entrance patterns, .lift, the accordion and the tab indicator all
+        declare their own `transition-*` lists with their own durations; a
+        blanket rule on `*` either loses to them (and does nothing) or wins
+        (and retimes them). Scoping it to the switch means the six patterns
+        in docs/09 are untouched, which is the standing instruction on this
+        change.
+     2. It is free at rest. No element carries a transition it will never use,
+        so nothing new is on the compositor during scroll.
+
+   `transition-property` is enumerated rather than `all`: `all` would sweep in
+   transform and opacity and animate the reveal states on every toggle.
+
+   Reduced motion is already handled globally — the block in @layer base
+   clamps every transition-duration to 0.01ms — so the switch becomes an
+   instant swap for anyone who asked for that, with no branch needed here. */
+:root[data-theme-switching] *,
+:root[data-theme-switching] *::before,
+:root[data-theme-switching] *::after {
+  transition-property: background-color, border-color, color, fill, stroke,
+    box-shadow, outline-color, text-decoration-color;
+  transition-duration: 180ms;
+  transition-timing-function: var(--ease-out-quint);
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
     /* Anchor targets clear the sticky header. */
     scroll-padding-top: 5.5rem;
-    color-scheme: light;
+    /* The default ground, for a UA that has not yet applied the blocks above
+       (and for the `color-scheme`-aware defaults of form controls and
+       scrollbars). Overridden per ground in the activation rules. */
+    color-scheme: dark;
     -webkit-text-size-adjust: 100%;
   }
 
@@ -351,16 +794,56 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* Focus is always visible, 3:1 against both the control and its backdrop. */
+  /* Focus is always visible, 3:1 against the backdrop.
+     `--color-focus`, not `--color-link`: the two are the same value on both
+     grounds today, but they are not the same *decision* — a future link colour
+     is free to move for typographic reasons, and the ring is a WCAG 2.4.13
+     obligation that must not follow it silently.
+
+     The 2px offset is load-bearing rather than cosmetic. On the light ground
+     the ring and the primary action are both brand-600, so a ring drawn ON the
+     button would be 1:1 and invisible; the offset puts it on the page ground,
+     where it measures 7.7:1. This is why there is no `focus on action` pair in
+     check-contrast — the pair the ring is actually judged against is the
+     ground, and that one is asserted. */
   :focus-visible {
-    outline: 2px solid var(--color-link);
+    outline: 2px solid var(--color-focus);
     outline-offset: 2px;
     border-radius: var(--radius-sm);
   }
 
+  /* Dark-ground islands: the band sections, the hero over its video, and the
+     video/code mats. All three are dark on BOTH grounds, so the page's focus
+     ring — brand-600 on the light ground — measures 2.52:1 inside them and a
+     keyboard user simply loses the indicator on §8 and §12.
+
+     Re-pointing the token on the container fixes every focusable descendant at
+     once, because `:focus-visible` above reads it through inheritance. That is
+     the whole reason the ring was given its own token rather than borrowing
+     `--color-link`: a role you can re-point locally.
+
+     `[data-tone='band']` is emitted by <Section tone="band">; `.on-dark-ground`
+     is the manual opt-in for the two places that are dark without being a
+     Section — the hero's scrim column and the media panels. */
+  [data-tone='band'],
+  .on-dark-ground {
+    --color-focus: var(--color-band-link);
+  }
+
   ::selection {
-    background-color: var(--color-brand-100);
-    color: var(--color-brand-900);
+    background-color: var(--color-selection);
+    color: var(--color-selection-fg);
+  }
+
+  /* Placeholders. Easy to miss when retrofitting a second ground: the browser
+     default is a UA-computed grey off the *input's* colour, which on a dark
+     field lands somewhere around 2:1 and is not ours to reason about. Setting
+     it explicitly makes it a measured pair on both grounds. It is held to
+     4.5:1 like any other text — a placeholder that doubles as a label (which
+     is not the pattern here, but is the common misuse) would otherwise fail. */
+  ::placeholder {
+    color: var(--color-placeholder);
+    opacity: 1; /* Firefox applies its own 0.54 otherwise */
   }
 
   h1, h2, h3, h4 {
@@ -422,13 +905,21 @@
      else.
 
      This is cyan-500's sanctioned use: a large decorative fill at low alpha
-     with ink text on top. It is never a border or an icon here. Values are
-     literal rather than var() because a colour stop needs an alpha channel;
-     they are brand-500 and cyan-500 with one applied. */
+     with body text on top. It is never a border or an icon here.
+
+     The stops are now tokens, and the ALPHA is what makes them per-ground
+     rather than one value reused. Both washes are the same two hues at both
+     ends — brand-500 and cyan-500 — but a glow has to travel further from a
+     dark ground before it reads at all, so the azure end carries roughly twice
+     the alpha (0.22/0.14) of the light one (0.10/0.08). Reusing the azure
+     alphas on white produced a visible blue bruise behind the closing CTA;
+     reusing the light ones on azure produced nothing at all. This is the
+     "translucent value that works on one canvas only" case, and the fix is a
+     token per ground, not a compromise alpha. */
   .bg-aurora {
     background-image:
-      radial-gradient(58rem 34rem at 78% -12%, oklch(0.58 0.17 258 / 0.22), transparent 68%),
-      radial-gradient(42rem 28rem at 8% 4%, oklch(0.72 0.14 200 / 0.14), transparent 70%);
+      radial-gradient(58rem 34rem at 78% -12%, var(--color-aurora-1), transparent 68%),
+      radial-gradient(42rem 28rem at 8% 4%, var(--color-aurora-2), transparent 70%);
   }
 
   /* Hero scrim — the dark veil that makes copy legible over the hero video.
@@ -460,15 +951,31 @@
      Rules: never a light or white layer over footage (that was the halo bug).
      No gradient, no shadow, no glow behind the text — flat only. Do not
      lighten below 0.72. --color-band-fg-muted is unavailable over video: it
-     measures 3.0:1 there. */
+     measures 3.0:1 there.
+
+     ── Why the measurement survives the light ground (2026-09-03) ─────────
+     It reads --color-band, and the band deliberately does NOT flip with the
+     theme (see the palette note). On the light ground the band is DEEPER —
+     neutral-950 rather than 0.235 L — so the veil gets darker and every ratio
+     above improves. Nothing here needed re-measuring, and that is the whole
+     reason the band was kept fixed: had it flipped, this scrim would have gone
+     pale on the light ground and taken the hero's copy with it. */
   .hero-scrim {
     background-color: color-mix(in srgb, var(--color-band) 74%, transparent);
   }
 
+  /* The ruled ground behind PageHero, FinalCta and the 404.
+
+     `--color-grid-line`, not a literal. The hairline was a translucent WHITE
+     (0.97 L at 5% alpha) — correct on the azure ground and completely absent
+     on a white one, which is the textbook version of the retrofit failure:
+     a value that is invisible rather than wrong, so nothing looks broken and
+     the texture simply stops existing. The light ground gets a translucent INK
+     rule instead. Same role, opposite direction, one token. */
   .bg-grid {
     background-image:
-      linear-gradient(to right, oklch(0.97 0.005 265 / 0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, oklch(0.97 0.005 265 / 0.05) 1px, transparent 1px);
+      linear-gradient(to right, var(--color-grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px);
     background-size: 56px 56px;
     mask-image: radial-gradient(58rem 30rem at 50% 0%, #000 20%, transparent 78%);
   }
@@ -510,11 +1017,13 @@
 
        draw-in  Draw     stroke-dashoffset 100→0   ChainRail · ArchitectureRail
        fade-in  Stagger  opacity 0→1               chain nodes · pipeline dots
-       grow-y   —        scaleY 0→1                P7 bars · pipeline segments
+       grow-y   —        scaleY 0→1                pipeline segments
 
-     `grow-y` carries no transform-origin on purpose: the bars grow from the
-     bottom and the pipeline segments from the top, so the origin belongs to
-     the element, not to the keyframe. */
+     `grow-y` carries no transform-origin on purpose: the origin belongs to the
+     element, not to the keyframe. It had two users until 2026-09-03, growing
+     from the bottom for the P7 bars and from the top for the pipeline
+     segments; the bars are a GSAP timeline now (see [data-kpi-halo] below) and
+     the segments are the one that remains. */
   @keyframes draw-in {
     from {
       stroke-dashoffset: 100;
@@ -572,66 +1081,39 @@
     }
   }
 
-  /* P7 Intelligence — bars, then the halo, then the annotation.
+  /* P7 Intelligence — the halo's paint only.
      Deck slide 09: BARS scaleY 320ms · 70ms apart · HALO 320ms, one KPI only ·
      ANNOTATION cross-fade 200ms.
 
-     scaleY from the bottom, so it is a transform and never a height. The bar's
-     own value lives in an inline --bar height on the track; the transform only
-     scales what is already sized, which keeps layout entirely out of the
-     animation and the axis steady.
+     **The sequence is no longer here.** It is a GSAP timeline in
+     interactive/utilisation-chart.tsx (owner request, 2026-09-03), for two
+     reasons the stylesheet cannot answer:
 
-     The halo is a CSS radial-gradient rather than the deck's named
-     `kpi-highlight.svg` (owner decision, 2026-09-01): it reads
-     --color-cyan-500 directly so it cannot drift from the palette, needs no
-     request, and scales with the bar. */
-  [data-bar] {
-    transform: scaleY(1);
-    transform-origin: bottom;
-  }
-  .reveal-seen [data-bar] {
-    animation: grow-y var(--duration-rise) var(--ease-out-quint) backwards;
-  }
+       1. Gated on `.reveal-seen`, the bars inherited <Reveal>'s 2s failsafe,
+          which fires whether or not the block is on screen. On the ninth
+          section of the homepage that meant the reveal had always finished
+          before it was scrolled to — the animation was right, the trigger
+          could not tell "in view" from "two seconds elapsed". The failsafe is
+          load-bearing on ~48 routes and stays; the chart opts out instead.
+       2. The percentages count up from 0 in step with their own bar, and a
+          number has to be interpolated and written to a text node.
 
-  /* One KPI only — the deck's rule, and it is enforced by there being exactly
-     one peak in the data rather than by styling discipline. */
+     What is left is the paint, which is where a palette read belongs (rule 8):
+     a CSS radial-gradient rather than the deck's named `kpi-highlight.svg`
+     (owner decision, 2026-09-01), reading --color-accent-fill (the decorative-fill role) so it
+     cannot drift, needing no request, and scaling with the bar. Opacity and
+     transform are the island's to animate and are left at their finished
+     values, so no-JS and reduced motion both get a complete chart.
+
+     One KPI only — the deck's rule, enforced by there being exactly one peak
+     in the data rather than by styling discipline. */
   [data-kpi-halo] {
     opacity: 1;
     background-image: radial-gradient(
       closest-side,
-      color-mix(in srgb, var(--color-cyan-500) 55%, transparent),
+      color-mix(in srgb, var(--color-accent-fill) 55%, transparent),
       transparent 100%
     );
-  }
-  .reveal-seen [data-kpi-halo] {
-    animation: kpi-halo var(--duration-rise) var(--ease-out-quint) backwards;
-  }
-  @keyframes kpi-halo {
-    from {
-      opacity: 0;
-    }
-  }
-
-  [data-annotation] {
-    opacity: 1;
-    transform: none;
-  }
-  .reveal-seen [data-annotation] {
-    animation: annotation-in var(--duration-cross-fade) var(--ease-out-quint) backwards;
-  }
-  @keyframes annotation-in {
-    from {
-      opacity: 0;
-      transform: translateX(8px);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .reveal-seen [data-bar],
-    .reveal-seen [data-kpi-halo],
-    .reveal-seen [data-annotation] {
-      animation: none;
-    }
   }
 
   /* P6 Developers — chrome, then the code rows.
@@ -844,6 +1326,107 @@
     }
   }
 
+  /* ── §3 The chain — the card slide-in ───────────────────────────────────
+     Owner instruction, 2026-09-03. Replaces the GSAP ScrollTrigger spread
+     (pinned section + `scrub`) that shipped earlier the same day, which was
+     janky under scroll: a scrubbed timeline re-runs on every scroll event, and
+     `invalidateOnRefresh` with function-based tween values re-read `offsetLeft`
+     / `offsetWidth` on refresh — layout reads on the scroll path. Nothing here
+     runs on scroll at all. One IntersectionObserver adds `.is-visible`, the
+     compositor runs the rest off `transform` and `opacity` only.
+     Island: components/interactive/chain-spread.tsx.
+
+     ── The default state is the FINISHED state ─────────────────────────────
+     Same direction as the rail below and for the same reason (rule 6): the
+     resting styles live on the elements themselves, and `.chain-slide` — added
+     by the island, only to cards that are still below the fold — is what winds
+     them back. JavaScript off, hydration failure, or an observer that never
+     fires all leave the row rendered and correct.
+
+     ── Only transform and opacity ──────────────────────────────────────────
+     Both composite. No `left`, `margin` or `width` anywhere in this block; the
+     cards' geometry is their ordinary flex layout at every moment, so the
+     transition cannot trigger layout or paint.
+
+     ── The stagger ─────────────────────────────────────────────────────────
+     `--slide-delay` is set inline per card from `stagger(i, STAGGER_WIDE)`,
+     the same 80ms step the rest of the site uses. It is read *only* inside
+     these rules rather than being applied as a bare inline `transition-delay`,
+     so a 320ms delay on the fifth card can never leak onto some other
+     transition that element picks up later.
+
+     ── The arrows ride the same observer ───────────────────────────────────
+     No second observer and no scroll listener of their own: each connector is
+     a sibling of its card inside the same `<li>`, so it is reachable from the
+     card's own class with `~`. Arrow `i` bridges cards `i` and `i + 1` and
+     carries the *next* card's delay, so it lands with the card it points at.
+
+     ── will-change ─────────────────────────────────────────────────────────
+     Scoped to `.chain-slide`, so it exists only while a card is armed, and
+     dropped again by `.is-settled` — which the island sets on `transitionend`.
+     Never left on an idle element. */
+  [data-chain-card].chain-slide,
+  [data-chain-card].chain-slide ~ div [data-chain-arrow] {
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+  /* Slides in from the left, so the row assembles left to right. */
+  [data-chain-card].chain-slide {
+    transform: translateX(-40px);
+  }
+  /* The connector pops rather than slides — it is a 28px square between two
+     cards, and translating it would read as a sixth thing moving sideways. */
+  [data-chain-card].chain-slide ~ div [data-chain-arrow] {
+    transform: scale(0.6);
+  }
+  /* ── The transition lives on the *end* state, deliberately ───────────────
+     A transition runs off the properties in the style being transitioned to,
+     so declaring it here and not on `.chain-slide` above makes the two
+     directions asymmetric on purpose:
+
+       arming   (adding `.chain-slide`)  — no transition, an instant snap;
+       revealing (adding `.is-visible`)  — the 560ms slide.
+
+     That asymmetry is required, not a nicety. The island arms a card by adding
+     a class to an element that is currently at its resting opacity 1 /
+     transform none. With the transition declared on the armed state, that add
+     is itself a transition, and the card animates *backwards* — 560ms of
+     fading out and sliding left before it can come back. Off-screen it is
+     invisible, but it is real work, and it races the reveal whenever the
+     observer fires soon after arming (a fast flick, or a card entering the
+     viewport within the stagger's own 320ms tail). Caught in the browser: the
+     armed cards measured opacity 1 / transform none instead of 0 / -40px. */
+  [data-chain-card].chain-slide.is-visible,
+  [data-chain-card].chain-slide.is-visible ~ div [data-chain-arrow] {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity var(--duration-slide) var(--ease-out-quint) var(--slide-delay, 0ms),
+      transform var(--duration-slide) var(--ease-out-quint) var(--slide-delay, 0ms);
+  }
+  /* Specificity is deliberate: (0,3,0) and (0,4,1) against the (0,2,0) and
+     (0,3,1) of the armed rules above, so these win wherever they land in
+     source order. */
+  [data-chain-card].chain-slide.is-settled,
+  [data-chain-card].chain-slide ~ div [data-chain-arrow].is-settled {
+    will-change: auto;
+  }
+  /* Belt and braces. The island returns before arming anything under reduced
+     motion, so `.chain-slide` is never applied there and these rules have
+     nothing to match — but the class is one `classList.add` away from a future
+     refactor, and the resting state should not depend on that discipline. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-chain-card].chain-slide,
+    [data-chain-card].chain-slide ~ div [data-chain-arrow],
+    [data-chain-card].chain-slide.is-visible,
+    [data-chain-card].chain-slide.is-visible ~ div [data-chain-arrow] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+      will-change: auto;
+    }
+  }
+
   /* P2 signature moment: the chain rail draws, its nodes stagger in, then the
      token travels the rail and parks on the last stage.
      Deck slide 04. Component: components/diagrams/chain-steps.tsx ChainRail.
@@ -941,28 +1524,86 @@
     }
   }
 
+  /* ── The scroll-scrubbed driver (2026-09-03, owner instruction) ──────────
+     Island: interactive/architecture-draw.tsx.
+
+     At `sm` and up the draw above is replaced by a pinned, scroll-scrubbed
+     sequence — apps rise, the fan draws into the collector point, the gateway
+     pulses, the spine rises, the drop draws. The island sets
+     `data-arch-draw="scrub"` on the diagram box once it has actually built a
+     timeline, and these two rules are what stop the CSS entrance from fighting
+     it.
+
+     They are necessary, not tidiness. Both drivers write the same two
+     properties — `stroke-dashoffset` on the rails, `opacity`/`transform` on the
+     cards and chips — and a running CSS `animation` beats an inline style, so
+     with both live the entrance would stamp over the scrub for its first 800ms
+     and the lines would snap to drawn before the user had scrolled.
+
+     Specificity is (0,3,0) against the (0,2,0) of the `.reveal-seen` rules
+     above, so it wins regardless of source order. Gating on `.reveal-seen`
+     costs nothing — if that class never lands, neither do the rules being
+     overridden.
+
+     The marker is set per `matchMedia` branch and removed when the branch stops
+     matching, so below `sm` and under reduced motion it is never present and
+     the CSS entrance keeps ownership. */
+  .reveal-seen [data-arch-draw='scrub'] [data-arch-rail],
+  .reveal-seen [data-arch-draw='scrub'] [data-rise-item] {
+    animation: none;
+  }
+
+  /* The gateway's activation ring — the beat that says the four connections
+     just landed.
+
+     A separate absolutely-positioned element rather than a shadow on the
+     gateway box itself, because docs/09 rule 5 forbids animating `box-shadow`
+     on scroll. The shadow here is static and only the element's *opacity* is
+     tweened, which stays on the compositor.
+
+     `opacity: 0` is the default and the resting state, so this is invisible
+     unless the island is driving it — the same default-is-finished contract as
+     everything else in this file. `border-radius: inherit` tracks the gateway's
+     own `--radius-lg` rather than restating it.
+
+     Colour is `--color-accent-line` — the tier-3 cyan role for a border or an
+     icon, which is exactly what this ring is. Naming the role rather than a
+     cyan step is what makes it correct on both grounds: it resolves to cyan-400
+     on the azure ground and cyan-600 on the light one. Nothing here is text, so
+     the text rules for cyan do not apply. */
+  [data-arch-glow] {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow:
+      inset 0 0 0 1px var(--color-accent-line),
+      0 0 20px -6px var(--color-accent-line);
+  }
+
   /* The pipeline — a stage list that rebuilds itself.
-     Call sites: page-template.tsx `Chain` (server, ~12 blocks across the
-     product / platform / security / solutions routes) and
-     interactive/cluster-switcher.tsx (homepage §4 and /demo).
+     Call site: page-template.tsx `Chain` (server, ~12 blocks across the
+     product / platform / security / solutions routes).
 
-     Both render the identical composition — a dot per stage with a hairline
-     segment between — and both were fully static. On the ClusterSwitcher that
-     mattered most: it sits beside a tablist whose indicator *does* animate, so
-     switching clusters read as "the label changed" rather than "the pipeline
-     rebuilt", which is the weaker of the two readings for a section whose one
-     idea is that every step in the chain is a full product.
+     **The ClusterSwitcher no longer uses this** (2026-09-03). It rendered the
+     identical composition — a dot per stage with a hairline segment between —
+     until its stepper moved to interactive/chain-stepper.tsx, where a GSAP
+     timeline sends a token down the connector and lands each stage as it
+     passes. The two diverged for a reason this block cannot fix: those landing
+     moments have to be derived from *measured* dot positions, because the
+     stage count varies 5→7 across tabs and the spacing is set by wrapped
+     label text, and an `animation-delay` written at render time cannot read a
+     rect. `Chain` is a server component with a fixed five-stage list, so it
+     keeps the cheaper implementation. Everything below is unchanged and still
+     live; only the second call site went away.
 
-     **Deviation from the brief, stated.** The brief specifies framer variants
-     keyed off `cluster.id`. This is CSS instead, for a reason that only shows
-     up once both call sites are in view: `Chain` is a server component and
-     cannot use framer at all, so a framer implementation would have meant two
-     implementations of one pattern, with the durations written out twice.
-     docs/09 §7 is "CSS-first… most of this site's motion needs no JS", and the
-     brief's own intent — "keyed to cluster switching" — is satisfied for free,
-     because the panel already remounts on `key={cluster.id}` and a CSS
-     animation restarts whenever its element is inserted. Same trigger, one
-     implementation, no numbers duplicated into JS.
+     The original note on why this was CSS rather than framer still stands for
+     `Chain`: it cannot use framer at all, so a framer version would have meant
+     two implementations of one pattern with the durations written out twice.
+     docs/09 §7 is "CSS-first… most of this site's motion needs no JS". The
+     trigger came for free from the remount, and still does — a CSS animation
+     restarts whenever its element is inserted.
 
      The segment grows by `scaleY` from `transform-origin: top` — never a
      height. This list is HTML rather than SVG, so a `stroke-dashoffset` reveal
@@ -992,6 +1633,29 @@
     .reveal-seen [data-pipe-line] {
       animation: none;
     }
+  }
+
+  /* The travelling token on the cluster stepper —
+     interactive/chain-stepper.tsx, which is the ClusterSwitcher's half of the
+     pipeline above (added 2026-09-03, owner request).
+
+     **No animation here, and that is the point.** The sequence is a GSAP
+     timeline in the island, because the per-stage landing moments have to be
+     derived from measured dot positions — the stage spacing is set by label
+     wrapping and the stage *count* varies 5→7 across tabs, so no
+     `animation-delay` written at render time can stay in sync. What lives here
+     is only the paint: the glow, which is `--color-accent-fill` read through
+     color-mix exactly as [data-kpi-halo] above reads it, so the palette value
+     is never re-typed into a component (rule 8) and never into JS.
+
+     Reduced motion needs no branch on this block. The island returns before
+     it dims anything, so the stepper simply renders finished — and the token
+     starts at `opacity: 0` here, which is also where it stays. */
+  [data-step-token] {
+    box-shadow: 0 0 12px 3px color-mix(in srgb, var(--color-accent-fill) 55%, transparent);
+  }
+  [data-step-halo] {
+    background-color: color-mix(in srgb, var(--color-accent-fill) 55%, transparent);
   }
 
   /* Entrance: Scan. The Developers §12 code sample reveals itself once, on

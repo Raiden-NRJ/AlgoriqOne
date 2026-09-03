@@ -54,7 +54,15 @@
     ".next-final2/types/**/*.ts",
     ".next-final2/dev/types/**/*.ts",
     ".next-ship/types/**/*.ts",
-    ".next-ship/dev/types/**/*.ts"
+    ".next-ship/dev/types/**/*.ts",
+    ".next-stepper/types/**/*.ts",
+    ".next-stepper/dev/types/**/*.ts",
+    ".next-verify-chain/types/**/*.ts",
+    ".next-verify-chain/dev/types/**/*.ts",
+    ".next-stepper2/types/**/*.ts",
+    ".next-stepper2/dev/types/**/*.ts",
+    ".next-verify-final/types/**/*.ts",
+    ".next-verify-final/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

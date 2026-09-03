@@ -4,6 +4,7 @@ import { capabilities } from '@/content/homepage';
 import { Container, Eyebrow, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
 import { stagger } from '@/components/site/motion';
+import { CapabilitiesSpread } from '@/components/interactive/capabilities-spread';
 
 /**
  * §6 Built to fit — beat 7. One idea: it bends to your process without a
@@ -29,19 +30,30 @@ export function Capabilities() {
         </Reveal>
 
         {/*
-          One <Reveal> on the grid, not one per card — deck slide 06's
-          "OBSERVER: one, on the grid". The cards were four separate Reveals,
-          so the grid carried four IntersectionObservers to do one job. They
-          now animate off the container's `.reveal-seen` marker with their own
-          animation-delay (globals.css, [data-rise-item]).
+          The card grid is the only block in this section that is *not* wrapped
+          in <Reveal>. CapabilitiesSpread owns its motion instead — a scrubbed,
+          section-pinned spread at xl and a per-card rise below it, shared with
+          §3 via useCardSpread — and it does so entirely in transforms, leaving
+          the grid rendered and finished without JavaScript. That is a strictly
+          better no-JS story than the Reveal it replaced, which started the grid
+          at opacity 0.
 
-          80ms, not 70: P5 specifies the wider step. Four cards can afford it.
+          This also retired the cards' [data-rise-item] stagger (deck slide 06's
+          "OBSERVER: one, on the grid", 80ms per P5). It could not stay: that
+          CSS animation writes transform and opacity on the same <li> the scrub
+          does, and a CSS animation beats an inline style, so it would have
+          overridden the spread for its first 320ms. The one observer the deck
+          asked for is still one — it is now a ScrollTrigger rather than a
+          Reveal.
         */}
-        <Reveal>
+        <CapabilitiesSpread>
           {/* 2-up at md so four cards never leave a single orphan on a row. */}
           <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            {capabilities.cards.map((card, i) => (
-              <li key={card.title} data-rise-item="" style={{ animationDelay: `${stagger(i, 80)}ms` }}>
+            {capabilities.cards.map((card) => (
+              // data-cap-card is CapabilitiesSpread's handle on this element.
+              // The animation writes transform and opacity only, so the class
+              // lists below are the resting state in every case.
+              <li key={card.title} data-cap-card="">
               <Link
                 href={card.href}
                 // `lift` is the deck's hover pattern: -2px, e1→e2, 120ms
@@ -51,7 +63,10 @@ export function Capabilities() {
                 className="group lift flex h-full flex-col gap-5 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-e1)] hover:border-[var(--color-border-strong)]"
               >
                 {/* The miniature */}
-                <div className="flex flex-wrap items-center gap-1.5 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-bg-subtle)] p-3">
+                <div
+                  data-cap-chips=""
+                  className="flex flex-wrap items-center gap-1.5 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-bg-subtle)] p-3"
+                >
                   {card.steps.map((step, index) => (
                     <span key={step} className="flex items-center gap-1.5">
                       <span
@@ -73,7 +88,7 @@ export function Capabilities() {
                   ))}
                 </div>
 
-                <div className="flex flex-col gap-2">
+                <div data-cap-copy="" className="flex flex-col gap-2">
                   <h3 className="text-lg font-semibold">{card.title}</h3>
                   <p className="text-sm leading-relaxed text-[var(--color-fg-muted)]">
                     {card.body}
@@ -91,20 +106,31 @@ export function Capabilities() {
               </li>
             ))}
           </ul>
+        </CapabilitiesSpread>
 
-          {/*
-            P5's "one claim": the rule under the four proofs, scaling in from
-            the left over 480ms. It is the only thing on the card grid that is
-            not a card, which is the point — four proofs, one line under them.
+        {/*
+          P5's "one claim": the rule under the four proofs, scaling in from
+          the left over 480ms. It is the only thing on the card grid that is
+          not a card, which is the point — four proofs, one line under them.
 
-            aria-hidden: it is a rule, not a separator with meaning. h-px +
-            scaleX so the animation is a transform, never a width.
-          */}
+          Its own Reveal, so `.reveal-seen` lands on this block when the rule
+          itself is in view rather than when the heading is — the same split
+          chain.tsx makes for its rail, and necessary now that the grid no
+          longer carries a Reveal for this to inherit the marker from.
+
+          aria-hidden: it is a rule, not a separator with meaning. h-px +
+          scaleX so the animation is a transform, never a width.
+
+          The `mt-12` this used to carry is gone: it was a sibling inside the
+          grid's Reveal, and it is now a flex item of the Container, whose
+          `gap-12` supplies exactly the same 3rem.
+        */}
+        <Reveal>
           <div
             aria-hidden="true"
             data-sweep=""
             style={{ animationDelay: `${stagger(capabilities.cards.length, 80)}ms` }}
-            className="mt-12 h-px w-full bg-[var(--color-link)]"
+            className="h-px w-full bg-[var(--color-link)]"
           />
         </Reveal>
       </Container>

@@ -22,9 +22,27 @@ poisons `next build` without it).
 | `zod` | Content-file schema validation at build time | build-time only |
 | A spring/motion micro-lib | **Only** inside the interactive-demo island, dynamically imported | counted against that island |
 
-**Rejected:** a global animation library (CSS covers ~90% of the motion spec), a CMS (see §5), a
-component library (we have our own), GSAP/ScrollTrigger (scrolljacking is banned anyway), any
-analytics or chat script that blocks rendering.
+| `gsap` + `@gsap/react` | Scroll-scrubbed, pinned sequences. **Islands only** — see the carve-out below | counted against those islands |
+
+**Rejected:** a global animation library (CSS still covers ~90% of the motion spec), a CMS (see §5),
+a component library (we have our own), any analytics or chat script that blocks rendering.
+
+**GSAP/ScrollTrigger — carve-out, owner instruction 2026-09-03.** This table previously read
+"Rejected: … GSAP/ScrollTrigger (scrolljacking is banned anyway)". The parenthetical was the whole
+argument, and docs/09 §1 rule 7 no longer bans pinning outright — it bounds it. GSAP is now a
+dependency, under these limits:
+
+- **Four consumers, all islands:** `use-card-spread.ts` (shared by §3 The chain and §6 Built to
+  fit), `chain-stepper.tsx` (core tween engine only, no plugin, no scroll coupling) and
+  `architecture-draw.tsx` (§4's architecture diagram). Nothing else imports it.
+- **CSS stays the default.** A new animation reaches for GSAP only when CSS demonstrably cannot do
+  it — scroll-position-driven progress and pinning are the two cases so far. `framer-motion`'s
+  `useScroll` was considered first for both and cannot pin.
+- **Every consumer keeps the site's resting-state contract:** the server output is the finished
+  state, and the island only ever winds it back once it has confirmed it can run. No-JS, failed
+  hydration and reduced motion all render complete.
+- **Not on the critical path.** It ships in the client chunks those islands already create, and the
+  §4 budget in `12-` is the gate.
 
 ---
 

@@ -13,6 +13,7 @@ import { ChevronDown, Menu, X } from 'lucide-react';
 import { NAV } from '@/content/site';
 import { Button, cn, Container } from './primitives';
 import { Logo } from './logo';
+import { ThemeToggle } from '@/components/interactive/theme-toggle';
 
 const OPEN_DELAY = 120;
 const CLOSE_DELAY = 200;
@@ -134,7 +135,7 @@ export function SiteHeader() {
                         className={cn(
                           'rounded-[var(--radius-md)] px-3 py-2 text-sm font-medium transition-colors',
                           overlay
-                            ? 'text-[var(--color-band-fg)] hover:text-white'
+                            ? 'text-[var(--color-band-fg)] hover:text-[var(--color-band-fg)]'
                             : 'text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]',
                         )}
                       >
@@ -162,7 +163,7 @@ export function SiteHeader() {
                       className={cn(
                         'inline-flex items-center gap-1 rounded-[var(--radius-md)] px-3 py-2 text-sm font-medium transition-colors',
                         overlay
-                          ? 'text-[var(--color-band-fg)] hover:text-white'
+                          ? 'text-[var(--color-band-fg)] hover:text-[var(--color-band-fg)]'
                           : isOpen
                             ? 'text-[var(--color-fg)]'
                             : 'text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]',
@@ -211,25 +212,55 @@ export function SiteHeader() {
           </nav>
 
           <div className="hidden items-center gap-2 lg:flex">
+            {/*
+              The toggle sits with the account actions rather than in the nav
+              list: it is chrome, not a destination, and putting it in <nav>
+              would announce it as a navigation landmark item.
+
+              `overlay` is the transparent-header-over-video state, where the
+              backdrop is the hero scrim — dark on BOTH grounds. The page's own
+              fg-muted measures ~3:1 there, which is why the sign-in link has
+              its own ghostOnBand variant; the toggle takes the same treatment
+              for the same reason.
+            */}
+            <ThemeToggle
+              className={
+                overlay
+                  ? 'on-dark-ground text-[var(--color-band-fg-muted)] hover:bg-[var(--color-band-surface)] hover:text-[var(--color-band-fg)]'
+                  : undefined
+              }
+            />
             <Button href="/login" variant={overlay ? 'ghostOnBand' : 'ghost'}>
               Sign in
             </Button>
             <Button href="/signup">Start free</Button>
           </div>
 
-          <button
-            type="button"
-            className={cn(
-              'rounded-[var(--radius-md)] p-2 lg:hidden',
-              overlay ? 'text-[var(--color-band-fg)]' : 'text-[var(--color-fg)]',
-            )}
-            aria-expanded={mobileOpen}
-            aria-controls="mobile-nav"
-            onClick={() => setMobileOpen((v) => !v)}
-          >
-            <span className="sr-only">{mobileOpen ? 'Close menu' : 'Open menu'}</span>
-            {mobileOpen ? <X className="size-5" aria-hidden /> : <Menu className="size-5" aria-hidden />}
-          </button>
+          {/* The toggle is outside the sheet on mobile, next to the menu
+              trigger, so it is reachable without opening the navigation —
+              switching ground is not a navigation task. */}
+          <div className="flex items-center gap-1 lg:hidden">
+            <ThemeToggle
+              className={
+                overlay
+                  ? 'on-dark-ground text-[var(--color-band-fg-muted)] hover:bg-[var(--color-band-surface)] hover:text-[var(--color-band-fg)]'
+                  : undefined
+              }
+            />
+            <button
+              type="button"
+              className={cn(
+                'rounded-[var(--radius-md)] p-2',
+                overlay ? 'text-[var(--color-band-fg)]' : 'text-[var(--color-fg)]',
+              )}
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-nav"
+              onClick={() => setMobileOpen((v) => !v)}
+            >
+              <span className="sr-only">{mobileOpen ? 'Close menu' : 'Open menu'}</span>
+              {mobileOpen ? <X className="size-5" aria-hidden /> : <Menu className="size-5" aria-hidden />}
+            </button>
+          </div>
         </div>
       </Container>
 

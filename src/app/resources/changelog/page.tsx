@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { PageHero } from '@/components/page/page-template';
 import { Container, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
+import { stagger } from '@/components/site/motion';
 import { formatDate, getReleases } from '@/lib/content-api';
 
 export const metadata: Metadata = {
@@ -32,9 +33,11 @@ export default async function ChangelogPage() {
       <Section>
         <Container className="flex flex-col gap-12">
           {releases.length > 0 ? (
-            <ol className="flex flex-col gap-6">
-              {releases.map((release) => (
-                <Reveal as="li" key={release.id}>
+            /* One observer on the list, not one per release — see the note on
+               the same conversion in resources/blog/page.tsx. */
+            <Reveal as="ol" className="flex flex-col gap-6">
+              {releases.map((release, i) => (
+                <li key={release.id} data-rise-item="" style={{ animationDelay: `${stagger(i)}ms` }}>
                   <article className="flex flex-col gap-2 border-l-2 border-[var(--color-brand-300)] pl-6">
                     <div className="flex flex-wrap items-baseline gap-3">
                       <h2 className="text-lg font-semibold">{release.title || release.version}</h2>
@@ -56,9 +59,9 @@ export default async function ChangelogPage() {
                       </p>
                     ) : null}
                   </article>
-                </Reveal>
+                </li>
               ))}
-            </ol>
+            </Reveal>
           ) : (
             <Reveal>
               <div className="flex max-w-[min(62ch,100%)] flex-col gap-4 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-bg-subtle)] p-8">

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { CtaBand, PageHero } from '@/components/page/page-template';
 import { BulletList, Container, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
+import { stagger } from '@/components/site/motion';
 import { PARENT, PLATFORM_FACTS, SITE } from '@/content/site';
 
 export const metadata: Metadata = {
@@ -104,8 +105,13 @@ export default function AboutPage() {
           <Reveal className="flex flex-col gap-6">
             <h2 className="text-h2">Where we are</h2>
             <dl className="grid grid-cols-2 gap-6 lg:grid-cols-4">
-              {PLATFORM_FACTS.map((fact) => (
-                <div key={fact.label} className="flex flex-col gap-1">
+              {PLATFORM_FACTS.map((fact, i) => (
+                <div
+                  key={fact.label}
+                  data-rise-item=""
+                  style={{ animationDelay: `${stagger(i)}ms` }}
+                  className="flex flex-col gap-1"
+                >
                   <dt className="sr-only">{fact.label}</dt>
                   <dd className="flex flex-col gap-1">
                     <span className="text-3xl font-semibold tracking-[-0.03em]">{fact.value}</span>
@@ -143,10 +149,12 @@ export default function AboutPage() {
           <Reveal className="flex flex-col gap-6">
             <h2 className="text-h2">How we work</h2>
             <ul className="grid gap-4 sm:grid-cols-2">
-              {PRINCIPLES.map((principle) => (
+              {PRINCIPLES.map((principle, i) => (
                 <li
                   key={principle.title}
-                  className="flex flex-col gap-2 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-e1)]"
+                  data-rise-item=""
+                  style={{ animationDelay: `${stagger(i)}ms` }}
+                  className="lift flex flex-col gap-2 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-e1)] hover:border-[var(--color-border-strong)]"
                 >
                   <h3 className="text-base font-semibold">{principle.title}</h3>
                   <p className="text-sm leading-relaxed text-[var(--color-fg-muted)]">

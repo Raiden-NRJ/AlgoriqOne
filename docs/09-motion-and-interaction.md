@@ -20,8 +20,30 @@ This document is as much about restraint as about animation.
 5. **60fps or don't.** `transform` and `opacity` only. Never animate `width`, `height`, `top`, `left`,
    `box-shadow`, or `filter` on scroll.
 6. **Reduced motion is a first-class design**, not a degraded one — see §6.
-7. **Never hijack the scroll.** No scrolljacking, no forced pinning that traps the user, no
-   "keep scrolling to continue" that ignores a fast flick. The user owns the scrollbar.
+7. **Bounded pinning only.** *(Owner instruction 2026-09-03, superseding the blanket ban recorded
+   below.)* Three beats now pin and scrub — §3 The chain and §6 Built to fit via
+   `interactive/use-card-spread.ts`, and §4 Platform's architecture diagram via
+   `interactive/architecture-draw.tsx`. What the original rule was protecting is kept, and a new
+   pinned beat has to keep it too:
+
+   - **Bounded.** The pin lasts ≤ 1.2 viewport heights (`PIN_VH`). Past ~1.5 it reads as
+     scrolljacking again.
+   - **`scrub: true`, never a timeline the user waits on.** Scroll position *is* progress, so a fast
+     flick straight through lands on the finished state instead of being ignored — which is the
+     specific failure the "keep scrolling to continue" clause named.
+   - **Reversible.** Scrolling up runs it backwards. No one-way gates.
+   - **Nothing is only reachable through the animation.** The section is complete and readable at
+     progress 0 and at progress 1; the pin adds sequence, never content. A diagram whose elements
+     start at `opacity: 0` fails this during the pre-pin approach — see `PENDING_OPACITY` in
+     `architecture-draw.tsx` for the case that caught it.
+   - **Below the breakpoint the layout was designed for, and under reduced motion, no pin is
+     created at all.**
+
+   > **Superseded:** *"Never hijack the scroll. No scrolljacking, no forced pinning that traps the
+   > user, no 'keep scrolling to continue' that ignores a fast flick. The user owns the scrollbar."*
+   > That rule stood from 2026-07-31 to 2026-09-03 and is recorded rather than deleted because
+   > comments across the repo were written under it. The user still owns the scrollbar — the
+   > constraints above are what makes that true while pinning.
 
 ---
 

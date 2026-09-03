@@ -1,9 +1,28 @@
 /**
- * WCAG contrast verification for the token set.
+ * WCAG contrast verification for the token set, on BOTH grounds.
  *
  * Converts oklch → sRGB → relative luminance and computes real contrast
  * ratios. This is the same approach the platform repo uses (and which caught a
  * genuine AA failure there) — colour is verified by arithmetic, never by eye.
+ *
+ * ── What changed on 2026-09-03, and why it matters ────────────────────────
+ *
+ * The site now ships two grounds (globals.css, "HOW THE TWO GROUNDS WORK").
+ * A checker that resolves `--color-fg` to one value would verify exactly half
+ * the product and report a clean run for the half it never looked at — which
+ * is the same failure mode as the hand-mirrored table this script replaced in
+ * August, just with a different cause. So:
+ *
+ *   · The pair list is written ONCE, in semantic-role terms, and RUN TWICE —
+ *     once with the semantic layer resolved against `--dk-*`, once against
+ *     `--lt-*`. A pair cannot be asserted on one ground only.
+ *   · Comments are stripped before parsing. The old regex read commented-out
+ *     declarations as real ones, which is why globals.css carried a warning
+ *     about writing example values with arrows instead of colons. That warning
+ *     is no longer load-bearing, but the arrows are harmless, so it stands.
+ *   · The two light-activation blocks (attribute + media query) are checked
+ *     for parity. They are the one unavoidable duplication in the stylesheet
+ *     and this is what stops them drifting.
  *
  * Usage: node scripts/check-contrast.mjs
  */
@@ -65,258 +84,361 @@ const hex = (oklch) =>
  * the whole ramp was re-hued and this script cheerfully reported "all 26 pairs
  * meet target" — for the violet tokens that had just been deleted. A checker
  * that can pass against colours the site no longer ships is worse than none,
- * so it now reads the same file the browser does.
+ * so it reads the same file the browser does.
  */
 
-const CSS = readFileSync(new URL('../src/app/globals.css', import.meta.url), 'utf8');
+const CSS_RAW = readFileSync(new URL('../src/app/globals.css', import.meta.url), 'utf8');
 
-const DECLARED = new Map(
-  [...CSS.matchAll(/--color-([a-z0-9-]+)\s*:\s*([^;]+);/g)].map(([, name, value]) => [
-    name,
-    value.trim(),
-  ]),
-);
+/** Comments out, before anything else looks at the text. */
+const CSS = CSS_RAW.replace(/\/\*[\s\S]*?\*\//g, '');
 
-/** Resolves `var(--color-x)` aliases down to a literal oklch() triple. */
-function token(name, depth = 0) {
-  const value = DECLARED.get(name);
-  if (value === undefined) throw new Error(`--color-${name} is not declared in globals.css`);
-  if (depth > 8) throw new Error(`--color-${name}: var() chain too deep (cycle?)`);
+/**
+ * Returns the body of the block whose header matches `needle`, by counting
+ * braces rather than by regex — the media block has a nested rule in it, and a
+ * non-greedy `{...}` match would stop at the inner closing brace.
+ */
+function block(needle, { from = 0 } = {}) {
+  const at = CSS.indexOf(needle, from);
+  if (at === -1) throw new Error(`globals.css: could not find the block "${needle}"`);
+  const open = CSS.indexOf('{', at);
+  let depth = 0;
+  for (let i = open; i < CSS.length; i += 1) {
+    if (CSS[i] === '{') depth += 1;
+    else if (CSS[i] === '}') {
+      depth -= 1;
+      if (depth === 0) return { body: CSS.slice(open + 1, i), end: i };
+    }
+  }
+  throw new Error(`globals.css: unbalanced braces after "${needle}"`);
+}
 
-  const alias = value.match(/^var\(\s*--color-([a-z0-9-]+)\s*\)$/);
-  if (alias) return token(alias[1], depth + 1);
-
-  const oklch = value.match(
-    /^oklch\(\s*([\d.]+%?)\s+([\d.]+)\s+([\d.]+)\s*\)$/,
+/** Every `--name: value;` in a chunk of CSS, as a Map. */
+function declarations(css) {
+  return new Map(
+    [...css.matchAll(/(--[a-z0-9-]+)\s*:\s*([^;{}]+);/g)].map(([, name, value]) => [
+      name,
+      value.trim(),
+    ]),
   );
-  if (!oklch) throw new Error(`--color-${name}: cannot parse "${value}" as a plain oklch() triple`);
+}
+
+const THEME = declarations(block('@theme').body);
+
+const LIGHT_ATTR_BLOCK = block(":root[data-theme='light']");
+const LIGHT_ATTR = declarations(LIGHT_ATTR_BLOCK.body);
+
+/* The media-query fallback holds one nested rule; take the inner one. */
+const LIGHT_MEDIA_OUTER = block('@media (prefers-color-scheme: light)');
+const LIGHT_MEDIA = declarations(LIGHT_MEDIA_OUTER.body);
+
+/**
+ * Resolves a custom property to a literal oklch() triple, following `var()`
+ * aliases through the palettes and the ramps.
+ *
+ * `overrides` is the active ground's override map — empty for the azure ground
+ * (the @theme defaults already point at `--dk-*`), the light activation block
+ * for the light one. Lookups fall through to @theme, which is what lets a
+ * light alias land on an unswitched ramp step: `--color-diagram-ink` →
+ * `--lt-diagram-ink` → `--color-brand-700` → a literal.
+ */
+function resolve(name, overrides, depth = 0) {
+  const value = overrides.get(name) ?? THEME.get(name);
+  if (value === undefined) throw new Error(`${name} is not declared in globals.css`);
+  if (depth > 10) throw new Error(`${name}: var() chain too deep (cycle?)`);
+
+  const alias = value.match(/^var\(\s*(--[a-z0-9-]+)\s*\)$/);
+  if (alias) return resolve(alias[1], overrides, depth + 1);
+
+  const oklch = value.match(/^oklch\(\s*([\d.]+%?)\s+([\d.]+)\s+([\d.]+)\s*\)$/);
+  if (!oklch) throw new Error(`${name}: cannot parse "${value}" as a plain oklch() triple`);
 
   const [, l, c, h] = oklch;
   return [l.endsWith('%') ? parseFloat(l) / 100 : parseFloat(l), parseFloat(c), parseFloat(h)];
 }
 
-const T = {
-  bg: token('bg'),
-  bgSubtle: token('bg-subtle'),
-  surface: token('surface'),
-  border: token('border'),
-  borderStrong: token('border-strong'),
-  fg: token('fg'),
-  fgMuted: token('fg-muted'),
-  fgSubtle: token('fg-subtle'),
-  fgInverse: token('fg-inverse'),
-
-  band: token('band'),
-  bandSurface: token('band-surface'),
-  bandBorder: token('band-border'),
-  bandFg: token('band-fg'),
-  bandFgMuted: token('band-fg-muted'),
-
-  // Aurora cyan — the third brand colour. Every step the site renders is
-  // pinned below; a cyan step that is not in PAIRS is not verified.
-  cyan50: token('cyan-50'),
-  cyan100: token('cyan-100'),
-  cyan300: token('cyan-300'),
-  cyan400: token('cyan-400'),
-  cyan500: token('cyan-500'),
-  cyan600: token('cyan-600'),
-  cyan700: token('cyan-700'),
-
-  brand50: token('brand-50'),
-  brand300: token('brand-300'),
-  brand400: token('brand-400'),
-  brand600: token('brand-600'),
-  brand700: token('brand-700'),
-  // Semantic layer, added with the azure ground (2026-09-02). These are what
-  // components reference now; the raw ramp steps above are kept only because a
-  // few fills still use them legitimately.
-  action: token('action'),
-  actionHover: token('action-hover'),
-  link: token('link'),
-  linkStrong: token('link-strong'),
-  chip: token('chip'),
-  chipFg: token('chip-fg'),
-  chipBorder: token('chip-border'),
-  tint: token('tint'),
-  tintBorder: token('tint-border'),
-  accentText: token('accent-text'),
-  accentLine: token('accent-line'),
-  brand800: token('brand-800'),
-
-  // App identity dots (architecture.tsx). Non-text, but they carry app
-  // identity, so they are held to the 3:1 non-text boundary.
-  appPortal: token('app-portal'),
-  appAdmin: token('app-admin'),
-  appPlatform: token('app-platform'),
-  appCustomer: token('app-customer'),
-  // Not a token: the literal white we set on brand-filled buttons.
-  white: [1, 0, 0],
-  // Two greens: one dark enough for white surfaces, one light enough for the
-  // dark band. A single value cannot clear 4.5:1 against both.
-  success: token('success'),
-  successOnBand: token('success-band'),
-  danger: token('danger'),
-  warning: token('warning'),
-};
-
-/**
- * Every pair the site actually renders. `min` is the ratio this pair must meet:
- * 7 for body text (our AAA commitment), 4.5 for all other text, 3 for
- * non-text boundaries such as focus rings.
- */
-const PAIRS = [
-  // Light surfaces
-  ['fg on bg', T.fg, T.bg, 7],
-  ['fg on bg-subtle', T.fg, T.bgSubtle, 7],
-  ['fg-muted on bg', T.fgMuted, T.bg, 4.5],
-  ['fg-muted on bg-subtle', T.fgMuted, T.bgSubtle, 4.5],
-  ['fg-subtle on bg', T.fgSubtle, T.bg, 4.5],
-  ['fg-subtle on bg-subtle', T.fgSubtle, T.bgSubtle, 4.5],
-
-  // Cyan-tinted surfaces (Section tone="tint"). Every text weight the site
-  // puts on cyan-50 is pinned here.
-  ['fg on tint', T.fg, T.tint, 7],
-  ['fg-muted on tint', T.fgMuted, T.tint, 4.5],
-  ['fg-subtle on tint', T.fgSubtle, T.tint, 4.5],
-  ['link on tint', T.link, T.tint, 4.5],
-  ['accent-text on tint', T.accentText, T.tint, 4.5],
-  ['fg on chip', T.fg, T.chip, 7],
-  ['chip-fg on chip', T.chipFg, T.chip, 4.5],
-
-  // Cyan as text / UI on white — the two steps that are allowed to carry it.
-  ['accent-text on bg', T.accentText, T.bg, 4.5],
-  ['accent-text on surface', T.accentText, T.surface, 4.5],
-  ['accent-line on bg (border/icon)', T.accentLine, T.bg, 3],
-
-  // Cyan on the dark band
-  ['cyan-300 TEXT on band', T.cyan300, T.band, 4.5],
-  ['cyan-300 TEXT on band-surface', T.cyan300, T.bandSurface, 4.5],
-  ['cyan-400 on band', T.cyan400, T.band, 3],
-  ['cyan-400 on band-surface', T.cyan400, T.bandSurface, 3],
-
-  ['link on bg', T.link, T.bg, 4.5],
-  ['link on surface', T.link, T.surface, 4.5],
-  ['link on bg-subtle', T.link, T.bgSubtle, 4.5],
-  ['chip-fg on chip', T.chipFg, T.chip, 4.5],
-  ['fg-inverse on action (button fill)', T.fgInverse, T.action, 4.5],
-  /*
-    No `text on cyan-500` pair, deliberately. On the white ground cyan-500 was
-    a fill that ink sat on, so the pair existed. On the azure ground nothing
-    renders text on it at all — checked: the §7 peak bar and the §2 rail token
-    are the only cyan-500 surfaces and both are bare shapes. Asserting a pair
-    the site does not render is how the old mirrored table came to pass against
-    deleted colours; if text ever lands on a cyan fill, add the pair then and
-    it will have to be `--color-fg-inverse`-dark, not light.
-  */
-  ['success on bg', T.success, T.bg, 4.5],
-  ['danger on bg', T.danger, T.bg, 4.5],
-
-  // Dark band
-  ['band-fg on band', T.bandFg, T.band, 7],
-  ['band-fg on band-surface', T.bandFg, T.bandSurface, 7],
-  ['band-fg-muted on band', T.bandFgMuted, T.band, 4.5],
-  ['band-fg-muted on band-surface', T.bandFgMuted, T.bandSurface, 4.5],
-  ['brand-300 on band', T.brand300, T.band, 4.5],
-  ['brand-300 on band-surface', T.brand300, T.bandSurface, 4.5],
-  ['success-on-band on band-surface', T.successOnBand, T.bandSurface, 4.5],
-  ['success-on-band on band', T.successOnBand, T.band, 4.5],
-  ['white on brand-600 (band)', T.white, T.brand600, 4.5],
-
-  // Non-text boundaries
-  ['border-strong on bg', T.borderStrong, T.bg, 1.3],
-  ['focus ring (link) on bg', T.link, T.bg, 3],
-  ['brand-400 on band-surface', T.brand400, T.bandSurface, 3],
-  ['band-border on band', T.bandBorder, T.band, 1.2],
-
-  // Cyan non-text boundaries. cyan-100 is the section border on tint sections;
-  // cyan-600 carries the diagram strokes that used to be --color-danger and
-  // the chart's second series, so it is held to the full 3:1 on every surface
-  // it appears on.
-  // cyan-300 is the section border on tint. cyan-100 was tried first and
-  // measured 1.09:1 against cyan-50 — fainter than the neutral border it
-  // replaces, so the section boundary would have disappeared. Held to the
-  // same 1.3 the neutral border-strong is held to.
-  ['tint-border on tint (section seam)', T.tintBorder, T.tint, 1.3],
-  ['cyan-300 border on bg', T.cyan300, T.bg, 1.3],
-  ['tint section on bg', T.tint, T.bg, 1.05],
-  ['accent-line stroke on tint', T.accentLine, T.tint, 3],
-
-  // App identity dots on a white card. Customer is cyan-600 rather than
-  // cyan-500 precisely because a bare dot is a mark, not a fill.
-  ['app-portal on surface', T.appPortal, T.surface, 3],
-  ['app-admin on surface', T.appAdmin, T.surface, 3],
-  ['app-platform on surface', T.appPlatform, T.surface, 3],
-  ['app-customer on surface', T.appCustomer, T.surface, 3],
+/** The two grounds, as `role → oklch` lookups. */
+const GROUNDS = [
+  { name: 'azure (dark)', overrides: new Map() },
+  { name: 'light', overrides: LIGHT_ATTR },
 ];
 
 /**
- * FILL-ONLY colours.
+ * Every pair the site actually renders, in semantic-role terms.
  *
- * cyan-500 (#00BEC7) is 2.29:1 on white. It cannot be text and cannot be a
- * border or a meaning-carrying icon. It is legal in exactly one role: a large
- * decorative fill with ink on top.
+ * `min` is the ratio the pair must meet on EVERY ground: 7 for body text (our
+ * AAA commitment), 4.5 for all other text, 3 for meaning-carrying non-text
+ * (icons, focus rings, identity dots), and below 3 only for pure texture —
+ * a section seam or a decorative rule, which is never the sole carrier of
+ * anything and is listed with the reason inline.
  *
- * Asserting only "ink on cyan-500 passes" would be a checker that quietly
- * blesses the colour. So each entry asserts BOTH halves:
- *   1. ink on the fill clears the text threshold  (what makes the fill legal)
- *   2. the fill on white is still BELOW 3:1       (the reason for the rule)
- *
- * If (2) ever starts passing, someone has changed the ramp and the fill-only
- * restriction may no longer be needed — that is a deliberate decision, so the
- * checker fails and makes you take it.
+ * A role named here is resolved per ground, so one row is two assertions.
  */
-/*
- * Empty since 2026-09-02, and that is the correct answer rather than a gap.
- *
- * The fill-only restriction existed because cyan-500 measured 2.29:1 on WHITE,
- * so on that ground it could not be text, a border, or a meaning-carrying
- * icon. On the azure ground it measures 8.5:1 against the surface — the
- * restriction is not relaxed, its premise is gone. Cyan-500 is a legitimate
- * border and icon colour here, which is what `--color-accent-line` is for.
- *
- * The trap inverted rather than disappearing: text on a cyan fill must now be
- * DARK, because `--color-fg` is light and measures 2.1:1 on it. That is
- * asserted as a normal pair above (`fg-inverse on cyan-500`), so the check
- * still exists — it just belongs in PAIRS now, not here.
- */
-const FILL_ONLY = [];
+const PAIRS = [
+  /* ── Body copy on the three page surfaces ─────────────────────────────── */
+  ['fg on bg', 'fg', 'bg', 7],
+  ['fg on bg-subtle', 'fg', 'bg-subtle', 7],
+  ['fg on surface', 'fg', 'surface', 7],
+  ['fg-muted on bg', 'fg-muted', 'bg', 4.5],
+  ['fg-muted on bg-subtle', 'fg-muted', 'bg-subtle', 4.5],
+  ['fg-muted on surface', 'fg-muted', 'surface', 4.5],
+  ['fg-subtle on bg', 'fg-subtle', 'bg', 4.5],
+  ['fg-subtle on bg-subtle', 'fg-subtle', 'bg-subtle', 4.5],
+  ['fg-subtle on surface', 'fg-subtle', 'surface', 4.5],
+
+  /* Placeholders. Held to full text contrast: the site never uses a
+     placeholder as a label, but a 3:1 placeholder is unreadable regardless. */
+  ['placeholder on bg', 'placeholder', 'bg', 4.5],
+  ['placeholder on surface', 'placeholder', 'surface', 4.5],
+
+  /* ── Links and actions ────────────────────────────────────────────────── */
+  ['link on bg', 'link', 'bg', 4.5],
+  ['link on bg-subtle', 'link', 'bg-subtle', 4.5],
+  ['link on surface', 'link', 'surface', 4.5],
+  ['link-strong (hover) on bg', 'link-strong', 'bg', 4.5],
+  ['link-strong (hover) on surface', 'link-strong', 'surface', 4.5],
+  /* The button fill. fg-inverse is LIGHT on both grounds — see the palette
+     note; the action is brand-600 either way, because the ramp does not
+     switch. This is the pair that catches anyone "fixing" that. */
+  ['fg-inverse on action (button fill)', 'fg-inverse', 'action', 4.5],
+  ['fg-inverse on action-hover', 'fg-inverse', 'action-hover', 4.5],
+
+  /* ── Chips and soft brand panels ──────────────────────────────────────── */
+  ['chip-fg on chip', 'chip-fg', 'chip', 4.5],
+  ['fg on chip', 'fg', 'chip', 4.5],
+
+  /* ── Tint sections (Section tone="tint") ──────────────────────────────── */
+  ['fg on tint', 'fg', 'tint', 7],
+  ['fg-muted on tint', 'fg-muted', 'tint', 4.5],
+  ['fg-subtle on tint', 'fg-subtle', 'tint', 4.5],
+  ['link on tint', 'link', 'tint', 4.5],
+  ['accent-text on tint', 'accent-text', 'tint', 4.5],
+
+  /* ── Cyan by ROLE, not by ramp step. Which step backs each of these is the
+        active ground's business; the obligation is the same on both. ─────── */
+  ['accent-text on bg', 'accent-text', 'bg', 4.5],
+  ['accent-text on surface', 'accent-text', 'surface', 4.5],
+  ['accent-text on bg-subtle', 'accent-text', 'bg-subtle', 4.5],
+  ['accent-line (border/icon) on bg', 'accent-line', 'bg', 3],
+  ['accent-line (border/icon) on surface', 'accent-line', 'surface', 3],
+  ['accent-line on tint', 'accent-line', 'tint', 3],
+  /* The fill and what may sit on it. This is the pair that replaces the old
+     FILL_ONLY machinery: rather than pinning cyan-500 as never-text, the fill
+     now names its own foreground, and that foreground is ink on the light
+     ground and ink on the dark one — because the fill is light on both. */
+  ['accent-fill-fg on accent-fill', 'accent-fill-fg', 'accent-fill', 4.5],
+
+  /* ── Diagram vocabulary ───────────────────────────────────────────────── */
+  ['diagram-ink on diagram-fill', 'diagram-ink', 'diagram-fill', 4.5],
+  ['diagram-ink on diagram-fill-strong', 'diagram-ink', 'diagram-fill-strong', 4.5],
+  ['diagram-ink stroke on bg', 'diagram-ink', 'bg', 3],
+  ['diagram-ink stroke on surface', 'diagram-ink', 'surface', 3],
+  ['diagram-accent on bg', 'diagram-accent', 'bg', 3],
+  ['diagram-accent on surface', 'diagram-accent', 'surface', 3],
+  /* Texture, not meaning: a soft rule and a panel wash. Both are held above
+     "visible at all" rather than to 3:1, and neither ever carries information
+     on its own — every diagram fill has a label or an adjacent stroke. */
+  ['diagram-line (soft rule) on bg', 'diagram-line', 'bg', 1.25],
+  ['diagram-line on surface', 'diagram-line', 'surface', 1.25],
+  ['diagram-fill on surface', 'diagram-fill', 'surface', 1.05],
+  ['diagram-fill-strong vs diagram-fill', 'diagram-fill-strong', 'diagram-fill', 1.15],
+
+  /* ── The band. Dark on BOTH grounds — only its depth changes — so these
+        rows assert the same design on two different slabs. ───────────────── */
+  ['band-fg on band', 'band-fg', 'band', 7],
+  ['band-fg on band-surface', 'band-fg', 'band-surface', 7],
+  ['band-fg-muted on band', 'band-fg-muted', 'band', 4.5],
+  ['band-fg-muted on band-surface', 'band-fg-muted', 'band-surface', 4.5],
+  /* The band's own link colour. `--color-link` is NOT usable here: on the
+     light ground it is brand-600, which measures ~2.3:1 on a neutral-950 slab.
+     That break is the reason band-link exists, and this is its guard. */
+  ['band-link on band', 'band-link', 'band', 4.5],
+  ['band-link on band-surface', 'band-link', 'band-surface', 4.5],
+  ['band-accent-text on band', 'band-accent-text', 'band', 4.5],
+  ['band-accent-text on band-surface', 'band-accent-text', 'band-surface', 4.5],
+  ['band-accent (icon) on band', 'band-accent', 'band', 3],
+  ['band-accent (icon) on band-surface', 'band-accent', 'band-surface', 3],
+  ['success-band on band', 'success-band', 'band', 4.5],
+  ['success-band on band-surface', 'success-band', 'band-surface', 4.5],
+  ['fg-inverse on action, over band', 'fg-inverse', 'action', 4.5],
+
+  /* ── Media: the mat behind footage and code panels. Fixed on both grounds
+        (a terminal is a dark artefact on any page), so these two rows verify
+        the same numbers twice — cheap, and it means a future "let's make the
+        code panel light" cannot land unmeasured. ─────────────────────────── */
+  ['media-fg on media', 'media-fg', 'media', 7],
+  ['media-fg-muted on media (code rows)', 'media-fg-muted', 'media', 4.5],
+  ['band-link on media', 'band-link', 'media', 4.5],
+
+  /* ── Functional colours (quarantined; see globals.css) ────────────────── */
+  ['success on bg', 'success', 'bg', 4.5],
+  ['success on surface', 'success', 'surface', 4.5],
+  ['danger on bg', 'danger', 'bg', 4.5],
+  ['danger on surface', 'danger', 'surface', 4.5],
+  ['warning on bg', 'warning', 'bg', 4.5],
+  ['warning on surface', 'warning', 'surface', 4.5],
+
+  /* ── Focus ring. WCAG 2.4.13. Judged against the PAGE, not the control:
+        the ring is drawn at outline-offset 2px, which puts it on the ground —
+        necessarily, since on the light ground the ring and the primary action
+        are the same blue. ──────────────────────────────────────────────────*/
+  ['focus ring on bg', 'focus', 'bg', 3],
+  ['focus ring on bg-subtle', 'focus', 'bg-subtle', 3],
+  ['focus ring on surface', 'focus', 'surface', 3],
+  ['focus ring on tint', 'focus', 'tint', 3],
+  /* Inside a band section the ring re-points to `--color-band-link` — the band
+     is dark on both grounds and the page's ring is brand-600 on the light one,
+     which measures 2.52:1 on a neutral-950 slab. That is a keyboard user
+     losing the focus indicator entirely on the Permissions and Security
+     sections, so the override is a fix and not a nicety; it is the
+     `[data-tone='band']` rule in globals.css. Asserted here against both
+     band surfaces. */
+  ['band focus ring on band', 'band-link', 'band', 3],
+  ['band focus ring on band-surface', 'band-link', 'band-surface', 3],
+
+  /* ── App identity dots. 8px fills, so 3:1 — and each is paired with its app
+        name in text, so colour is never the sole carrier (WCAG 1.4.1). ───── */
+  ['app-portal on surface', 'app-portal', 'surface', 3],
+  ['app-admin on surface', 'app-admin', 'surface', 3],
+  ['app-platform on surface', 'app-platform', 'surface', 3],
+  ['app-customer on surface', 'app-customer', 'surface', 3],
+  ['app-portal on bg-subtle', 'app-portal', 'bg-subtle', 3],
+  ['app-admin on bg-subtle', 'app-admin', 'bg-subtle', 3],
+  ['app-platform on bg-subtle', 'app-platform', 'bg-subtle', 3],
+  ['app-customer on bg-subtle', 'app-customer', 'bg-subtle', 3],
+
+  /* ── Boundaries and seams. Below 3:1 on purpose — a hairline between two
+        surfaces is texture. The floor is "distinguishable at all", which is
+        what catches a border that vanishes on the ground it was not designed
+        for: the rgba-white-on-white case in the brief. ───────────────────── */
+  ['border on surface', 'border', 'surface', 1.15],
+  ['border on bg', 'border', 'bg', 1.15],
+  ['border-strong on bg', 'border-strong', 'bg', 1.3],
+  ['border-strong on surface', 'border-strong', 'surface', 1.3],
+  ['chip-border on chip', 'chip-border', 'chip', 1.15],
+  ['tint-border on tint (section seam)', 'tint-border', 'tint', 1.3],
+  ['tint section on bg', 'tint', 'bg', 1.03],
+  ['bg-subtle band on bg', 'bg-subtle', 'bg', 1.03],
+  /*
+    There is deliberately NO `surface on bg` row.
+
+    On the light ground the two are both white and measure 1.00 — a card is
+    separated from the page by its BORDER, which is what `border on surface`
+    and `border on bg` above assert. On the azure ground they cannot be equal
+    (a card matching the ground disappears between its own hairlines) and the
+    palette lifts surface to 0.19 against a 0.16 bg.
+
+    So the invariant is "a card is distinguishable by its surface OR its
+    border", and only the border half is universally true. A row asserting the
+    surface half would have to be written per-ground, which is precisely the
+    kind of one-ground assertion this rewrite exists to eliminate. Asserting it
+    anyway, and then loosening the threshold until white-on-white passed, would
+    have produced a row that can never fail — worse than none.
+  */
+  ['band-border on band', 'band-border', 'band', 1.2],
+  /* 1.06, not 1.1: on the light ground the band is a neutral-950 well and its
+     raised card is 0.205 L, which is a 1.08 step. That is the original design
+     and it is legible because the card also draws a band-border at 1.42 — the
+     seam is the border's job here, same as on the page ground above. */
+  ['band-surface on band', 'band-surface', 'band', 1.06],
+  ['media-border on media', 'media-border', 'media', 1.2],
+];
+
+/* ── Run ─────────────────────────────────────────────────────────────────── */
 
 let failed = 0;
-console.log('  ratio   min   pair');
-console.log('  ─────   ───   ────');
 
-for (const [label, fg, bg, min] of PAIRS) {
-  const ratio = contrast(fg, bg);
-  const ok = ratio >= min;
-  if (!ok) failed += 1;
-  console.log(
-    `  ${ratio.toFixed(2).padStart(5)}   ${String(min).padStart(3)}   ${ok ? ' ' : '✗'} ${label}  (${hex(fg)} on ${hex(bg)})`,
-  );
+for (const ground of GROUNDS) {
+  console.log(`\n  GROUND: ${ground.name}`);
+  console.log('  ratio   min   pair');
+  console.log('  ─────   ───   ────');
+
+  for (const [label, fgRole, bgRole, min] of PAIRS) {
+    const fg = resolve(`--color-${fgRole}`, ground.overrides);
+    const bg = resolve(`--color-${bgRole}`, ground.overrides);
+    const ratio = contrast(fg, bg);
+    const ok = ratio >= min;
+    if (!ok) failed += 1;
+    console.log(
+      `  ${ratio.toFixed(2).padStart(5)}   ${String(min).padStart(3)}   ${ok ? ' ' : '✗'} ${label}  (${hex(fg)} on ${hex(bg)})`,
+    );
+  }
 }
 
-console.log('\n  fill-only colours — legal as a large fill with ink on top, nothing else');
-console.log('  ─────────────────────────────────────────────────────────────────────');
+/* ── Parity: the light palette is activated twice and must not drift ─────── */
 
-for (const [label, fill, inkMin, nonTextCeiling] of FILL_ONLY) {
-  const inkOn = contrast(T.fg, fill);
-  const onWhite = contrast(fill, T.bg);
+console.log('\n  light activation blocks — attribute vs. prefers-color-scheme');
+console.log('  ───────────────────────────────────────────────────────────');
 
-  const inkOk = inkOn >= inkMin;
-  if (!inkOk) failed += 1;
+const attrKeys = [...LIGHT_ATTR.keys()].sort();
+const mediaKeys = [...LIGHT_MEDIA.keys()].sort();
+
+const missingFromMedia = attrKeys.filter((k) => !LIGHT_MEDIA.has(k));
+const missingFromAttr = mediaKeys.filter((k) => !LIGHT_ATTR.has(k));
+const mismatched = attrKeys.filter(
+  (k) => LIGHT_MEDIA.has(k) && LIGHT_MEDIA.get(k) !== LIGHT_ATTR.get(k),
+);
+
+for (const k of missingFromMedia) {
+  failed += 1;
+  console.log(`  ✗ ${k} is in :root[data-theme='light'] but not in the media fallback`);
+}
+for (const k of missingFromAttr) {
+  failed += 1;
+  console.log(`  ✗ ${k} is in the media fallback but not in :root[data-theme='light']`);
+}
+for (const k of mismatched) {
+  failed += 1;
   console.log(
-    `  ${inkOn.toFixed(2).padStart(5)}   ${String(inkMin).padStart(3)}   ${inkOk ? ' ' : '✗'} ink on ${label} (fill is legal)  (${hex(T.fg)} on ${hex(fill)})`,
+    `  ✗ ${k} differs: "${LIGHT_ATTR.get(k)}" vs "${LIGHT_MEDIA.get(k)}"`,
   );
+}
+if (failed === 0) {
+  console.log(`    ${attrKeys.length} declarations, identical in both blocks`);
+}
 
-  // Deliberately inverted: this one must stay BELOW the non-text threshold.
-  const stillFillOnly = onWhite < nonTextCeiling;
-  if (!stillFillOnly) failed += 1;
-  console.log(
-    `  ${onWhite.toFixed(2).padStart(5)}   <${String(nonTextCeiling).padStart(2)}   ${stillFillOnly ? ' ' : '✗'} ${label} on white — must stay fill-only, never text/border/icon`,
-  );
+/* ── Completeness: every semantic role must exist on both grounds ────────── */
+
+/**
+ * Catches the other half of the drift problem: a role added to @theme (so the
+ * azure ground gets it) and never given an `--lt-*` value, which would leave
+ * the light ground silently inheriting an azure colour. The pair list above
+ * cannot catch that on its own — it would just measure the azure value twice
+ * and pass.
+ */
+const SEMANTIC_SKIP = new Set([
+  // Fixed by design — declared once, identical on both grounds. See globals.css.
+  '--color-media',
+  '--color-media-border',
+  '--color-media-fg',
+  '--color-media-fg-muted',
+  '--color-success-band',
+]);
+
+const semanticRoles = [...THEME.keys()].filter(
+  (k) =>
+    k.startsWith('--color-') &&
+    /^var\(\s*--dk-/.test(THEME.get(k) ?? '') === false &&
+    !SEMANTIC_SKIP.has(k) &&
+    // The ramps are absolute and correctly do not switch.
+    !/^--color-(brand|neutral|cyan)-/.test(k),
+);
+
+console.log('\n  semantic roles present on both grounds');
+console.log('  ─────────────────────────────────────');
+const unswitched = semanticRoles.filter((k) => !LIGHT_ATTR.has(k));
+for (const k of unswitched) {
+  failed += 1;
+  console.log(`  ✗ ${k} has no light-ground value — it will inherit the azure one`);
+}
+if (unswitched.length === 0) {
+  const switched = [...THEME.keys()].filter((k) => /^var\(\s*--dk-/.test(THEME.get(k) ?? ''));
+  console.log(`    ${switched.length} switched roles, ${SEMANTIC_SKIP.size} fixed by design`);
 }
 
 if (failed > 0) {
-  console.error(`\n${failed} contrast assertion(s) failed.`);
+  console.error(`\n${failed} assertion(s) failed.`);
   process.exit(1);
 }
-console.log(`\nAll ${PAIRS.length} pairs meet target; ${FILL_ONLY.length} fill-only colour(s) verified.`);
+console.log(
+  `\nAll ${PAIRS.length} pairs meet target on both grounds (${PAIRS.length * GROUNDS.length} assertions).`,
+);

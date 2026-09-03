@@ -89,3 +89,27 @@ export function staggerS(
 ): number {
   return stagger(index, step) / MS;
 }
+
+/* ──────────────────── The GSAP mirror ───────────────────────────────────
+ *
+ * Same contract as the framer mirror above — seconds, not milliseconds, and
+ * globals.css stays authoritative. GSAP gets its own block only because it
+ * takes a named ease string rather than a bezier array, so the two mirrors
+ * cannot share a constant.
+ *
+ * One consumer: interactive/chain-stepper.tsx.
+ */
+
+/** 1400ms — mirrors `--duration-transit`, the token-travels-the-rail gesture
+ *  already redlined for `[data-chain-token]` (deck slide 04). */
+export const DURATION_TRANSIT_S = 1400 / MS;
+
+/**
+ * GSAP's nearest name for `--ease-out-quint`.
+ *
+ * Not an exact match — cubic-bezier(0.16, 1, 0.3, 1) is steeper on exit than
+ * `power3.out` — but GSAP's `CustomEase` is a paid plugin and a hand-rolled
+ * bezier here would be a fourth copy of the same curve. The visible difference
+ * over 320ms is a frame or two of tail.
+ */
+export const GSAP_EASE_OUT = 'power3.out';

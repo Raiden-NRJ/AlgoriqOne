@@ -3,6 +3,7 @@ import { CONTACT } from '@/content/site';
 import { PageHero } from '@/components/page/page-template';
 import { Container, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
+import { stagger } from '@/components/site/motion';
 import { ContactForm } from '@/components/interactive/contact-form';
 
 export const metadata: Metadata = {
@@ -54,8 +55,13 @@ export default function ContactPage() {
           </Reveal>
 
           <Reveal delay={70} className="flex flex-col gap-8">
-            {ROUTES.map((route) => (
-              <div key={route.heading} className="flex flex-col gap-2">
+            {ROUTES.map((route, i) => (
+              <div
+                key={route.heading}
+                data-rise-item=""
+                style={{ animationDelay: `${stagger(i)}ms` }}
+                className="flex flex-col gap-2"
+              >
                 <h2 className="text-base font-semibold">{route.heading}</h2>
                 <p className="text-sm leading-relaxed text-[var(--color-fg-muted)]">{route.body}</p>
                 {route.links.length > 0 ? (

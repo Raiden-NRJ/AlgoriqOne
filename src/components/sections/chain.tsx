@@ -1,10 +1,12 @@
+import type { CSSProperties } from 'react';
 import { ArrowRight, ArrowDown } from 'lucide-react';
 import { chain } from '@/content/homepage';
 import { Container, Eyebrow, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
-import { stagger } from '@/components/site/motion';
+import { STAGGER_WIDE, stagger } from '@/components/site/motion';
 import Image from 'next/image';
 import { CHAIN_PHOTOS, ChainCurrent, ChainRail } from '@/components/diagrams/chain-steps';
+import { ChainSpread } from '@/components/interactive/chain-spread';
 
 /**
  * §3 The chain — the centrepiece of the site (docs/01 §8, beat 1).
@@ -18,8 +20,25 @@ import { CHAIN_PHOTOS, ChainCurrent, ChainRail } from '@/components/diagrams/cha
  * because five columns of body copy at 1280px is a datasheet, and §3 is the
  * keynote slide. Depth belongs on the module pages, one click away (rule 9).
  *
- * Server-rendered, no client JavaScript beyond <Reveal>. Below xl the row
- * becomes a column and the arrows rotate; the sequence reads the same.
+ * Server-rendered. Below xl the row becomes a column and the arrows rotate; the
+ * sequence reads the same.
+ *
+ * Client JavaScript is <Reveal> plus <ChainSpread>, which wraps the card row
+ * and slides the cards in from the left as they come into view. It writes
+ * transform and opacity and nothing else, which is why every layout note below
+ * still describes what actually ships — including with JavaScript off, where
+ * the row simply renders finished.
+ *
+ * ── Motion, 2026-09-03 ────────────────────────────────────────────────────
+ * ChainSpread was a GSAP ScrollTrigger spread earlier the same day — an
+ * overlapped deck fanning out, `scrub`bed against scroll with this section
+ * pinned. Owner instruction replaced it: it was janky on scroll, and pinning
+ * was a **documented exception** to docs/09 §1.7 and docs/11 §1, both of which
+ * ban scroll pinning outright. Removing it puts this section back inside the
+ * rule. What runs now is one IntersectionObserver plus a CSS transition; the
+ * island carries the reasoning and globals.css carries the redlines.
+ *
+ * §6 Built to fit still runs the GSAP spread. This instruction named §3.
  */
 export function Chain() {
   return (
@@ -42,7 +61,15 @@ export function Chain() {
           </p>
         </Reveal>
 
-        <Reveal>
+        {/*
+          The card row is the only block in this section that is *not* wrapped
+          in <Reveal>. ChainSpread owns its motion instead — a staggered slide
+          in from the left, run entirely in transform and opacity, leaving the
+          row rendered and finished without JavaScript. That is a strictly
+          better no-JS story than the Reveal it replaced, which started the row
+          at opacity 0.
+        */}
+        <ChainSpread>
           <ol className="flex flex-col gap-2 xl:flex-row xl:items-stretch xl:gap-0">
             {chain.links.map((link, index) => {
               const photo = CHAIN_PHOTOS[link.stage];
@@ -52,7 +79,22 @@ export function Chain() {
                   key={link.stage}
                   className="flex flex-col xl:min-w-0 xl:flex-1 xl:flex-row xl:items-stretch"
                 >
-                  <article className="flex flex-1 flex-col gap-4 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-e1)]">
+                  {/* data-chain-card is ChainSpread's handle on this element.
+                      The animation writes transform and opacity only, so the
+                      class list below is the resting state in every case.
+
+                      --slide-delay is this card's place in the stagger, so the
+                      row assembles left to right. Read only inside the
+                      `.chain-slide` rules in globals.css — deliberately not a
+                      bare `transition-delay`, which would apply to any other
+                      transition this element ever picks up. STAGGER_WIDE (80ms)
+                      because five cards at the tight 70ms step resolve almost
+                      together at xl, where they all cross the fold at once. */}
+                  <article
+                    data-chain-card=""
+                    style={{ '--slide-delay': `${stagger(index, STAGGER_WIDE)}ms` } as CSSProperties}
+                    className="flex flex-1 flex-col gap-4 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-e1)]"
+                  >
                     <div className="flex items-baseline justify-between gap-2">
                       <span className="text-label text-[var(--color-fg-subtle)]">
                         Step {index + 1}
@@ -128,7 +170,19 @@ export function Chain() {
                     }
                   >
                     {index < chain.links.length - 1 ? (
-                      <span className="grid size-7 place-items-center rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-link)] shadow-[var(--shadow-e1)]">
+                      /* Arrow `index` bridges cards `index` and `index + 1`, so
+                         it carries the *next* card's delay and lands with the
+                         card it points at. No observer and no scroll listener
+                         of its own: it is a sibling of its card inside this
+                         same <li>, so the CSS reaches it from the card's class
+                         with `~`. */
+                      <span
+                        data-chain-arrow=""
+                        style={
+                          { '--slide-delay': `${stagger(index + 1, STAGGER_WIDE)}ms` } as CSSProperties
+                        }
+                        className="grid size-7 place-items-center rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-link)] shadow-[var(--shadow-e1)]"
+                      >
                         {/* Already inside an aria-hidden wrapper; marked
                             individually too so the intent survives a refactor
                             that moves them out of it. */}
@@ -143,7 +197,7 @@ export function Chain() {
               );
             })}
           </ol>
-        </Reveal>
+        </ChainSpread>
 
         {/*
           P2's signature moment (deck slide 04): the rail draws over 800ms, its

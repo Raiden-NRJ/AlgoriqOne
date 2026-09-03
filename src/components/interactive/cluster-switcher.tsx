@@ -14,13 +14,13 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, Check } from 'lucide-react';
 import { CLUSTERS, type ClusterId } from '@/content/clusters';
 import { cn } from '@/components/site/primitives';
+import { ChainStepper } from '@/components/interactive/chain-stepper';
 // The framer mirror — framer cannot read a CSS custom property, so these are
 // the one place the millisecond redlines are duplicated for it (motion.ts).
 import {
   DURATION_CROSS_FADE_S,
   DURATION_INDICATOR_S,
   EASE_OUT_QUINT,
-  stagger,
 } from '@/components/site/motion';
 
 export function ClusterSwitcher() {
@@ -173,52 +173,26 @@ export function ClusterSwitcher() {
         {/*
           The chain — the proof that these modules are one system.
 
-          It animates as of 2026-09-02, and the trigger is the remount this
-          panel already does. `key={cluster.id}` above tears the whole subtree
-          down and builds a new one on every cluster change; a CSS animation
-          starts when its element is inserted, so the dots and the segments
-          replay in step with the panel's own cross-fade without a single line
-          of switch-aware code. Before this, the panel sat beside a tablist
-          whose indicator *does* animate, and a cluster change read as "the
-          label changed" rather than "the pipeline rebuilt".
+          It animates, and the trigger is the remount this panel already does:
+          `key={cluster.id}` above tears the whole subtree down and builds a
+          new one on every cluster change, so `ChainStepper` mounts fresh and
+          replays in step with the panel's own cross-fade, without a line of
+          switch-aware code here. Before any of this, the panel sat beside a
+          tablist whose indicator *does* animate, and a cluster change read as
+          "the label changed" rather than "the pipeline rebuilt".
 
-          The two `data-pipe-*` attributes and their delays are the entire
-          implementation; the motion is the `[data-pipe-dot]` / `[data-pipe-line]`
-          block in globals.css, shared verbatim with the server-rendered `Chain`
-          in page-template.tsx, which is the same composition on ~12 deep-page
-          blocks. Reduced motion is handled there too, globally, rather than
-          through the `reduced` flag this file uses for its framer transitions.
+          **What changed 2026-09-03.** This was the `[data-pipe-dot]` /
+          `[data-pipe-line]` CSS cascade, shared verbatim with the
+          server-rendered `Chain` in page-template.tsx. It is now a GSAP
+          timeline in chain-stepper.tsx: a token travels the connector and each
+          stage lands as it passes. `Chain` and its CSS are untouched — the
+          reason the two diverged is that the landing moments have to come from
+          measured dot positions, and an `animation-delay` written at render
+          time cannot see a rect. chain-stepper.tsx's header has the full note.
         */}
         <div className="flex flex-col gap-4 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-e1)] sm:p-8">
           <p className="text-label text-[var(--color-fg-subtle)]">End to end</p>
-          <ol className="flex flex-col gap-0">
-            {cluster.chain.map((step, i) => (
-              <li key={step} className="flex items-start gap-3">
-                <span className="flex flex-col items-center self-stretch">
-                  <span
-                    aria-hidden
-                    data-pipe-dot=""
-                    style={{ animationDelay: `${stagger(i)}ms` }}
-                    className={cn(
-                      'mt-1.5 size-2.5 shrink-0 rounded-full',
-                      i === cluster.chain.length - 1
-                        ? 'bg-[var(--color-action)]'
-                        : 'bg-[var(--color-brand-300)]',
-                    )}
-                  />
-                  {i < cluster.chain.length - 1 ? (
-                    <span
-                      aria-hidden
-                      data-pipe-line=""
-                      style={{ animationDelay: `${stagger(i)}ms` }}
-                      className="w-px flex-1 bg-[var(--color-border-strong)]"
-                    />
-                  ) : null}
-                </span>
-                <span className="pb-4 text-sm font-medium">{step}</span>
-              </li>
-            ))}
-          </ol>
+          <ChainStepper steps={cluster.chain} />
 
           <div className="mt-auto flex flex-wrap gap-1.5 border-t border-[var(--color-border)] pt-4">
             {cluster.permissions.map((key) => (

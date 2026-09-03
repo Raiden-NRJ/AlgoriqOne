@@ -47,7 +47,7 @@ export function Permissions() {
 
           <Link
             href="/security/permissions"
-            className="inline-flex min-h-6 w-fit items-center gap-1.5 py-1 text-sm font-medium text-[var(--color-brand-300)] underline decoration-[var(--color-brand-400)]/50 underline-offset-4 transition-colors hover:decoration-[var(--color-brand-300)]"
+            className="inline-flex min-h-6 w-fit items-center gap-1.5 py-1 text-sm font-medium text-[var(--color-link)] underline decoration-[var(--color-link)]/50 underline-offset-4 transition-colors hover:decoration-[var(--color-link-strong)]"
           >
             How authorization works
             <ArrowRight className="size-4" aria-hidden />

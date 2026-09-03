@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react';
 import { CtaBand, PageHero } from '@/components/page/page-template';
 import { Container, Section } from '@/components/site/primitives';
 import { Reveal } from '@/components/site/reveal';
+import { stagger } from '@/components/site/motion';
 import { FAQS } from '@/content/faq';
 import { PRICING_FAQS } from '@/content/pricing';
 
@@ -44,9 +45,15 @@ export default function FaqPage() {
           {SECTIONS.map((section) => (
             <Reveal key={section.heading} className="flex flex-col gap-5">
               <h2 className="text-h2">{section.heading}</h2>
+              {/* Stagger the questions in. The accordion's own open/close
+                  motion is unrelated and unchanged — this is the entrance. */}
               <ul className="flex flex-col gap-2">
-                {section.items.map((item) => (
-                  <li key={item.question}>
+                {section.items.map((item, i) => (
+                  <li
+                    key={item.question}
+                    data-rise-item=""
+                    style={{ animationDelay: `${stagger(i)}ms` }}
+                  >
                     <details className="group rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] open:border-[var(--color-border-strong)]">
                       <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-base font-medium [&::-webkit-details-marker]:hidden">
                         {item.question}
